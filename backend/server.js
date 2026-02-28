@@ -1,10 +1,19 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
+// Safety fallbacks — prevents crash when .env is missing
+if (!process.env.JWT_SECRET) {
+    process.env.JWT_SECRET = 'soeit_dev_fallback_secret_do_not_use_in_production';
+    console.warn('⚠️  JWT_SECRET not set in .env — using fallback (dev only)');
+}
+if (!process.env.JWT_EXPIRE) process.env.JWT_EXPIRE = '30d';
+if (!process.env.PORT) process.env.PORT = '5000';
+if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const path = require('path');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 

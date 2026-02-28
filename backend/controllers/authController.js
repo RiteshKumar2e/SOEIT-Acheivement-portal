@@ -18,14 +18,33 @@ const sendTokenResponse = (user, statusCode, res, message = 'Success') => {
 exports.register = async (req, res, next) => {
     try {
         const { name, email, password, department, studentId, enrollmentNo, batch, semester, section } = req.body;
-        const existingUser = await User.findOne({
-            $or: [{ email }, { enrollmentNo: enrollmentNo || 'NOT_PROVIDED' }]
-        });
+
+        // Build duplicate-check query — only include enrollmentNo when provided
+        const orConditions = [{ email: email?.toLowerCase() }];
+        if (enrollmentNo && enrollmentNo.trim()) {
+            orConditions.push({ enrollmentNo: enrollmentNo.trim() });
+        }
+        const existingUser = await User.findOne({ $or: orConditions });
         if (existingUser) return res.status(400).json({ success: false, message: 'Email or Enrollment No. already registered' });
 
-        const user = await User.create({ name, email, password, department, studentId, enrollmentNo, batch, semester, section, role: 'student' });
+        // Coerce semester to Number; schema requires Number (min 1 – max 8)
+        const semesterNum = semester ? parseInt(semester, 10) : undefined;
+
+        const user = await User.create({
+            name,
+            email,
+            password,
+            department,
+            studentId: studentId?.trim() || undefined,
+            enrollmentNo: enrollmentNo?.trim() || undefined,
+            batch: batch?.trim() || undefined,
+            semester: !isNaN(semesterNum) ? semesterNum : undefined,
+            section: section?.trim() || undefined,
+            role: 'student',
+        });
         sendTokenResponse(user, 201, res, 'Registration successful! Welcome to SOEIT Portal.');
     } catch (error) {
+        console.error('[Register Error]', error.message, error.errors ?? '');
         next(error);
     }
 };

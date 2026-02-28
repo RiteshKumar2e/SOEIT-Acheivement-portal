@@ -31,13 +31,12 @@ achievementSchema.index({ studentId: 1, status: 1 });
 achievementSchema.index({ category: 1, level: 1 });
 achievementSchema.index({ status: 1, createdAt: -1 });
 
-// Calculate points based on level
-achievementSchema.pre('save', function (next) {
+// Calculate points based on level (async style — Mongoose 9 compatible)
+achievementSchema.pre('save', async function () {
     const pointsMap = { International: 100, National: 75, State: 50, University: 30, College: 20, Department: 10 };
     if (this.isModified('level') || this.isNew) {
         this.points = pointsMap[this.level] || 10;
     }
-    next();
 });
 
 module.exports = mongoose.model('Achievement', achievementSchema);
