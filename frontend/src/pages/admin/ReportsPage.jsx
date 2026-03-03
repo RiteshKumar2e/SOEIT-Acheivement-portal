@@ -16,15 +16,18 @@ const ReportsPage = () => {
     useEffect(() => {
         adminAPI.getReports()
             .then(res => setData(res.data))
-            .catch(() => toast.error('Failed to load reports'))
+            .catch(() => toast.error('Failed to synchronize analytical stream'))
             .finally(() => setLoading(false));
     }, []);
 
     if (loading) return (
-        <div>
-            {[...Array(3)].map((_, i) =>
-                <div key={i} className="skeleton" style={{ height: 280, borderRadius: 'var(--radius-lg)', marginBottom: '1.25rem' }} />
-            )}
+        <div className="animate-fade-in">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
+                {[...Array(4)].map((_, i) => <div key={i} className="skeleton" style={{ height: 120, borderRadius: 'var(--radius-lg)' }} />)}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                {[...Array(2)].map((_, i) => <div key={i} className="skeleton" style={{ height: 350, borderRadius: 'var(--radius-lg)' }} />)}
+            </div>
         </div>
     );
 
@@ -37,188 +40,218 @@ const ReportsPage = () => {
         try {
             const doc = new jsPDF();
             const date = new Date().toLocaleDateString();
-
-            // Header
-            doc.setFillColor(30, 41, 59);
-            doc.rect(0, 0, 210, 40, 'F');
+            doc.setFillColor(30, 64, 175);
+            doc.rect(0, 0, 210, 45, 'F');
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22);
-            doc.text('SOEIT ACHIEVEMENT PORTAL', 105, 18, { align: 'center' });
-            doc.setFontSize(12);
-            doc.text('Institutional Performance Report', 105, 28, { align: 'center' });
-            doc.setFontSize(10);
-            doc.text(`Generated on: ${date}`, 105, 34, { align: 'center' });
-
-            let y = 55;
-
-            // 1. Monthly Trends Table
-            doc.setTextColor(30, 41, 59);
+            doc.setFontSize(24);
+            doc.text('SOEIT ACADEMIC PORTAL', 105, 20, { align: 'center' });
             doc.setFontSize(14);
-            doc.text('1. Monthly Growth Trend', 14, y);
-            y += 8;
+            doc.text('Performance & Achievement Analytical Projection', 105, 30, { align: 'center' });
+            doc.setFontSize(10);
+            doc.text(`Official Document ID: SOEIT-REP-${date.replace(/\//g, '')} | Date: ${date}`, 105, 38, { align: 'center' });
+
+            let y = 60;
+            doc.setTextColor(30, 64, 175);
+            doc.setFontSize(16);
+            doc.text('I. INSTITUTIONAL GROWTH METRICS', 14, y);
+            y += 10;
             autoTable(doc, {
                 startY: y,
-                head: [['Month', 'Submitted Achievements', 'Approved Achievements']],
+                head: [['Analytical Period (Month)', 'Submissions Received', 'Verified Achievements']],
                 body: monthlyData.map(d => [d.name, d.submitted, d.approved]),
                 theme: 'grid',
-                headStyles: { fillStyle: 'F', fillColor: [59, 130, 246] },
+                headStyles: { fillColor: [30, 64, 175], textColor: [255, 255, 255], fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: [248, 250, 252] },
             });
-            y = doc.lastAutoTable.finalY + 15;
+            y = doc.lastAutoTable.finalY + 20;
 
-            // 2. Departmental Stats Table
-            doc.setFontSize(14);
-            doc.text('2. Department-wise Performance', 14, y);
-            y += 8;
+            if (y > 220) { doc.addPage(); y = 20; }
+            doc.setFontSize(16);
+            doc.text('II. DEPARTMENTAL DISTRIBUTION ANALYSIS', 14, y);
+            y += 10;
             autoTable(doc, {
                 startY: y,
-                head: [['Department', 'Total Achievements Count']],
+                head: [['Institutional Department', 'Cumulative Achievement Count']],
                 body: (data?.departmentStats || []).map(d => [d._id, d.count]),
                 theme: 'grid',
-                headStyles: { fillStyle: 'F', fillColor: [139, 92, 246] },
+                headStyles: { fillColor: [79, 70, 229], textColor: [255, 255, 255] },
             });
-            y = doc.lastAutoTable.finalY + 15;
+            y = doc.lastAutoTable.finalY + 20;
 
-            // New Page if needed
-            if (y > 220) { doc.addPage(); y = 20; }
-
-            // 3. Top Performers Table
-            doc.setFontSize(14);
-            doc.text('3. University Top Performers', 14, y);
-            y += 8;
+            if (y > 180) { doc.addPage(); y = 20; }
+            doc.setFontSize(16);
+            doc.text('III. ACADEMIC EXCELLENCE RECOGNITION', 14, y);
+            y += 10;
             autoTable(doc, {
                 startY: y,
-                head: [['Rank', 'Student Name', 'Department', 'Points', 'Achievements']],
+                head: [['Rank', 'Scholar Name', 'Department', 'Institutional Points', 'Records']],
                 body: (data?.topPerformers || []).map((p, i) => [i + 1, p.student?.name, p.student?.department, p.totalPoints, p.achievementCount]),
                 theme: 'grid',
-                headStyles: { fillStyle: 'F', fillColor: [245, 158, 11] },
+                headStyles: { fillColor: [245, 158, 11], textColor: [255, 255, 255] },
             });
 
-            doc.save(`SOEIT_Performance_Report_${date.replace(/\//g, '-')}.pdf`);
-            toast.success('Report downloaded successfully');
+            doc.save(`SOEIT_Academic_Projection_${date.replace(/\//g, '-')}.pdf`);
+            toast.success('Official projection document exported');
         } catch (error) {
-            console.error('Export error:', error);
-            toast.error('Download failed! ' + error.message);
+            toast.error('Projection export failed! ' + error.message);
         }
     };
 
     return (
-        <div style={{ animation: 'fadeIn 0.5s ease' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="animate-fade-in">
+            {/* Header Suite */}
+            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <div>
-                    <h2 style={{ marginBottom: '0.25rem' }}>Reports & Analytics</h2>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Comprehensive insights across departments and categories</p>
+                    <h2 className="heading-display">Analytical Intelligence</h2>
+                    <p className="page-subtitle">Unified narrative of institutional growth, departmental performance, and excellence metrics.</p>
                 </div>
-                <button className="btn btn-primary" onClick={exportReportsPDF}>
-                    <Download size={16} /> Download PDF Report
+                <button className="btn btn-primary" onClick={exportReportsPDF} style={{ height: '48px', padding: '0 1.5rem', fontWeight: 800 }}>
+                    <Download size={18} />
+                    <span>Generate Academic Report</span>
                 </button>
             </div>
 
-            {/* Charts Row 1 */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '1.5rem' }}>
-                <div className="card">
-                    <div className="card-header"><h4 style={{ fontSize: '1rem' }}>Monthly Trend (Submitted vs Approved)</h4></div>
-                    <div className="card-body">
-                        <ResponsiveContainer width="100%" height={220}>
+            {/* Performance Overview Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
+                {[
+                    { label: 'Cumulative Yield', value: data?.topPerformers?.reduce((acc, p) => acc + p.totalPoints, 0) || 0, icon: Star, color: 'var(--brand-600)', bg: 'var(--primary-50)' },
+                    { label: 'Evaluation Density', value: data?.categoryStats?.reduce((acc, c) => acc + c.count, 0) || 0, icon: BarChart3, color: 'var(--purple-600)', bg: 'var(--purple-50)' },
+                    { label: 'Excellence Points', value: data?.topPerformers?.[0]?.totalPoints || 0, icon: Trophy, color: 'var(--warning-600)', bg: 'var(--warning-50)' },
+                    { label: 'Active Domains', value: data?.categoryStats?.length || 0, icon: Award, color: 'var(--success-600)', bg: 'var(--success-50)' },
+                ].map(({ label, value, icon: Icon, color, bg }) => (
+                    <div key={label} className="card" style={{ padding: '1.5rem', border: '1px solid var(--border-primary)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                            <div style={{ width: 40, height: 40, background: bg, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: color }}>
+                                <Icon size={20} />
+                            </div>
+                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+                        </div>
+                        <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1 }}>{value.toLocaleString()}</div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Charts Ecosystem */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
+                <div className="card" style={{ border: '1px solid var(--border-primary)' }}>
+                    <div className="card-header" style={{ borderBottom: '1px solid var(--border-primary)', padding: '1.5rem' }}>
+                        <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.1rem' }}>Longitudinal Submission Analytics</h4>
+                    </div>
+                    <div className="card-body" style={{ padding: '2rem 1rem 1rem 1rem' }}>
+                        <ResponsiveContainer width="100%" height={300}>
                             <AreaChart data={monthlyData}>
                                 <defs>
-                                    <linearGradient id="grad1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} /><stop offset="100%" stopColor="#3b82f6" stopOpacity={0} /></linearGradient>
-                                    <linearGradient id="grad2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#22c55e" stopOpacity={0.3} /><stop offset="100%" stopColor="#22c55e" stopOpacity={0} /></linearGradient>
+                                    <linearGradient id="gradSub" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--brand-600)" stopOpacity={0.12} /><stop offset="100%" stopColor="var(--brand-600)" stopOpacity={0} /></linearGradient>
+                                    <linearGradient id="gradApp" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--success-500)" stopOpacity={0.12} /><stop offset="100%" stopColor="var(--success-500)" stopOpacity={0} /></linearGradient>
                                 </defs>
-                                <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 11 }} tickLine={false} axisLine={false} />
-                                <YAxis tick={{ fill: '#64748b', fontSize: 11 }} tickLine={false} axisLine={false} />
-                                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#f8fafc', fontSize: 12 }} />
-                                <Area type="monotone" dataKey="submitted" stroke="#3b82f6" strokeWidth={2} fill="url(#grad1)" name="Submitted" />
-                                <Area type="monotone" dataKey="approved" stroke="#22c55e" strokeWidth={2} fill="url(#grad2)" name="Approved" />
-                                <Legend formatter={v => <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>{v}</span>} />
+                                <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 12, fontWeight: 700 }} tickLine={false} axisLine={false} dy={10} />
+                                <YAxis tick={{ fill: '#64748b', fontSize: 12, fontWeight: 700 }} tickLine={false} axisLine={false} />
+                                <Tooltip contentStyle={{ background: '#fff', border: 'none', borderRadius: 12, boxShadow: 'var(--shadow-xl)' }} />
+                                <Area type="monotone" dataKey="submitted" stroke="var(--brand-700)" strokeWidth={3} fill="url(#gradSub)" name="Registry Input" dot={{ r: 4, fill: '#fff', strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                                <Area type="monotone" dataKey="approved" stroke="var(--success-600)" strokeWidth={3} fill="url(#gradApp)" name="Verified Output" dot={{ r: 4, fill: '#fff', strokeWidth: 2 }} activeDot={{ r: 6 }} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                <div className="card">
-                    <div className="card-header"><h4 style={{ fontSize: '1rem' }}>Achievement by Category</h4></div>
-                    <div className="card-body">
-                        <ResponsiveContainer width="100%" height={220}>
+                <div className="card" style={{ border: '1px solid var(--border-primary)' }}>
+                    <div className="card-header" style={{ borderBottom: '1px solid var(--border-primary)', padding: '1.5rem' }}>
+                        <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.1rem' }}>Categorical Distribution</h4>
+                    </div>
+                    <div className="card-body" style={{ padding: '1.5rem' }}>
+                        <ResponsiveContainer width="100%" height={300}>
                             <PieChart>
-                                <Pie data={data?.categoryStats || []} dataKey="count" nameKey="_id" cx="50%" cy="50%" outerRadius={80} paddingAngle={3}>
+                                <Pie
+                                    data={data?.categoryStats || []}
+                                    dataKey="count"
+                                    nameKey="_id"
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={75}
+                                    outerRadius={105}
+                                    paddingAngle={6}
+                                    stroke="none"
+                                >
                                     {(data?.categoryStats || []).map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                                 </Pie>
-                                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#f8fafc', fontSize: 12 }} />
-                                <Legend formatter={v => <span style={{ color: 'var(--text-secondary)', fontSize: '0.7rem' }}>{v}</span>} />
+                                <Tooltip contentStyle={{ background: '#fff', border: 'none', borderRadius: 12, boxShadow: 'var(--shadow-xl)' }} />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
             </div>
 
-            {/* Charts Row 2 */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '1.5rem' }}>
-                <div className="card">
-                    <div className="card-header"><h4 style={{ fontSize: '1rem' }}>Department-wise Count</h4></div>
-                    <div className="card-body">
-                        <ResponsiveContainer width="100%" height={220}>
-                            <BarChart data={data?.departmentStats || []} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
-                                <XAxis dataKey="_id" tick={{ fill: '#64748b', fontSize: 11 }} tickLine={false} axisLine={false} />
-                                <YAxis tick={{ fill: '#64748b', fontSize: 11 }} tickLine={false} axisLine={false} />
-                                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#f8fafc', fontSize: 12 }} />
-                                <Bar dataKey="count" name="Achievements" fill="url(#deptGrad)" radius={[4, 4, 0, 0]} />
-                                <defs><linearGradient id="deptGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#8b5cf6" /><stop offset="100%" stopColor="#4f46e5" /></linearGradient></defs>
-                            </BarChart>
-                        </ResponsiveContainer>
+            {/* Performance Excellence Leaderboard */}
+            <div className="card" style={{ border: '1px solid var(--border-primary)' }}>
+                <div className="card-header" style={{ padding: '1.75rem', borderBottom: '1px solid var(--border-primary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
+                        <div style={{ width: 44, height: 44, background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 15px rgba(255, 165, 0, 0.2)' }}>
+                            <Trophy size={24} color="#fff" strokeWidth={2.5} />
+                        </div>
+                        <div>
+                            <h4 style={{ fontSize: '1.25rem', fontWeight: 900, margin: 0 }}>Excellence Leaderboard</h4>
+                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Elite scholars classified by verified institutional point distribution.</p>
+                        </div>
                     </div>
                 </div>
-
-                <div className="card">
-                    <div className="card-header"><h4 style={{ fontSize: '1rem' }}>Achievement by Level</h4></div>
-                    <div className="card-body">
-                        <ResponsiveContainer width="100%" height={220}>
-                            <BarChart data={data?.levelStats || []} layout="vertical" margin={{ top: 5, right: 25, left: 20, bottom: 5 }}>
-                                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 11 }} tickLine={false} axisLine={false} />
-                                <YAxis type="category" dataKey="_id" tick={{ fill: '#64748b', fontSize: 11 }} tickLine={false} axisLine={false} width={80} />
-                                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#f8fafc', fontSize: 12 }} />
-                                <Bar dataKey="count" name="Count" radius={[0, 4, 4, 0]}>
-                                    {(data?.levelStats || []).map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                                </Bar>
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </div>
-
-            {/* Top Performers */}
-            <div className="card">
-                <div className="card-header" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Trophy size={18} style={{ color: '#f59e0b' }} />
-                    <h4 style={{ fontSize: '1rem' }}>Top Performers</h4>
-                </div>
-                <div className="table-wrapper" style={{ border: 'none', borderRadius: 0 }}>
+                <div className="table-container">
                     <table className="table">
-                        <thead><tr><th>#</th><th>Student</th><th>Department</th><th>Achievements</th><th>Total Points</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th style={{ paddingLeft: '2rem', width: '100px' }}>Rank</th>
+                                <th>Scholar Profile</th>
+                                <th>Focus Department</th>
+                                <th style={{ textAlign: 'center' }}>Verified Units</th>
+                                <th style={{ textAlign: 'right', paddingRight: '2rem' }}>Institutional Points</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             {(data?.topPerformers || []).map((p, i) => (
-                                <tr key={p._id}>
-                                    <td>
-                                        <span style={{ width: 28, height: 28, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.8rem', background: i < 3 ? ['rgba(255,215,0,0.15)', 'rgba(192,192,192,0.15)', 'rgba(205,127,50,0.15)'][i] : 'rgba(255,255,255,0.05)', color: i < 3 ? ['#ffd700', '#c0c0c0', '#cd7f32'][i] : 'var(--text-muted)' }}>
+                                <tr key={p._id} className="hover-row">
+                                    <td style={{ paddingLeft: '2rem' }}>
+                                        <div style={{
+                                            width: 36,
+                                            height: 36,
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontWeight: 900,
+                                            fontSize: '0.9rem',
+                                            background: i < 3 ? ['#FFF9C4', '#F1F5F9', '#FFEDD5'][i] : 'var(--slate-50)',
+                                            color: i < 3 ? ['#B79100', '#64748B', '#9A3412'][i] : 'var(--text-muted)',
+                                            border: i < 3 ? `2px solid ${['#FDE68A', '#E2E8F0', '#FED7AA'][i]}` : '1px solid var(--border-primary)'
+                                        }}>
                                             {i + 1}
-                                        </span>
+                                        </div>
                                     </td>
                                     <td>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                            <div className="avatar avatar-sm">{p.student?.name?.charAt(0) || 'S'}</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.5rem 0' }}>
+                                            <div style={{ width: 44, height: 44, background: i < 3 ? 'var(--primary-50)' : 'var(--slate-50)', color: 'var(--brand-700)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '1rem', border: '2px solid white', boxShadow: 'var(--shadow-xs)' }}>
+                                                {p.student?.name?.charAt(0) || 'S'}
+                                            </div>
                                             <div>
-                                                <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.875rem' }}>{p.student?.name}</div>
-                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{p.student?.studentId}</div>
+                                                <div style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '0.95rem' }}>{p.student?.name}</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>ID: {p.student?.studentId}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span className="badge badge-primary">{p.student?.department}</span></td>
-                                    <td style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>{p.achievementCount}</td>
-                                    <td><span style={{ fontWeight: 800, color: 'var(--warning-500)', fontSize: '1rem' }}>{p.totalPoints}</span><span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: 4 }}>pts</span></td>
+                                    <td>
+                                        <span className="badge badge-brand" style={{ fontWeight: 800, padding: '0.4rem 0.75rem' }}>{p.student?.department}</span>
+                                    </td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, color: 'var(--text-secondary)' }}>
+                                            {p.achievementCount} <span style={{ fontSize: '0.7rem', opacity: 0.6 }}>Synchronized</span>
+                                        </div>
+                                    </td>
+                                    <td style={{ textAlign: 'right', paddingRight: '2rem' }}>
+                                        <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--brand-700)', letterSpacing: '-0.02em' }}>
+                                            {p.totalPoints}
+                                            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', marginLeft: '0.5rem', opacity: 0.6 }}>PTS RESOLUTION</span>
+                                        </div>
+                                    </td>
                                 </tr>
                             ))}
-                            {(!data?.topPerformers?.length) && (
-                                <tr><td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No data available</td></tr>
-                            )}
                         </tbody>
                     </table>
                 </div>

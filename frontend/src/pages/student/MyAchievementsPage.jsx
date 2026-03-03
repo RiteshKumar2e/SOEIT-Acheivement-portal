@@ -2,7 +2,7 @@ import '../../styles/MyAchievementsPage.css';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { achievementAPI } from '../../services/api';
-import { Trophy, Search, Filter, Pencil, Trash2, Clock, CheckCircle, XCircle, Eye, Upload, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trophy, Search, Filter, Pencil, Trash2, Clock, CheckCircle, XCircle, Eye, Upload, ChevronLeft, ChevronRight, Star, GraduationCap } from 'lucide-react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
@@ -10,9 +10,18 @@ const CATEGORIES = ['', 'Academic', 'Sports', 'Cultural', 'Technical', 'Research
 const STATUSES = ['', 'pending', 'approved', 'rejected'];
 
 const StatusBadge = ({ status }) => {
-    const icons = { pending: Clock, approved: CheckCircle, rejected: XCircle };
-    const Icon = icons[status];
-    return <span className={`badge badge-${status}`}>{Icon && <Icon size={10} />}{status}</span>;
+    const map = {
+        pending: ['badge-warning', Clock],
+        approved: ['badge-success', CheckCircle],
+        rejected: ['badge-error', XCircle]
+    };
+    const [cls, Icon] = map[status] || ['badge-primary', null];
+    return (
+        <span className={`badge ${cls}`} style={{ fontWeight: 800, padding: '0.4rem 0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            {Icon && <Icon size={12} style={{ marginRight: '4px' }} />}
+            {status}
+        </span>
+    );
 };
 
 const MyAchievementsPage = () => {
@@ -21,7 +30,6 @@ const MyAchievementsPage = () => {
     const [total, setTotal] = useState(0);
     const [pages, setPages] = useState(1);
     const [filters, setFilters] = useState({ status: '', category: '', search: '', page: 1 });
-    const [deleteId, setDeleteId] = useState(null);
 
     const load = async () => {
         setLoading(true);
@@ -33,7 +41,7 @@ const MyAchievementsPage = () => {
             setTotal(data.total);
             setPages(data.pages);
         } catch {
-            toast.error('Failed to load achievements');
+            toast.error('Identity protocol failed: Records unavailable');
         } finally {
             setLoading(false);
         }
@@ -43,128 +51,166 @@ const MyAchievementsPage = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
+        setFilters(p => ({ ...p, page: 1 }));
         load();
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this achievement?')) return;
+        if (!window.confirm('Security protocol: Permanent elimination of this record required?')) return;
         try {
             await achievementAPI.delete(id);
-            toast.success('Achievement deleted');
+            toast.success('Credential protocol: Record eliminated');
             load();
         } catch {
-            toast.error('Failed to delete');
+            toast.error('Elimination protocol failed');
         }
     };
 
     return (
-        <div style={{ animation: 'fadeIn 0.5s ease' }}>
-            {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="animate-fade-in">
+            {/* Header Suite */}
+            <div className="page-header" style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <div>
-                    <h2 style={{ marginBottom: '0.25rem' }}>My Achievements</h2>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{total} achievement{total !== 1 ? 's' : ''} submitted</p>
+                    <h2 className="heading-display">Institutional Achievement Registry</h2>
+                    <p className="page-subtitle">Unified chronological ledger of verified academic and professional milestones.</p>
                 </div>
-                <Link to="/achievements/upload" className="btn btn-primary">
-                    <Upload size={16} /> New Achievement
+                <Link to="/achievements/upload" className="btn btn-primary" style={{ padding: '0.8rem 2rem', fontWeight: 900 }}>
+                    <Upload size={18} />
+                    <span>Synchronize New Record</span>
                 </Link>
             </div>
 
-            {/* Filters */}
-            <div className="card card-body" style={{ marginBottom: '1.5rem' }}>
-                <form onSubmit={handleSearch} style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                    <div style={{ flex: 1, minWidth: 200 }}>
-                        <div className="search-box">
-                            <Search size={16} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 1 }} />
-                            <input className="form-control" style={{ paddingLeft: '2.5rem' }} placeholder="Search achievements..." value={filters.search} onChange={e => setFilters(p => ({ ...p, search: e.target.value }))} />
-                        </div>
+            {/* Navigation & Control Suite */}
+            <div className="card" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--slate-50)', border: '1px solid var(--border-primary)' }}>
+                <form onSubmit={handleSearch} style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 2fr) 1.2fr 1.2fr auto auto', gap: '1rem', alignItems: 'center' }}>
+                    <div style={{ position: 'relative' }}>
+                        <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                        <input
+                            className="form-control"
+                            style={{ paddingLeft: '3rem', height: '48px', fontWeight: 600 }}
+                            placeholder="Query by record title..."
+                            value={filters.search}
+                            onChange={e => setFilters(p => ({ ...p, search: e.target.value }))}
+                        />
                     </div>
-                    <select className="filter-select" value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value, page: 1 }))}>
-                        <option value="">All Status</option>
-                        {STATUSES.slice(1).map(s => <option key={s} value={s} style={{ textTransform: 'capitalize' }}>{s}</option>)}
+
+                    <select className="form-control" style={{ height: '48px', fontWeight: 700 }} value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value, page: 1 }))}>
+                        <option value="">Verification Status</option>
+                        {STATUSES.slice(1).map(s => <option key={s} value={s} style={{ textTransform: 'capitalize' }}>{s.toUpperCase()}</option>)}
                     </select>
-                    <select className="filter-select" value={filters.category} onChange={e => setFilters(p => ({ ...p, category: e.target.value, page: 1 }))}>
-                        <option value="">All Categories</option>
-                        {CATEGORIES.slice(1).map(c => <option key={c} value={c}>{c}</option>)}
+
+                    <select className="form-control" style={{ height: '48px', fontWeight: 700 }} value={filters.category} onChange={e => setFilters(p => ({ ...p, category: e.target.value, page: 1 }))}>
+                        <option value="">Functional Category</option>
+                        {CATEGORIES.slice(1).map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
                     </select>
-                    <button type="submit" className="btn btn-primary btn-sm"><Filter size={14} /> Filter</button>
-                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => setFilters({ status: '', category: '', search: '', page: 1 })}>Clear</button>
+
+                    <button type="submit" className="btn btn-primary" style={{ height: '48px', padding: '0 1.5rem', fontWeight: 900 }}>
+                        <Filter size={18} />
+                        <span>Filter</span>
+                    </button>
+
+                    <button type="button" className="btn btn-ghost" style={{ height: '48px', fontWeight: 800, border: '1px solid var(--border-primary)', background: 'white' }} onClick={() => setFilters({ status: '', category: '', search: '', page: 1 })}>
+                        Reset
+                    </button>
                 </form>
             </div>
 
-            {/* Table */}
-            {loading ? (
-                <div className="card">{[...Array(5)].map((_, i) => <div key={i} className="skeleton" style={{ height: 60, margin: '0.5rem', borderRadius: 'var(--radius-md)' }} />)}</div>
-            ) : achievements.length === 0 ? (
-                <div className="card">
-                    <div className="empty-state">
-                        <Trophy />
-                        <h3>No Achievements Found</h3>
-                        <p>Start documenting your accomplishments to build your portfolio!</p>
-                        <Link to="/achievements/upload" className="btn btn-primary" style={{ marginTop: '1rem' }}>Upload Your First Achievement</Link>
-                    </div>
-                </div>
-            ) : (
-                <>
-                    <div className="table-wrapper">
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>Achievement</th>
-                                    <th>Category</th>
-                                    <th>Level</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Points</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {achievements.map((a) => (
-                                    <tr key={a._id}>
-                                        <td>
-                                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</div>
-                                            {a.institution && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>{a.institution}</div>}
-                                        </td>
-                                        <td><span className="badge badge-primary" style={{ fontSize: '0.7rem' }}>{a.category}</span></td>
-                                        <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{a.level}</td>
-                                        <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{format(new Date(a.date || a.createdAt), 'dd MMM yy')}</td>
-                                        <td><StatusBadge status={a.status} /></td>
-                                        <td>
-                                            <span style={{ fontWeight: 700, color: a.status === 'approved' ? 'var(--success-500)' : 'var(--text-muted)' }}>
-                                                {a.status === 'approved' ? `+${a.points}` : '-'}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                {a.status !== 'approved' && (
-                                                    <Link to={`/achievements/edit/${a._id}`} className="btn btn-secondary btn-icon" title="Edit">
-                                                        <Pencil size={14} />
-                                                    </Link>
-                                                )}
-                                                <button className="btn btn-icon" title="Delete" onClick={() => handleDelete(a._id)} style={{ background: 'rgba(239,68,68,0.1)', color: 'var(--error-500)' }}>
-                                                    <Trash2 size={14} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Pagination */}
-                    {pages > 1 && (
-                        <div className="pagination">
-                            <button className="page-btn" onClick={() => setFilters(p => ({ ...p, page: p.page - 1 }))} disabled={filters.page === 1}><ChevronLeft size={16} /></button>
-                            {[...Array(pages)].map((_, i) => (
-                                <button key={i} className={`page-btn ${filters.page === i + 1 ? 'active' : ''}`} onClick={() => setFilters(p => ({ ...p, page: i + 1 }))}>{i + 1}</button>
-                            ))}
-                            <button className="page-btn" onClick={() => setFilters(p => ({ ...p, page: p.page + 1 }))} disabled={filters.page === pages}><ChevronRight size={16} /></button>
+            {/* Registry Documentation Table */}
+            <div className="card" style={{ overflow: 'hidden' }}>
+                <div style={{ overflowX: 'auto' }}>
+                    {loading ? (
+                        <div style={{ padding: '2rem' }}>
+                            {[...Array(6)].map((_, i) => <div key={i} className="skeleton" style={{ height: 72, marginBottom: '1rem', borderRadius: '12px' }} />)}
                         </div>
+                    ) : achievements.length === 0 ? (
+                        <div style={{ padding: '8rem 2rem', textAlign: 'center' }}>
+                            <div style={{ width: 100, height: 100, background: 'var(--primary-50)', color: 'var(--brand-700)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem auto' }}>
+                                <GraduationCap size={48} />
+                            </div>
+                            <h3 style={{ fontWeight: 900, fontSize: '1.5rem', marginBottom: '0.75rem' }}>Registry Initialization Required</h3>
+                            <p style={{ color: 'var(--text-muted)', fontWeight: 600, maxWidth: '450px', margin: '0 auto 2.5rem auto' }}>No achievement records have been synchronized with the institutional database for the current query.</p>
+                            <Link to="/achievements/upload" className="btn btn-primary" style={{ padding: '0.8rem 2.5rem', fontWeight: 900 }}>
+                                Initiate First Submission
+                            </Link>
+                        </div>
+                    ) : (
+                        <>
+                            <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <thead>
+                                    <tr style={{ borderBottom: '2px solid var(--border-primary)', background: 'var(--slate-50)' }}>
+                                        <th style={{ padding: '1.25rem 2rem', textAlign: 'left', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.75rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>Record Nomenclature</th>
+                                        <th style={{ padding: '1.25rem 2rem', textAlign: 'left', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.75rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>Domain</th>
+                                        <th style={{ padding: '1.25rem 2rem', textAlign: 'left', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.75rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>Resolution</th>
+                                        <th style={{ padding: '1.25rem 2rem', textAlign: 'left', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.75rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>Registry Date</th>
+                                        <th style={{ padding: '1.25rem 2rem', textAlign: 'left', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.75rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>Verification</th>
+                                        <th style={{ padding: '1.25rem 2rem', textAlign: 'left', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.75rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>Yield</th>
+                                        <th style={{ padding: '1.25rem 2rem', textAlign: 'right', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.75rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>Suite</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {achievements.map((a) => (
+                                        <tr key={a._id} style={{ borderBottom: '1px solid var(--border-primary)', transition: 'background 0.2s ease' }} className="hover-slate">
+                                            <td style={{ padding: '1.25rem 2rem' }}>
+                                                <div style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '0.95rem' }}>{a.title}</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, marginTop: '2px' }}>{a.institution || 'Institutional Record'}</div>
+                                            </td>
+                                            <td style={{ padding: '1.25rem 2rem' }}><span className="badge badge-primary" style={{ fontWeight: 800, textTransform: 'uppercase' }}>{a.category}</span></td>
+                                            <td style={{ padding: '1.25rem 2rem' }}><span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>{a.level} Resolution</span></td>
+                                            <td style={{ padding: '1.25rem 2rem' }}><span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>{format(new Date(a.date || a.createdAt), 'MMM dd, yyyy')}</span></td>
+                                            <td style={{ padding: '1.25rem 2rem' }}><StatusBadge status={a.status} /></td>
+                                            <td style={{ padding: '1.25rem 2rem' }}>
+                                                {a.status === 'approved' ? (
+                                                    <div style={{ fontWeight: 900, color: 'var(--brand-700)', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '1.1rem' }}>
+                                                        <Star size={14} fill="var(--brand-600)" />
+                                                        {a.points}
+                                                    </div>
+                                                ) : (
+                                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 700 }}>PENDING YIELD</span>
+                                                )}
+                                            </td>
+                                            <td style={{ padding: '1.25rem 2rem', textAlign: 'right' }}>
+                                                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                                    {a.status !== 'approved' && (
+                                                        <Link to={`/achievements/edit/${a._id}`} className="btn btn-ghost btn-icon" style={{ borderRadius: '10px' }}>
+                                                            <Pencil size={18} />
+                                                        </Link>
+                                                    )}
+                                                    <button className="btn btn-ghost btn-icon" style={{ borderRadius: '10px' }}>
+                                                        <Eye size={18} />
+                                                    </button>
+                                                    <button className="btn btn-ghost btn-icon" style={{ color: 'var(--error-500)', borderRadius: '10px' }} onClick={() => handleDelete(a._id)}>
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                            {/* Paginator Resolution */}
+                            {pages > 1 && (
+                                <div style={{ padding: '1.5rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--slate-50)' }}>
+                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+                                        SYNCHRONIZED: <span style={{ color: 'var(--text-primary)' }}>{achievements.length}</span> / <span style={{ color: 'var(--text-primary)' }}>{total}</span> DOSSIERS
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button className="btn btn-ghost" style={{ padding: '0.5rem', height: '40px', width: '40px', background: 'white', border: '1px solid var(--border-primary)' }} onClick={() => setFilters(p => ({ ...p, page: p.page - 1 }))} disabled={filters.page === 1}><ChevronLeft size={18} /></button>
+                                        {[...Array(pages)].map((_, i) => (
+                                            <button key={i} onClick={() => setFilters(p => ({ ...p, page: i + 1 }))}
+                                                className={`btn ${filters.page === i + 1 ? 'btn-primary' : 'btn-ghost'}`}
+                                                style={{ height: '40px', width: '40px', padding: 0, fontWeight: 800, background: filters.page === i + 1 ? 'var(--brand-600)' : 'white', border: filters.page !== i + 1 ? '1px solid var(--border-primary)' : 'none' }}>
+                                                {i + 1}
+                                            </button>
+                                        ))}
+                                        <button className="btn btn-ghost" style={{ padding: '0.5rem', height: '40px', width: '40px', background: 'white', border: '1px solid var(--border-primary)' }} onClick={() => setFilters(p => ({ ...p, page: p.page + 1 }))} disabled={filters.page === pages}><ChevronRight size={18} /></button>
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
-                </>
-            )}
+                </div>
+            </div>
         </div>
     );
 };

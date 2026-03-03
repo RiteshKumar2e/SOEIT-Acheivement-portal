@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { adminAPI, noticeAPI } from '../../services/api';
 import {
     Users, Trophy, Clock, CheckCircle, GraduationCap,
-    Search, Filter, ChevronRight, Eye, Download, UsersRound
+    Search, Filter, ChevronRight, Eye, Download, UsersRound, XCircle, X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import jsPDF from 'jspdf';
@@ -27,7 +27,7 @@ const FacultyDashboard = () => {
                 const res = await adminAPI.getDashboard();
                 setStats(res.data);
             } catch {
-                toast.error('Failed to load portal stats');
+                toast.error('Failed to synchronize portal operations');
             }
         };
         loadStats();
@@ -46,7 +46,7 @@ const FacultyDashboard = () => {
                 const res = await adminAPI.getStudents(params);
                 setStudents(res.data.data);
             } catch {
-                toast.error('Failed to load student list');
+                toast.error('Failed to load scholar directory');
             } finally {
                 setLoading(false);
             }
@@ -56,36 +56,29 @@ const FacultyDashboard = () => {
 
     const exportToPDF = () => {
         if (students.length === 0) {
-            toast.error('No data available to export');
+            toast.error('No empirical data available for export');
             return;
         }
 
         const doc = new jsPDF();
         const timestamp = new Date().toLocaleString();
 
-        // Header
         doc.setFontSize(22);
-        doc.setTextColor(48, 54, 87); // #303657
+        doc.setTextColor(15, 23, 42); // slate-900
         doc.text('ARKA JAIN UNIVERSITY', 105, 20, { align: 'center' });
 
         doc.setFontSize(14);
-        doc.setTextColor(139, 30, 30); // #8B1E1E
-        doc.text('SOEIT Student Achievement Report', 105, 30, { align: 'center' });
+        doc.setTextColor(30, 58, 138); // blue-900
+        doc.text('DEPARTMENT OF ENGINEERING & IT', 105, 30, { align: 'center' });
+        doc.text('Faculty Oversight Achievement Report', 105, 40, { align: 'center' });
 
         doc.setFontSize(10);
-        doc.setTextColor(100, 116, 139); // #64748b
-        doc.text(`Generated on: ${timestamp}`, 105, 38, { align: 'center' });
+        doc.setTextColor(100, 116, 139); // slate-500
+        doc.text(`Generation Timestamp: ${timestamp}`, 105, 48, { align: 'center' });
 
-        // Filters Info
         doc.setDrawColor(226, 232, 240);
-        doc.line(20, 45, 190, 45);
-        doc.setFontSize(11);
-        doc.setTextColor(48, 54, 87);
-        doc.text(`Semester: ${semester === 'all' ? 'All' : semester}`, 20, 52);
-        doc.text(`Section: ${section === 'all' ? 'All' : section}`, 70, 52);
-        doc.text(`Department: CSE`, 120, 52); // Example Dept
+        doc.line(20, 55, 190, 55);
 
-        // Table
         const tableData = students.map((s, i) => [
             i + 1,
             s.name,
@@ -97,262 +90,214 @@ const FacultyDashboard = () => {
         ]);
 
         doc.autoTable({
-            startY: 60,
-            head: [['#', 'Student Name', 'Enrollment No.', 'Academic Info', 'Total', 'Valid', 'Points']],
+            startY: 65,
+            head: [['#', 'Scholar Name', 'Enrollment ID', 'Academic Unit', 'Total', 'Verified', 'Score']],
             body: tableData,
-            headStyles: { fillColor: [48, 54, 87], textColor: [255, 255, 255], fontStyle: 'bold' },
+            headStyles: { fillColor: [30, 58, 138], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
+            bodyStyles: { fontSize: 9, halign: 'center' },
+            columnStyles: { 1: { halign: 'left' } },
             alternateRowStyles: { fillColor: [248, 250, 252] },
-            styles: { fontSize: 9, cellPadding: 3 },
-            margin: { left: 15, right: 15 }
         });
 
-        const filename = `SOEIT_Report_Sem${semester}_Sec${section}_${new Date().getTime()}.pdf`;
+        const filename = `SOEIT_Faculty_Report_${new Date().getTime()}.pdf`;
         doc.save(filename);
-        toast.success('Report exported successfully');
+        toast.success('Professional report exported successfully');
     };
 
     const handlePostNotice = async (e) => {
         e.preventDefault();
-        const toastId = toast.loading('Posting notice and notifying students...');
+        const toastId = toast.loading('Executing broadcast protocol...');
         try {
             await noticeAPI.create(noticeData);
-            toast.success('Notice posted successfully!', { id: toastId });
+            toast.success('Institutional notice published successfully', { id: toastId });
             setShowNoticeModal(false);
             setNoticeData({ title: '', content: '', priority: 'Medium' });
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Failed to post notice', { id: toastId });
+            toast.error(error.response?.data?.message || 'Broadcast protocol failed', { id: toastId });
         }
     };
 
     const statCards = [
-        { label: 'Total Students', value: stats?.stats?.totalStudents ?? 0, icon: Users, color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
-        { label: 'Pending Review', value: stats?.stats?.pendingCount ?? 0, icon: Clock, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-        { label: 'Verified', value: stats?.stats?.approvedCount ?? 0, icon: CheckCircle, color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
-        { label: 'Achievements', value: stats?.stats?.totalAchievements ?? 0, icon: Trophy, color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
+        { label: 'Scholar Registry', value: stats?.stats?.totalStudents ?? 0, icon: Users, color: 'var(--brand-600)', bg: 'var(--primary-50)' },
+        { label: 'Evaluation Queue', value: stats?.stats?.pendingCount ?? 0, icon: Clock, color: 'var(--warning-500)', bg: 'rgba(245,158,11,0.08)' },
+        { label: 'Verified Records', value: stats?.stats?.approvedCount ?? 0, icon: CheckCircle, color: 'var(--success-600)', bg: 'var(--success-50)' },
+        { label: 'Total Submissions', value: stats?.stats?.totalAchievements ?? 0, icon: Trophy, color: 'var(--brand-600)', bg: 'var(--primary-50)' },
     ];
 
     const semesters = [
-        { id: '1', label: '1st Semester' },
-        { id: '2', label: '2nd Semester' },
-        { id: '3', label: '3rd Semester' },
-        { id: '4', label: '4th Semester' },
-        { id: '5', label: '5th Semester' },
-        { id: '6', label: '6th Semester' },
-        { id: '7', label: '7th Semester' },
-        { id: '8', label: '8th Semester' },
+        { id: '1', label: 'Semester 1' },
+        { id: '2', label: 'Semester 2' },
+        { id: '3', label: 'Semester 3' },
+        { id: '4', label: 'Semester 4' },
+        { id: '5', label: 'Semester 5' },
+        { id: '6', label: 'Semester 6' },
+        { id: '7', label: 'Semester 7' },
+        { id: '8', label: 'Semester 8' },
     ];
 
     return (
-        <div style={{ padding: '2rem', animation: 'fadeIn 0.5s ease' }}>
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem' }}>
+        <div className="animate-fade-in">
+            {/* Header Suite */}
+            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#303657', marginBottom: '0.5rem' }}>Faculty Control Center</h1>
-                    <p style={{ color: '#64748b' }}>Comprehensive student achievement monitoring & academic oversight</p>
+                    <h2 className="heading-display">Faculty Command Center</h2>
+                    <p className="page-subtitle">Administrative oversight, scholar progress tracking, and institutional broadcasting.</p>
                 </div>
-                <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <button
-                        className="btn btn-secondary"
-                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                        onClick={exportToPDF}
-                    >
-                        <Download size={18} /> Export Results
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                    <button className="btn btn-secondary" onClick={exportToPDF}>
+                        <Download size={18} />
+                        <span>Export Analytics</span>
                     </button>
-                    <button
-                        className="btn btn-primary"
-                        style={{ background: '#8B1E1E', border: 'none' }}
-                        onClick={() => setShowNoticeModal(true)}
-                    >
-                        Post Notice
+                    <button className="btn btn-primary" onClick={() => setShowNoticeModal(true)}>
+                        <GraduationCap size={18} />
+                        <span>Dispatch Notice</span>
                     </button>
                 </div>
             </div>
 
-            {/* Stats Overview */}
+            {/* Analytical Metrics */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
                 {statCards.map(({ label, value, icon: Icon, color, bg }) => (
-                    <div key={label} style={{ background: '#fff', padding: '1.5rem', borderRadius: '1.25rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                            <div style={{ width: 48, height: 48, background: bg, borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Icon size={24} color={color} />
+                    <div key={label} className="card" style={{ padding: '1.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                            <div style={{ width: 44, height: 44, background: bg, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Icon size={22} color={color} />
                             </div>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>LIVE</span>
+                            <div className="badge badge-brand" style={{ fontSize: '0.6rem' }}>SYNCHRONIZED</div>
                         </div>
-                        <div style={{ fontSize: '2rem', fontWeight: 800, color: '#303657', marginBottom: '0.25rem' }}>{value}</div>
-                        <div style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 600 }}>{label}</div>
+                        <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>{value.toLocaleString()}</div>
+                        <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{label}</div>
                     </div>
                 ))}
             </div>
 
-            {/* Academic Sections */}
-            <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#303657', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <GraduationCap size={22} color="#8B1E1E" /> Academic Progress Tracking
-                </h3>
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-                    <button
-                        onClick={() => { setSemester('all'); setSection('all'); }}
-                        style={{
-                            padding: '0.75rem 1.5rem', borderRadius: 'var(--radius-md)',
-                            background: semester === 'all' ? '#303657' : '#fff',
-                            color: semester === 'all' ? '#fff' : '#64748b',
-                            border: '1px solid ' + (semester === 'all' ? '#303657' : '#e2e8f0'),
-                            fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s'
-                        }}
-                    >
-                        All Semesters
-                    </button>
-                    {semesters.map(sem => (
-                        <button
-                            key={sem.id}
-                            onClick={() => { setSemester(sem.id); setSection('all'); }}
-                            style={{
-                                padding: '0.75rem 1.5rem', borderRadius: 'var(--radius-md)',
-                                background: semester === sem.id ? '#303657' : '#fff',
-                                color: semester === sem.id ? '#fff' : '#64748b',
-                                border: '1px solid ' + (semester === sem.id ? '#303657' : '#e2e8f0'),
-                                fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s'
-                            }}
-                        >
-                            {sem.label}
-                        </button>
-                    ))}
-                </div>
+            {/* Academic Controls */}
+            <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <h4 style={{ margin: 0, fontWeight: 800, fontSize: '0.9rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Academic Cohort Selection</h4>
+                        <div style={{ height: '1px', flex: 1, background: 'var(--border-primary)' }}></div>
+                    </div>
 
-                {/* Section Selection - Dynamic based on semester */}
-                {semester !== 'all' && (
-                    <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '1rem', border: '1px solid #e2e8f0', marginBottom: '2rem', animation: 'fadeIn 0.3s ease' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Filter by Section:</span>
-                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                <button
-                                    onClick={() => setSection('all')}
-                                    style={{
-                                        padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.85rem',
-                                        background: section === 'all' ? '#8B1E1E' : '#fff',
-                                        color: section === 'all' ? '#fff' : '#64748b',
-                                        border: '1px solid ' + (section === 'all' ? '#8B1E1E' : '#e2e8f0'),
-                                        fontWeight: 600, cursor: 'pointer'
-                                    }}
-                                >
-                                    All
-                                </button>
+                    <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        <button
+                            onClick={() => { setSemester('all'); setSection('all'); }}
+                            className={`btn ${semester === 'all' ? 'btn-primary' : 'btn-ghost'}`}
+                            style={{ padding: '0.6rem 1.25rem', fontSize: '0.85rem' }}
+                        >
+                            Complete Registry
+                        </button>
+                        {semesters.map(sem => (
+                            <button
+                                key={sem.id}
+                                onClick={() => { setSemester(sem.id); setSection('all'); }}
+                                className={`btn ${semester === sem.id ? 'btn-primary' : 'btn-ghost'}`}
+                                style={{ padding: '0.6rem 1.25rem', fontSize: '0.85rem' }}
+                            >
+                                {sem.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {semester !== 'all' && (
+                        <div className="animate-fade-in" style={{ padding: '1rem', background: 'var(--primary-50)', borderRadius: '12px', border: '1px solid var(--primary-100)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <Filter size={16} className="text-brand" />
+                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--brand-700)' }}>Section Resolution:</span>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button onClick={() => setSection('all')} className={`btn btn-sm ${section === 'all' ? 'btn-primary' : 'btn-ghost'}`} style={{ fontSize: '0.75rem' }}>All Sections</button>
                                 {(semester === '1' || semester === '2' ? ['A', 'B', 'C', 'D', 'E', 'F', 'G'] : ['A', 'B', 'C', 'D', 'E', 'F']).map(s => (
-                                    <button
-                                        key={s}
-                                        onClick={() => setSection(s)}
-                                        style={{
-                                            padding: '0.5rem 1.25rem', borderRadius: '0.5rem', fontSize: '0.85rem',
-                                            background: section === s ? '#8B1E1E' : '#fff',
-                                            color: section === s ? '#fff' : '#64748b',
-                                            border: '1px solid ' + (section === s ? '#8B1E1E' : '#e2e8f0'),
-                                            fontWeight: 700, cursor: 'pointer'
-                                        }}
-                                    >
-                                        Section {s}
-                                    </button>
+                                    <button key={s} onClick={() => setSection(s)} className={`btn btn-sm ${section === s ? 'btn-primary' : 'btn-ghost'}`} style={{ fontSize: '0.75rem' }}>Section {s}</button>
                                 ))}
                             </div>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
 
-            {/* Student List Section */}
-            <div style={{ background: '#fff', borderRadius: '1.25rem', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-                <div style={{ padding: '1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h4 style={{ fontWeight: 800, color: '#303657', fontSize: '1.1rem' }}>
-                        Student Directory — {semester === 'all' ? 'All Years' : `Semester ${semester}`} {section !== 'all' ? `(Section ${section})` : '(All Sections)'}
+            {/* Scholar Management Suite */}
+            <div className="card">
+                <div className="card-header" style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid var(--border-primary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.1rem' }}>
+                        Scholar Directory — {semester === 'all' ? 'Institutional View' : `Semester ${semester}`} {section !== 'all' ? `(Section ${section})` : ''}
                     </h4>
                     <div style={{ position: 'relative', width: '300px' }}>
-                        <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
+                        <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', opacity: 0.6 }} />
                         <input
-                            type="text"
-                            placeholder="Search by Name or Enrollment..."
-                            style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.75rem', borderRadius: '0.75rem', border: '1px solid #e2e8f0', fontSize: '0.9rem' }}
+                            className="form-control"
+                            style={{ padding: '0.65rem 1rem 0.65rem 2.75rem', fontSize: '0.85rem' }}
+                            placeholder="Identify by name or enrollment..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
                 </div>
 
-                <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div className="table-responsive">
+                    <table className="table">
                         <thead>
-                            <tr style={{ background: '#f8fafc', textAlign: 'left' }}>
-                                <th style={{ padding: '1rem 1.5rem', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>Student Details</th>
-                                <th style={{ padding: '1rem 1.5rem', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>Academic Info</th>
-                                <th style={{ padding: '1rem 1.5rem', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>Achievements</th>
-                                <th style={{ padding: '1rem 1.5rem', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>Points</th>
-                                <th style={{ padding: '1rem 1.5rem', textAlign: 'right' }}>Actions</th>
+                            <tr>
+                                <th>Scholar Profile</th>
+                                <th>Academic Compliance</th>
+                                <th className="text-center">Verification Matrix</th>
+                                <th className="text-center">Cumulative Pts</th>
+                                <th className="text-right">Operations</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
                                 [...Array(5)].map((_, i) => (
-                                    <tr key={i}><td colSpan="5" style={{ padding: '1.5rem' }}><div className="skeleton" style={{ height: '40px', width: '100%' }} /></td></tr>
+                                    <tr key={i}><td colSpan="5"><div className="skeleton" style={{ height: '60px' }} /></td></tr>
                                 ))
                             ) : students.length === 0 ? (
-                                <tr>
-                                    <td colSpan="5" style={{ textAlign: 'center', padding: '4rem', color: '#64748b' }}>
-                                        <UsersRound size={48} style={{ marginBottom: '1rem', opacity: 0.2 }} />
-                                        <p>No students found for this criteria.</p>
+                                <tr className="empty-row">
+                                    <td colSpan="5">
+                                        <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+                                            <UsersRound size={48} style={{ opacity: 0.1, margin: '0 auto 1.5rem auto' }} />
+                                            <h5 style={{ fontWeight: 800, margin: '0 0 0.5rem 0' }}>No Records Extracted</h5>
+                                            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>The requested scholar cohort yielded zero results from the database.</p>
+                                        </div>
                                     </td>
                                 </tr>
                             ) : students.map(student => (
-                                <tr key={student._id} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.2s' }} className="hover:bg-slate-50">
-                                    <td style={{ padding: '1.25rem 1.5rem' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                            <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#303657', fontSize: '0.9rem' }}>
+                                <tr key={student._id} className="hover-row">
+                                    <td style={{ padding: '1rem 1.75rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                            <div className="avatar avatar-md" style={{ background: 'var(--primary-100)', color: 'var(--brand-700)', fontWeight: 800 }}>
                                                 {student.name.charAt(0)}
                                             </div>
                                             <div>
-                                                <div style={{ fontWeight: 700, color: '#303657', fontSize: '0.95rem' }}>{student.name}</div>
-                                                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{student.enrollmentNo || student.email}</div>
+                                                <div style={{ fontWeight: 800, fontSize: '0.95rem' }}>{student.name}</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>{student.enrollmentNo || student.email}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td style={{ padding: '1.25rem 1.5rem' }}>
+                                    <td style={{ padding: '1rem 1.75rem' }}>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                                            <span className="badge badge-primary" style={{ fontSize: '0.65rem' }}>{student.department}</span>
-                                            <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Semester {student.semester || 'N/A'} • {student.batch}</span>
+                                            <span className="badge badge-brand" style={{ width: 'fit-content', fontSize: '0.65rem' }}>{student.department}</span>
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 700 }}>Sem {student.semester || 'N/A'} • {student.batch}</span>
                                         </div>
                                     </td>
-                                    <td style={{ padding: '1.25rem 1.5rem' }}>
-                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                            <div style={{ textAlign: 'center' }}>
-                                                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#303657' }}>{student.achievementCounts?.total || 0}</div>
-                                                <div style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase' }}>Total</div>
+                                    <td className="text-center" style={{ padding: '1rem 1.75rem' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+                                            <div>
+                                                <div style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--text-primary)' }}>{student.achievementCounts?.total || 0}</div>
+                                                <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Sum</div>
                                             </div>
-                                            <div style={{ width: '1px', background: '#e2e8f0', margin: '0 0.5rem' }} />
-                                            <div style={{ textAlign: 'center' }}>
-                                                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#22c55e' }}>{student.achievementCounts?.approved || 0}</div>
-                                                <div style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase' }}>Valid</div>
+                                            <div style={{ width: '1px', background: 'var(--border-primary)' }}></div>
+                                            <div>
+                                                <div style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--success-600)' }}>{student.achievementCounts?.approved || 0}</div>
+                                                <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Val</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td style={{ padding: '1.25rem 1.5rem' }}>
-                                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#8b5cf6' }}>
-                                            {student.achievementCounts?.points || 0}
-                                        </div>
+                                    <td className="text-center" style={{ padding: '1rem 1.75rem' }}>
+                                        <div style={{ fontSize: '1.15rem', fontWeight: 900, color: 'var(--brand-600)' }}>{student.achievementCounts?.points || 0}</div>
                                     </td>
-                                    <td style={{ padding: '1.25rem 1.5rem', textAlign: 'right' }}>
-                                        <button
-                                            className="btn btn-icon btn-secondary"
-                                            style={{ padding: '0.5rem' }}
-                                            title="View Quick Stats"
-                                            onClick={() => setSelectedStudent(student)}
-                                        >
-                                            <Eye size={18} />
-                                        </button>
-                                        <button
-                                            className="btn btn-icon btn-secondary"
-                                            style={{ padding: '0.5rem', marginLeft: '0.5rem' }}
-                                            title="View Full Portfolio"
-                                            onClick={() => navigate(`/portfolio/${student._id}`)}
-                                        >
-                                            <ChevronRight size={18} />
-                                        </button>
+                                    <td className="text-right" style={{ padding: '1rem 1.75rem' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                                            <button className="btn btn-ghost btn-sm" onClick={() => setSelectedStudent(student)} title="View Summary"><Eye size={18} /></button>
+                                            <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/portfolio/${student._id}`)} title="Full Portfolio"><ChevronRight size={18} /></button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -361,115 +306,100 @@ const FacultyDashboard = () => {
                 </div>
             </div>
 
-            {/* Post Notice Modal */}
+            {/* Institutional Broadcasting Modal */}
             {showNoticeModal && (
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-                    <div className="card" style={{ width: '100%', maxWidth: '500px', animation: 'slideUp 0.3s ease' }}>
-                        <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#303657', color: 'white' }}>
-                            <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Post Official Notice</h3>
-                            <button onClick={() => setShowNoticeModal(false)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer' }}>&times;</button>
+                <div className="modal-overlay animate-fade-in" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
+                    <div className="card animate-slide-up" style={{ width: '100%', maxWidth: '600px', padding: 0, overflow: 'hidden' }}>
+                        <div className="card-header" style={{ padding: '1.5rem', background: 'var(--brand-700)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Broadcast Institutional Notice</h3>
+                                <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.8 }}>Formal communication suite for academic oversight.</p>
+                            </div>
+                            <button onClick={() => setShowNoticeModal(false)} className="btn btn-ghost" style={{ padding: '0.25rem', color: 'white' }}><XCircle size={24} /></button>
                         </div>
-                        <div className="card-body" style={{ padding: '1.5rem' }}>
-                            <form onSubmit={handlePostNotice} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                        <div className="card-body" style={{ padding: '2rem' }}>
+                            <form onSubmit={handlePostNotice} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                 <div className="form-group">
-                                    <label className="form-label" style={{ fontWeight: 700 }}>Notice Title</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        required
-                                        placeholder="e.g. Schedule Change for Mid-Sem Exams"
-                                        value={noticeData.title}
-                                        onChange={e => setNoticeData({ ...noticeData, title: e.target.value })}
-                                    />
+                                    <label className="form-label" style={{ fontWeight: 800 }}>Communication Title</label>
+                                    <input className="form-control" placeholder="Identify the core subject of this broadcast..." required value={noticeData.title} onChange={e => setNoticeData({ ...noticeData, title: e.target.value })} />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label" style={{ fontWeight: 700 }}>Priority Level</label>
-                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <label className="form-label" style={{ fontWeight: 800 }}>Priority Resolution</label>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
                                         {['Low', 'Medium', 'High', 'Urgent'].map(p => (
-                                            <button
-                                                key={p}
-                                                type="button"
-                                                onClick={() => setNoticeData({ ...noticeData, priority: p })}
-                                                style={{
-                                                    flex: 1, padding: '0.5rem', borderRadius: '0.5rem', fontSize: '0.8rem', fontWeight: 600,
-                                                    background: noticeData.priority === p ? (p === 'Urgent' ? '#ef4444' : '#303657') : '#f1f5f9',
-                                                    color: noticeData.priority === p ? 'white' : '#64748b',
-                                                    border: 'none', cursor: 'pointer', transition: 'all 0.2s'
-                                                }}
-                                            >
+                                            <button key={p} type="button" onClick={() => setNoticeData({ ...noticeData, priority: p })}
+                                                className={`btn btn-sm ${noticeData.priority === p ? (p === 'Urgent' ? 'btn-danger' : 'btn-primary') : 'btn-ghost'}`}
+                                                style={{ border: noticeData.priority !== p ? '1px solid var(--border-primary)' : 'none', fontSize: '0.75rem' }}>
                                                 {p}
                                             </button>
                                         ))}
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label" style={{ fontWeight: 700 }}>Notice Content</label>
-                                    <textarea
-                                        className="form-control"
-                                        rows="6"
-                                        required
-                                        placeholder="Type the detailed notice here..."
-                                        style={{ resize: 'none' }}
-                                        value={noticeData.content}
-                                        onChange={e => setNoticeData({ ...noticeData, content: e.target.value })}
-                                    ></textarea>
+                                    <label className="form-label" style={{ fontWeight: 800 }}>Broadcast Content</label>
+                                    <textarea className="form-control" rows="6" placeholder="Document the detailed narrative of the institutional notice..." required style={{ resize: 'none' }} value={noticeData.content} onChange={e => setNoticeData({ ...noticeData, content: e.target.value })} />
                                 </div>
-                                <div style={{ background: '#fef2f2', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #fee2e2' }}>
-                                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#991b1b', fontWeight: 600 }}>
-                                        ⚠️ This notice will be sent to ALL active students via email instantly.
+                                <div style={{ padding: '1rem', background: 'var(--error-50)', borderRadius: '12px', border: '1px solid var(--error-100)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    <Clock size={20} className="text-danger" />
+                                    <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--error-800)', fontWeight: 700 }}>
+                                        PROTOCOL: Execution will trigger an immediate SMTP broadcast to all active scholar endpoints.
                                     </p>
                                 </div>
-                                <button type="submit" className="btn btn-primary" style={{ background: '#8B1E1E', border: 'none', padding: '1rem', fontWeight: 700 }}>
-                                    Broadcast Notice & Send Emails
-                                </button>
+                                <button type="submit" className="btn btn-primary" style={{ padding: '1.25rem', fontWeight: 800 }}>Publish Broadcast & Execute Email Protocol</button>
                             </form>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Student Insight Modal */}
+            {/* Scholar Insight Suite */}
             {selectedStudent && (
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1001, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-                    <div className="card" style={{ width: '100%', maxWidth: '450px', overflow: 'hidden', animation: 'fadeIn 0.2s ease' }}>
-                        <div style={{ background: 'linear-gradient(135deg, #303657, #1e293b)', padding: '2rem', textAlign: 'center', color: 'white' }}>
-                            <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', margin: '0 auto 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 800, border: '2px solid rgba(255,255,255,0.2)' }}>
-                                {selectedStudent.name.charAt(0)}
+                <div className="modal-overlay animate-fade-in" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)', zIndex: 1001, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
+                    <div className="card animate-scale-in" style={{ width: '100%', maxWidth: '480px', padding: 0, overflow: 'hidden' }}>
+                        <div style={{ background: 'linear-gradient(135deg, var(--brand-700), var(--brand-900))', padding: '2.5rem 1.5rem', textAlign: 'center', color: 'white' }}>
+                            <div className="avatar avatar-xl" style={{ width: 96, height: 96, background: 'rgba(255,255,255,0.15)', border: '4px solid rgba(255,255,255,0.2)', margin: '0 auto 1.5rem auto', fontSize: '2.5rem', fontWeight: 900 }}>
+                                {student.name.charAt(0)}
                             </div>
-                            <h3 style={{ margin: 0, fontSize: '1.3rem' }}>{selectedStudent.name}</h3>
-                            <p style={{ margin: '0.25rem 0 0', opacity: 0.8, fontSize: '0.9rem' }}>{selectedStudent.enrollmentNo || 'No Enrollment No.'}</p>
+                            <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{selectedStudent.name}</h3>
+                            <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.9rem', opacity: 0.9, fontWeight: 600 }}>{selectedStudent.enrollmentNo || 'Institutional Entry: ' + selectedStudent._id.slice(-6).toUpperCase()}</p>
                         </div>
-                        <div className="card-body" style={{ padding: '1.5rem' }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                                <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '0.75rem', textAlign: 'center' }}>
-                                    <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Academic Info</div>
-                                    <div style={{ fontWeight: 700, color: '#303657' }}>Sem {selectedStudent.semester} • {selectedStudent.section}</div>
+                        <div className="card-body" style={{ padding: '2rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+                                <div style={{ padding: '1rem', background: 'var(--slate-50)', borderRadius: '16px', textAlign: 'center', border: '1px solid var(--border-primary)' }}>
+                                    <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>Academic Unit</div>
+                                    <div style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '0.9rem' }}>Sem {selectedStudent.semester} • {selectedStudent.section}</div>
                                 </div>
-                                <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '0.75rem', textAlign: 'center' }}>
-                                    <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Department</div>
-                                    <div style={{ fontWeight: 700, color: '#303657' }}>{selectedStudent.department}</div>
-                                </div>
-                            </div>
-
-                            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b', marginBottom: '1rem', textTransform: 'uppercase', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Achievement Summary</h4>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                                <div>
-                                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#22c55e' }}>{selectedStudent.achievementCounts?.approved || 0}</div>
-                                    <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 600 }}>Approved</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f59e0b' }}>{selectedStudent.achievementCounts?.pending || 0}</div>
-                                    <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 600 }}>In Review</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#8b5cf6' }}>{selectedStudent.achievementCounts?.points || 0}</div>
-                                    <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 600 }}>Points</div>
+                                <div style={{ padding: '1rem', background: 'var(--slate-50)', borderRadius: '16px', textAlign: 'center', border: '1px solid var(--border-primary)' }}>
+                                    <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>Department</div>
+                                    <div style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '0.9rem' }}>{selectedStudent.department}</div>
                                 </div>
                             </div>
 
-                            <div style={{ display: 'flex', gap: '0.75rem' }}>
-                                <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setSelectedStudent(null)}>Close</button>
-                                <button className="btn btn-primary" style={{ flex: 1, background: '#303657', border: 'none' }} onClick={() => navigate(`/portfolio/${selectedStudent._id}`)}>Full Portfolio</button>
+                            <div style={{ borderTop: '1px solid var(--border-primary)', paddingTop: '1.5rem', marginBottom: '2rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                                    <h5 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Achievement Analytical Summary</h5>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', textAlign: 'center' }}>
+                                    <div>
+                                        <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--success-600)' }}>{selectedStudent.achievementCounts?.approved || 0}</div>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>VERIFIED</div>
+                                    </div>
+                                    <div style={{ width: '1px', background: 'var(--border-primary)' }}></div>
+                                    <div>
+                                        <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--warning-500)' }}>{selectedStudent.achievementCounts?.pending || 0}</div>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>REVIEW</div>
+                                    </div>
+                                    <div style={{ width: '1px', background: 'var(--border-primary)' }}></div>
+                                    <div>
+                                        <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--brand-600)' }}>{selectedStudent.achievementCounts?.points || 0}</div>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>POINTS</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '1rem' }}>
+                                <button className="btn btn-ghost w-full" style={{ padding: '1rem', fontWeight: 700 }} onClick={() => setSelectedStudent(null)}>Terminate View</button>
+                                <button className="btn btn-primary w-full" style={{ padding: '1rem', fontWeight: 800 }} onClick={() => navigate(`/portfolio/${selectedStudent._id}`)}>Full Portfolio</button>
                             </div>
                         </div>
                     </div>

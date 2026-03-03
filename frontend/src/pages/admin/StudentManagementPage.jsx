@@ -1,7 +1,7 @@
 import '../../styles/StudentManagementPage.css';
 import { useState, useEffect } from 'react';
 import { adminAPI } from '../../services/api';
-import { Users, Search, Trophy, Star, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Users, Search, Trophy, Star, Eye, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { jsPDF } from 'jspdf';
@@ -15,7 +15,7 @@ const StudentManagementPage = () => {
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
     const [pages, setPages] = useState(1);
-    const [filters, setFilters] = useState({ department: '', search: '', page: 1 });
+    const [filters, setFilters] = useState({ department: '', search: '', semester: '', page: 1 });
 
     const load = async () => {
         setLoading(true);
@@ -27,20 +27,19 @@ const StudentManagementPage = () => {
             setTotal(data.total);
             setPages(data.pages);
         } catch {
-            toast.error('Failed to load students');
+            toast.error('Failed to synchronize scholar registry');
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => { load(); }, [filters.department, filters.page]);
+    useEffect(() => { load(); }, [filters.department, filters.semester, filters.page]);
 
     const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'S';
 
     const exportStudentData = (type) => {
         try {
             const date = new Date().toLocaleDateString().replace(/\//g, '-');
-
             if (type === 'excel') {
                 const excelData = students.map(s => ({
                     'Name': s.name,
@@ -54,167 +53,172 @@ const StudentManagementPage = () => {
                     'Approved': s.achievementCounts?.approved || 0,
                     'Total Points': s.achievementCounts?.points || 0
                 }));
-
                 const ws = XLSX.utils.json_to_sheet(excelData);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Students");
-                XLSX.writeFile(wb, `SOEIT_Students_List_${date}.xlsx`);
-                toast.success('Excel file downloaded');
+                XLSX.writeFile(wb, `SOEIT_Scholars_${date}.xlsx`);
+                toast.success('Excel protocol: Archive exported');
             } else {
                 const doc = new jsPDF('l', 'mm', 'a4');
                 doc.setFillColor(30, 41, 59);
                 doc.rect(0, 0, 297, 30, 'F');
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(20);
-                doc.text('SOEIT STUDENT MANAGEMENT - ACADEMIC REPORT', 148, 15, { align: 'center' });
+                doc.text('SOEIT SCHOLAR MANAGEMENT - ADMINISTRATIVE ARCHIVE', 148, 15, { align: 'center' });
                 doc.setFontSize(10);
                 doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 148, 22, { align: 'center' });
-
                 autoTable(doc, {
                     startY: 40,
-                    head: [['Name', 'ID/Enrollment', 'Dept', 'Sem', 'Email', 'Achievements', 'Points']],
+                    head: [['Name', 'ID/Enrollment', 'Dept', 'Sem', 'Email', 'Unit Yield', 'Total Points']],
                     body: students.map(s => [
-                        s.name,
-                        s.enrollmentNo || s.studentId,
-                        s.department,
-                        `${s.semester || 'N/A'}-${s.section || 'X'}`,
-                        s.email,
-                        s.achievementCounts?.total || 0,
-                        s.achievementCounts?.points || 0
+                        s.name, s.enrollmentNo || s.studentId, s.department, `${s.semester || 'N/A'}-${s.section || 'X'}`,
+                        s.email, s.achievementCounts?.total || 0, s.achievementCounts?.points || 0
                     ]),
                     theme: 'grid',
                     headStyles: { fillColor: [59, 130, 246] },
-                    alternateRowStyles: { fillColor: [245, 248, 255] }
                 });
-
-                doc.save(`SOEIT_Students_Data_${date}.pdf`);
-                toast.success('PDF report downloaded');
+                doc.save(`SOEIT_Scholars_Registry_${date}.pdf`);
+                toast.success('PDF protocol: Archive generated');
             }
         } catch (error) {
-            console.error('Export error:', error);
-            toast.error('Download failed! ' + error.message);
+            toast.error('Archive synchronization failed');
         }
     };
 
     return (
-        <div style={{ animation: 'fadeIn 0.5s ease' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="animate-fade-in">
+            {/* Header Suite */}
+            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <div>
-                    <h2 style={{ marginBottom: '0.25rem' }}>Student Management</h2>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{total} registered students</p>
+                    <h2 className="heading-display">Scholar Registry</h2>
+                    <p className="page-subtitle">Unified surveillance of the institutional scholar population and their cumulative merit yields.</p>
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button className="btn btn-secondary btn-sm" onClick={() => exportStudentData('excel')} style={{ background: '#16a34a', color: '#fff', border: 'none' }}>
-                        Excel Export
+                <div style={{ display: 'flex', gap: '0.875rem' }}>
+                    <button className="btn btn-ghost" onClick={() => exportStudentData('excel')} style={{ border: '1px solid var(--border-primary)', fontWeight: 800 }}>
+                        <Download size={18} />
+                        <span>Excel Archive</span>
                     </button>
-                    <button className="btn btn-secondary btn-sm" onClick={() => exportStudentData('pdf')}>
-                        PDF Export
+                    <button className="btn btn-primary" onClick={() => exportStudentData('pdf')} style={{ fontWeight: 800, padding: '0 1.5rem' }}>
+                        <Users size={18} />
+                        <span>Generate Master Report</span>
                     </button>
                 </div>
             </div>
 
-            {/* Filters */}
-            <div className="card card-body" style={{ marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <div style={{ flex: 1, minWidth: 200, position: 'relative' }}>
-                        <Search size={16} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 1 }} />
-                        <input className="form-control" style={{ paddingLeft: '2.5rem' }} placeholder="Search by name, enrollment no, or ID..." value={filters.search} onChange={e => setFilters(p => ({ ...p, search: e.target.value }))} onKeyDown={e => e.key === 'Enter' && load()} />
+            {/* Advanced Filtering Intelligence */}
+            <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid var(--border-primary)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr 1fr auto', gap: '1rem', alignItems: 'center' }}>
+                    <div style={{ position: 'relative' }}>
+                        <Search size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', opacity: 0.6 }} />
+                        <input className="form-control" style={{ paddingLeft: '3rem', height: '48px', fontWeight: 600 }} placeholder="Search nomenclature, enrollment numbers, or digital identifiers..." value={filters.search} onChange={e => setFilters(p => ({ ...p, search: e.target.value }))} onKeyDown={e => e.key === 'Enter' && load()} />
                     </div>
-                    <select className="filter-select" value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
-                        <option value="">All Departments</option>
+                    <select className="form-control" style={{ height: '48px', fontWeight: 700 }} value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
+                        <option value="">All Institutional Departments</option>
                         {['CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE'].map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
-                    <select className="filter-select" value={filters.semester} onChange={e => setFilters(p => ({ ...p, semester: e.target.value, page: 1 }))}>
-                        <option value="">All Semesters</option>
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>Sem {s}</option>)}
+                    <select className="form-control" style={{ height: '48px', fontWeight: 700 }} value={filters.semester} onChange={e => setFilters(p => ({ ...p, semester: e.target.value, page: 1 }))}>
+                        <option value="">All Academic Terms</option>
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>Semester Sequence {s}</option>)}
                     </select>
-                    <button className="btn btn-primary" onClick={load}><Search size={14} /> Search</button>
+                    <button className="btn btn-primary" style={{ height: '48px', width: '48px', padding: 0 }} onClick={load}>
+                        <Search size={20} strokeWidth={3} />
+                    </button>
                 </div>
             </div>
 
-            {loading ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
-                    {[...Array(6)].map((_, i) => <div key={i} className="skeleton" style={{ height: 180, borderRadius: 'var(--radius-lg)' }} />)}
-                </div>
-            ) : students.length === 0 ? (
-                <div className="card"><div className="empty-state"><Users /><h3>No Students Found</h3><p>Try adjusting your search.</p></div></div>
-            ) : (
-                <>
-                    <div className="card" style={{ overflowX: 'auto', border: '1px solid var(--border-primary)' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                            <thead style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--border-primary)' }}>
-                                <tr>
-                                    <th style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Student</th>
-                                    <th style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Academic Info</th>
-                                    <th style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Login Detail</th>
-                                    <th style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'center' }}>Total</th>
-                                    <th style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'center' }}>Valid</th>
-                                    <th style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'center' }}>Points</th>
-                                    <th style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'right' }}>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {students.map((s) => (
-                                    <tr key={s._id} style={{ borderBottom: '1px solid var(--border-primary)', transition: 'background 0.2s' }}
-                                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
-                                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                                        <td style={{ padding: '1rem' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                                {s.profileImage ? (
-                                                    <img src={`${import.meta.env.VITE_UPLOADS_URL || ''}${s.profileImage}`} alt={s.name} style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
-                                                ) : (
-                                                    <div className="avatar avatar-sm" style={{ width: 32, height: 32, fontSize: '0.7rem' }}>{getInitials(s.name)}</div>
-                                                )}
-                                                <div>
-                                                    <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{s.name}</div>
-                                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{s.enrollmentNo || s.studentId}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <div style={{ fontSize: '0.85rem' }}>
-                                                <span className="badge badge-primary" style={{ marginRight: '0.4rem', padding: '0.1rem 0.4rem', fontSize: '0.65rem' }}>{s.department}</span>
-                                                <span style={{ color: 'var(--text-secondary)' }}>Sem {s.semester}-{s.section || 'X'}</span>
-                                                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>Batch {s.batch || 'N/A'}</div>
-                                            </div>
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                                <Star size={12} color="var(--primary-400)" />
-                                                {s.email}
-                                            </div>
-                                        </td>
-                                        <td style={{ padding: '1rem', textAlign: 'center' }}>
-                                            <span style={{ fontWeight: 700, color: 'var(--primary-400)' }}>{s.achievementCounts?.total ?? 0}</span>
-                                        </td>
-                                        <td style={{ padding: '1rem', textAlign: 'center' }}>
-                                            <span style={{ fontWeight: 700, color: 'var(--success-500)' }}>{s.achievementCounts?.approved ?? 0}</span>
-                                        </td>
-                                        <td style={{ padding: '1rem', textAlign: 'center' }}>
-                                            <div style={{ fontWeight: 800, color: 'var(--warning-500)', fontFamily: 'Space Grotesk' }}>{s.achievementCounts?.points ?? 0}</div>
-                                        </td>
-                                        <td style={{ padding: '1rem', textAlign: 'right' }}>
-                                            <Link to={`/portfolio/${s._id}`} className="btn btn-secondary btn-sm" style={{ padding: '0.4rem 0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                                                <Eye size={14} /> View
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {pages > 1 && (
-                        <div className="pagination">
-                            <button className="page-btn" onClick={() => setFilters(p => ({ ...p, page: p.page - 1 }))} disabled={filters.page === 1}><ChevronLeft size={16} /></button>
-                            {[...Array(Math.min(pages, 7))].map((_, i) => (
-                                <button key={i} className={`page-btn ${filters.page === i + 1 ? 'active' : ''}`} onClick={() => setFilters(p => ({ ...p, page: i + 1 }))}>{i + 1}</button>
-                            ))}
-                            <button className="page-btn" onClick={() => setFilters(p => ({ ...p, page: p.page + 1 }))} disabled={filters.page === pages}><ChevronRight size={16} /></button>
+            {/* Registry Table Ecosystem */}
+            <div className="card" style={{ border: '1px solid var(--border-primary)', overflow: 'hidden' }}>
+                <div className="table-container">
+                    {loading ? (
+                        <div style={{ padding: '2rem' }}>
+                            {[...Array(8)].map((_, i) => <div key={i} className="skeleton" style={{ height: 60, marginBottom: '1rem', borderRadius: '12px' }} />)}
                         </div>
+                    ) : students.length === 0 ? (
+                        <div style={{ padding: '6rem 2rem', textAlign: 'center' }}>
+                            <div style={{ width: 80, height: 80, background: 'var(--primary-50)', color: 'var(--brand-600)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem auto' }}>
+                                <Users size={40} />
+                            </div>
+                            <h3 style={{ fontWeight: 900, color: 'var(--text-primary)' }}>No Scholar Matches Synchronized</h3>
+                            <p style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Refine your search parameters or synchronize the department filter.</p>
+                        </div>
+                    ) : (
+                        <>
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th style={{ paddingLeft: '2rem' }}>Scholar Identity</th>
+                                        <th>Academic Affiliation</th>
+                                        <th>Communication Endpoint</th>
+                                        <th style={{ textAlign: 'center' }}>Synchronized Units</th>
+                                        <th style={{ textAlign: 'center' }}>Verified Yield</th>
+                                        <th style={{ textAlign: 'right', paddingRight: '2rem' }}>Administration</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {students.map((s) => (
+                                        <tr key={s._id} className="hover-row">
+                                            <td style={{ paddingLeft: '2rem' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', padding: '0.75rem 0' }}>
+                                                    {s.profileImage ? (
+                                                        <img src={`${import.meta.env.VITE_UPLOADS_URL || ''}${s.profileImage}`} alt={s.name} style={{ width: 44, height: 44, borderRadius: '12px', objectFit: 'cover', border: '2px solid white', boxShadow: 'var(--shadow-sm)' }} />
+                                                    ) : (
+                                                        <div style={{ width: 44, height: 44, borderRadius: '12px', background: 'var(--primary-100)', color: 'var(--brand-700)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '1rem', border: '2px solid white', boxShadow: 'var(--shadow-sm)' }}>
+                                                            {getInitials(s.name)}
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-primary)' }}>{s.name}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 800 }}>{s.enrollmentNo || s.studentId}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                                                    <span className="badge badge-brand" style={{ fontWeight: 800, padding: '0.4rem 0.6rem' }}>{s.department}</span>
+                                                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Semester {s.semester} • Section {s.section || 'X'}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--brand-400)' }}></div>
+                                                    {s.email}
+                                                </div>
+                                            </td>
+                                            <td style={{ textAlign: 'center' }}>
+                                                <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)' }}>{s.achievementCounts?.total ?? 0}</div>
+                                            </td>
+                                            <td style={{ textAlign: 'center' }}>
+                                                <div style={{ fontSize: '1.125rem', fontWeight: 900, color: 'var(--brand-700)' }}>{s.achievementCounts?.points ?? 0}</div>
+                                            </td>
+                                            <td style={{ textAlign: 'right', paddingRight: '2rem' }}>
+                                                <Link to={`/portfolio/${s._id}`} className="btn btn-ghost" style={{ padding: '0.5rem', borderRadius: '10px', color: 'var(--brand-600)' }} title="Conduct Portfolio Audit">
+                                                    <Eye size={22} strokeWidth={2.5} />
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                            {/* Sequential Pagination */}
+                            {pages > 1 && (
+                                <div style={{ borderTop: '1px solid var(--border-primary)', padding: '1.25rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--slate-50)' }}>
+                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+                                        SYNCHRONIZED SCHOLARS: <strong style={{ color: 'var(--text-primary)' }}>{total}</strong> REGISTERED ENTITIES
+                                    </div>
+                                    <div className="pagination" style={{ margin: 0, gap: '0.5rem' }}>
+                                        <button className="btn btn-ghost" style={{ padding: 0, width: 40, height: 40, background: 'white', border: '1px solid var(--border-primary)' }} onClick={() => setFilters(p => ({ ...p, page: p.page - 1 }))} disabled={filters.page === 1}><ChevronLeft size={18} /></button>
+                                        {[...Array(pages)].map((_, i) => (
+                                            <button key={i} className={`btn ${filters.page === i + 1 ? 'btn-primary' : 'btn-ghost'}`} style={{ padding: 0, width: 40, height: 40, fontWeight: 800, background: filters.page === i + 1 ? 'var(--brand-600)' : 'white', border: filters.page !== i + 1 ? '1px solid var(--border-primary)' : 'none' }} onClick={() => setFilters(p => ({ ...p, page: i + 1 }))}>{i + 1}</button>
+                                        ))}
+                                        <button className="btn btn-ghost" style={{ padding: 0, width: 40, height: 40, background: 'white', border: '1px solid var(--border-primary)' }} onClick={() => setFilters(p => ({ ...p, page: p.page + 1 }))} disabled={filters.page === pages}><ChevronRight size={18} /></button>
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
-                </>
-            )}
+                </div>
+            </div>
         </div>
     );
 };

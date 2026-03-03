@@ -6,17 +6,17 @@ import { Mail, Lock, Eye, EyeOff, RefreshCw, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const UniversityHeader = () => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.25rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
-        <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#303657', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.5rem', fontWeight: 800, flexShrink: 0, boxShadow: '0 4px 12px rgba(48,54,87,0.2)' }}>JGi</div>
-        <div style={{ height: '60px', width: '2px', background: '#8B1E1E' }} className="hidden md:block" />
-        <div style={{ textAlign: 'left', minWidth: '180px' }}>
-            <div style={{ fontWeight: 800, fontSize: '1.4rem', lineHeight: 1.1 }}>
-                <span style={{ color: '#8B1E1E' }}>ARKA JAIN</span><br />
-                <span style={{ color: '#303657' }}>UNIVERSITY</span>
+    <div className="auth-header">
+        <div className="auth-logo">JGi</div>
+        <div className="auth-divider hidden md:block" />
+        <div className="auth-title-column">
+            <div className="auth-university-name">
+                <span className="auth-name-primary">ARKA JAIN</span><br />
+                <span className="auth-name-secondary">UNIVERSITY</span>
             </div>
-            <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '4px' }}>Jharkhand</div>
+            <div className="auth-location">Jharkhand</div>
         </div>
-        <div style={{ background: '#8B1E1E', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '0.35rem 0.75rem', borderRadius: '4px', alignSelf: 'center', whiteSpace: 'nowrap' }}>NAAC GRADE A</div>
+        <div className="auth-naac-badge">NAAC GRADE A</div>
     </div>
 );
 
@@ -78,17 +78,17 @@ const LoginPage = () => {
     };
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fcfcfc', padding: '1.5rem', position: 'relative' }}>
-            <div style={{ position: 'absolute', top: '2rem', left: '2rem' }}>
+        <div className="login-page">
+            <div style={{ position: 'absolute', top: '2rem', left: '2rem', zIndex: 10 }}>
                 <Link to="/" className="btn btn-secondary btn-sm" style={{ fontWeight: 600, boxShadow: 'var(--shadow-sm)' }}>
                     <ArrowLeft size={14} /> Back to Home
                 </Link>
             </div>
 
-            <div style={{ width: '100%', maxWidth: '440px' }}>
+            <div className="animate-slide-up" style={{ width: '100%', maxWidth: '440px' }}>
                 <UniversityHeader />
 
-                <div className="card card-body" style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.04)', border: 'none', borderRadius: 'var(--radius-xl)' }}>
+                <div className="login-card">
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
 
                         <div className="form-group" style={{ marginBottom: 0 }}>
@@ -97,15 +97,6 @@ const LoginPage = () => {
                                 <input
                                     type="text"
                                     className={`form-control ${errors.email ? 'error' : ''}`}
-                                    style={{
-                                        padding: '1rem 1.25rem',
-                                        height: 'auto',
-                                        background: '#f8fafc',
-                                        border: '1px solid #e2e8f0',
-                                        color: '#1e293b',
-                                        fontSize: '1rem',
-                                        borderRadius: '8px'
-                                    }}
                                     placeholder="e.g. AJU/221403"
                                     value={form.email}
                                     onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
@@ -120,15 +111,6 @@ const LoginPage = () => {
                                 <input
                                     type={showPassword ? 'text' : 'password'}
                                     className={`form-control ${errors.password ? 'error' : ''}`}
-                                    style={{
-                                        padding: '1rem 3rem 1rem 1.25rem',
-                                        height: 'auto',
-                                        background: '#f8fafc',
-                                        border: '1px solid #e2e8f0',
-                                        color: '#1e293b',
-                                        fontSize: '1rem',
-                                        borderRadius: '8px'
-                                    }}
                                     placeholder="Enter your password"
                                     value={form.password}
                                     onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
@@ -155,21 +137,12 @@ const LoginPage = () => {
                         </div>
 
                         <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label className="form-label" style={{ fontWeight: 600, color: '#303657', marginBottom: '0.4rem', display: 'block', fontSize: '0.85rem' }}>Security Check</label>
-                            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                            <label className="form-label">Security Check</label>
+                            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                                 <div style={{ flex: 1 }}>
                                     <input
                                         type="text"
                                         className={`form-control ${errors.captchaInput ? 'error' : ''}`}
-                                        style={{
-                                            padding: '1rem 1.25rem',
-                                            height: 'auto',
-                                            background: '#f8fafc',
-                                            border: '1px solid #e2e8f0',
-                                            color: '#1e293b',
-                                            fontSize: '1rem',
-                                            borderRadius: '8px'
-                                        }}
                                         placeholder="Captcha code"
                                         value={form.captchaInput}
                                         onChange={e => setForm(p => ({ ...p, captchaInput: e.target.value }))}
@@ -178,25 +151,25 @@ const LoginPage = () => {
                                 <div className="captcha-box">
                                     {captcha}
                                 </div>
-                                <button type="button" onClick={generateCaptcha} className="btn-icon btn-secondary" style={{ padding: '1rem', borderRadius: '8px' }}>
+                                <button type="button" onClick={generateCaptcha} className="btn-icon">
                                     <RefreshCw size={18} />
                                 </button>
                             </div>
                             {errors.captchaInput && <div className="input-error" style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.captchaInput}</div>}
                         </div>
 
-                        <button type="submit" className="btn btn-arka-jain" disabled={loading} style={{ marginTop: '0.5rem', padding: '1rem' }}>
-                            {loading ? 'Logging in...' : 'LOGIN'}
+                        <button type="submit" className="btn-arka-jain" disabled={loading}>
+                            {loading ? 'AUTHENTICATING...' : 'LOGIN'}
                         </button>
                     </form>
 
-                    <p style={{ textAlign: 'center', fontSize: '0.9rem', color: '#64748b', marginTop: '2.5rem' }}>
+                    <p className="login-footer-text" style={{ textAlign: 'center', marginTop: '2.5rem' }}>
                         Don't have an account?{' '}
-                        <Link to="/register" style={{ color: '#303657', fontWeight: 700 }}>Create User</Link>
+                        <Link to="/register" className="login-link">Create User</Link>
                     </p>
                 </div>
 
-                <div className="alert alert-info" style={{ marginTop: '1.5rem', fontSize: '0.8rem', background: '#f1f5f9', border: 'none', color: '#475569' }}>
+                <div className="demo-alert" style={{ marginTop: '1.5rem' }}>
                     <strong>Demo Accounts:</strong> AJU/221403 (Student) | AJU/FACULTY (Faculty) | AJU/ADMIN (Admin) | <br /> <strong>Pass:</strong> Test@123 / Faculty@123 / Admin@123
                 </div>
             </div>

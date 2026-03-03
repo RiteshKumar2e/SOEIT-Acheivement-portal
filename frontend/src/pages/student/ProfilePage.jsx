@@ -2,7 +2,7 @@ import '../../styles/StudentProfilePage.css';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { authAPI } from '../../services/api';
-import { User, Mail, Phone, BookOpen, Linkedin, Github, Globe, Camera, Save, Key, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Phone, BookOpen, Linkedin, Github, Globe, Camera, Save, Key, Eye, EyeOff, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const DEPARTMENTS = ['CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE', 'Other'];
@@ -32,7 +32,7 @@ const ProfilePage = () => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        if (file.size > 2 * 1024 * 1024) { toast.error('Image must be under 2MB'); return; }
+        if (file.size > 2 * 1024 * 1024) { toast.error('Image dimensions or size exceeds theoretical limits (Max 2MB)'); return; }
         setProfileImage(file);
         setImagePreview(URL.createObjectURL(file));
     };
@@ -46,9 +46,9 @@ const ProfilePage = () => {
             if (profileImage) fd.append('profileImage', profileImage);
             const { data } = await authAPI.updateProfile(fd);
             updateUser(data.user);
-            toast.success('Profile updated successfully!');
+            toast.success('Institutional Personnel Identity synchronized successfully');
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Update failed');
+            toast.error(err.response?.data?.message || 'Identity synchronization failed');
         } finally {
             setLoading(false);
         }
@@ -56,14 +56,14 @@ const ProfilePage = () => {
 
     const handlePasswordChange = async (e) => {
         e.preventDefault();
-        if (pwForm.newPassword !== pwForm.confirmPassword) { toast.error('Passwords do not match'); return; }
+        if (pwForm.newPassword !== pwForm.confirmPassword) { toast.error('Security mismatch: New passwords are not identical'); return; }
         setPwLoading(true);
         try {
             await authAPI.changePassword({ currentPassword: pwForm.currentPassword, newPassword: pwForm.newPassword });
-            toast.success('Password changed successfully!');
+            toast.success('Security protocol updated: Password rotated');
             setPwForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Failed to change password');
+            toast.error(err.response?.data?.message || 'Security protocol execution failed');
         } finally {
             setPwLoading(false);
         }
@@ -72,177 +72,206 @@ const ProfilePage = () => {
     const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
 
     return (
-        <div style={{ maxWidth: 800, margin: '0 auto', animation: 'fadeIn 0.5s ease' }}>
-            {/* Profile Header */}
-            <div className="card card-body" style={{ marginBottom: '1.5rem', background: 'linear-gradient(135deg, rgba(59,130,246,0.08), rgba(99,102,241,0.08))' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+        <div className="animate-fade-in" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+            {/* Professional Identity Architecture */}
+            <div className="card" style={{ marginBottom: '2.5rem', padding: '3rem', background: 'linear-gradient(135deg, var(--brand-700) 0%, var(--brand-900) 100%)', position: 'relative', overflow: 'hidden', borderRadius: '30px', boxShadow: 'var(--shadow-2xl)' }}>
+                {/* Institutional Geometric Motifs */}
+                <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '450px', height: '450px', background: 'rgba(255,255,255,0.04)', borderRadius: '80px', transform: 'rotate(25deg)' }}></div>
+                <div style={{ position: 'absolute', bottom: '-30%', left: '-15%', width: '500px', height: '500px', background: 'rgba(255,255,255,0.05)', borderRadius: '100px', transform: 'rotate(-15deg)' }}></div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '3rem', position: 'relative', zIndex: 1 }}>
                     <div style={{ position: 'relative' }}>
-                        {imagePreview ? (
-                            <img src={imagePreview} alt="Profile" style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', border: '3px solid rgba(59,130,246,0.4)' }} />
-                        ) : (
-                            <div className="avatar avatar-xl" style={{ border: '3px solid rgba(59,130,246,0.4)' }}>{getInitials(user?.name)}</div>
-                        )}
-                        <label htmlFor="profileImg" style={{ position: 'absolute', bottom: 0, right: 0, width: 32, height: 32, background: 'var(--primary-600)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px solid var(--bg-secondary)' }}>
-                            <Camera size={14} color="#fff" />
+                        <div style={{ position: 'relative', width: 140, height: 140, borderRadius: '40px', overflow: 'hidden', padding: '6px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', boxShadow: 'var(--shadow-xl)' }}>
+                            {imagePreview ? (
+                                <img src={imagePreview} alt="Identity Profile" style={{ width: '100%', height: '100%', borderRadius: '34px', objectFit: 'cover' }} />
+                            ) : (
+                                <div style={{ width: '100%', height: '100%', borderRadius: '34px', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', fontWeight: 900, color: 'white', letterSpacing: '-0.05em' }}>{getInitials(user?.name)}</div>
+                            )}
+                        </div>
+                        <label htmlFor="profileImg" style={{ position: 'absolute', bottom: '-10px', right: '-10px', width: 44, height: 44, background: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 10px 20px rgba(0,0,0,0.2)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', border: '1px solid rgba(0,0,0,0.05)' }} className="hover-scale">
+                            <Camera size={20} className="text-brand" strokeWidth={2.5} />
                         </label>
                         <input id="profileImg" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageChange} />
                     </div>
-                    <div>
-                        <h2 style={{ marginBottom: '0.25rem' }}>{user?.name}</h2>
-                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{user?.email}</p>
-                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
-                            <span className="badge badge-primary">{user?.department}</span>
-                            <span className="badge badge-purple" style={{ textTransform: 'capitalize' }}>{user?.role}</span>
-                            {user?.batch && <span className="badge" style={{ background: 'rgba(255,255,255,0.08)', color: 'var(--text-muted)', border: '1px solid var(--border-primary)', fontSize: '0.7rem', padding: '0.2rem 0.6rem' }}>Batch {user.batch}</span>}
+
+                    <div style={{ color: 'white', flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.75rem' }}>
+                            <h2 style={{ fontSize: '2.75rem', fontWeight: 950, margin: 0, letterSpacing: '-0.04em', lineHeight: 1.1 }}>{user?.name}</h2>
+                            <div style={{ padding: '0.4rem 0.8rem', background: 'rgba(255,255,255,0.15)', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', border: '1px solid rgba(255,255,255,0.2)' }}>VERIFIED OFFICIAL</div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', opacity: 0.9, marginBottom: '1.75rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                                <div style={{ width: 32, height: 32, background: 'rgba(255,255,255,0.1)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Mail size={16} /></div>
+                                <span style={{ fontWeight: 600, fontSize: '1rem' }}>{user?.email}</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                                <div style={{ width: 32, height: 32, background: 'rgba(255,255,255,0.1)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BookOpen size={16} /></div>
+                                <span style={{ fontWeight: 600, fontSize: '1rem' }}>{user?.enrollmentNo || user?.studentId || 'Admin Infrastructure'}</span>
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                            <div style={{ padding: '0.625rem 1.25rem', background: 'white', color: 'var(--brand-800)', borderRadius: '14px', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', boxShadow: 'var(--shadow-sm)' }}>{user?.department}</div>
+                            <div style={{ padding: '0.625rem 1.25rem', background: 'rgba(255,255,255,0.15)', color: 'white', borderRadius: '14px', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', border: '1px solid rgba(255,255,255,0.2)' }}>{user?.role}</div>
+                            {user?.batch && <div style={{ padding: '0.625rem 1.25rem', background: 'var(--success-500)', color: 'white', borderRadius: '14px', fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', boxShadow: 'var(--shadow-sm)' }}>COHORT {user.batch}</div>}
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Tabs */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-primary)', paddingBottom: '0' }}>
-                {[['profile', 'Personal Info'], ['password', 'Change Password']].map(([key, label]) => (
-                    <button key={key} onClick={() => setTab(key)} style={{ padding: '0.625rem 1.25rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', borderBottom: `2px solid ${tab === key ? 'var(--primary-500)' : 'transparent'}`, color: tab === key ? 'var(--primary-400)' : 'var(--text-muted)', marginBottom: '-1px', transition: 'all var(--transition-fast)' }}>
-                        {label}
+            {/* Protocol Navigation Control */}
+            <div style={{ display: 'flex', gap: '1.25rem', marginBottom: '3rem', background: 'var(--slate-50)', padding: '0.625rem', borderRadius: '20px', border: '1px solid var(--border-primary)' }}>
+                {[
+                    { key: 'profile', label: 'Identity Configuration', icon: User },
+                    { key: 'password', label: 'Security Enforcement', icon: Shield }
+                ].map(({ key, label, icon: Icon }) => (
+                    <button key={key} onClick={() => setTab(key)}
+                        className={`btn ${tab === key ? 'btn-primary' : 'btn-ghost'}`}
+                        style={{ flex: 1, height: '52px', fontWeight: 900, borderRadius: '14px', background: tab === key ? 'var(--brand-600)' : 'transparent', color: tab === key ? 'white' : 'var(--text-muted)', fontSize: '0.95rem' }}>
+                        <Icon size={20} strokeWidth={2.5} />
+                        <span>{label}</span>
                     </button>
                 ))}
             </div>
 
             {tab === 'profile' ? (
-                <form onSubmit={handleSubmit} className="card card-body">
-                    <h4 style={{ marginBottom: '1.25rem', color: 'var(--primary-400)' }}>Personal Information</h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1rem' }}>
-                        <div className="form-group">
-                            <label className="form-label">Full Name</label>
-                            <div style={{ position: 'relative' }}>
-                                <User size={15} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                <input className="form-control" style={{ paddingLeft: '2.25rem' }} value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} />
+                <form onSubmit={handleSubmit} className="animate-slide-up">
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: '2rem' }}>
+                        {/* Institutional Attribute Architecture */}
+                        <div className="card" style={{ padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--border-primary)', boxShadow: 'var(--shadow-sm)' }}>
+                            <div style={{ marginBottom: '2.5rem' }}>
+                                <h4 style={{ margin: 0, fontWeight: 950, fontSize: '1.5rem', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>Academic Personnel Mapping</h4>
+                                <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.95rem', color: 'var(--text-muted)', fontWeight: 600 }}>Formal document synchronization for the institutional archival registry.</p>
                             </div>
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Email (Read-only)</label>
-                            <div style={{ position: 'relative' }}>
-                                <Mail size={15} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                <input className="form-control" style={{ paddingLeft: '2.25rem' }} value={user?.email || ''} disabled />
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Phone Number</label>
-                            <div style={{ position: 'relative' }}>
-                                <Phone size={15} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                <input className="form-control" style={{ paddingLeft: '2.25rem' }} placeholder="+91 98765 43210" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} />
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">{user?.role === 'student' ? 'Enrollment No.' : 'Employee ID'}</label>
-                            <div style={{ position: 'relative' }}>
-                                <BookOpen size={15} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                <input className="form-control" style={{ paddingLeft: '2.25rem' }} value={user?.enrollmentNo || user?.studentId || ''} disabled />
-                            </div>
-                        </div>
-                        {user?.role === 'student' && (
-                            <>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.75rem', marginBottom: '2rem' }}>
                                 <div className="form-group">
-                                    <label className="form-label">Batch</label>
-                                    <input className="form-control" placeholder="e.g. 2021" value={form.batch} onChange={e => setForm(p => ({ ...p, batch: e.target.value }))} />
+                                    <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Personnel Nomenclature</label>
+                                    <input className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label">Semester</label>
-                                    <select className="form-control" value={form.semester} onChange={e => setForm(p => ({ ...p, semester: e.target.value }))}>
-                                        <option value="">Select Semester</option>
-                                        {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>Semester {s}</option>)}
-                                    </select>
+                                    <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Communication Endpoint</label>
+                                    <input className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} placeholder="+91 00000 00000" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} />
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Section</label>
-                                    <input className="form-control" placeholder="e.g. A" value={form.section} onChange={e => setForm(p => ({ ...p, section: e.target.value }))} />
+
+                                {user?.role === 'student' && (
+                                    <>
+                                        <div className="form-group">
+                                            <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Institutional Batch</label>
+                                            <input className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} placeholder="Cohorts Year (e.g., 2026)" value={form.batch} onChange={e => setForm(p => ({ ...p, batch: e.target.value }))} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Semester Resolution</label>
+                                            <select className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} value={form.semester} onChange={e => setForm(p => ({ ...p, semester: e.target.value }))}>
+                                                <option value="">Resolution Sequence</option>
+                                                {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>Semester Matrix {s}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                                            <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Academic Section Marker</label>
+                                            <input className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} placeholder="Section Indicator (e.g., Alpha-7)" value={form.section} onChange={e => setForm(p => ({ ...p, section: e.target.value }))} />
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Professional Abstract Summary</label>
+                                <textarea className="form-control" style={{ borderRadius: '14px', padding: '1.25rem', fontWeight: 600, lineHeight: 1.6, resize: 'none' }} rows={6} placeholder="Document your academic specialization, technical yields, and professional trajectories..." value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} maxLength={500} />
+                                <div style={{ textAlign: 'right', fontSize: '0.75rem', fontWeight: 900, color: 'var(--text-muted)', marginTop: '0.75rem', letterSpacing: '0.02em' }}>{form.bio.length} / 500 UNITS DOCUMENTED</div>
+                            </div>
+                        </div>
+
+                        {/* Digital Connectivity Connectivity */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                            <div className="card" style={{ padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--border-primary)', boxShadow: 'var(--shadow-sm)' }}>
+                                <div style={{ marginBottom: '2rem' }}>
+                                    <h4 style={{ margin: 0, fontWeight: 950, fontSize: '1.25rem', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>Global Connectivity</h4>
                                 </div>
-                            </>
-                        )}
-                    </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                    <div className="form-group">
+                                        <label className="form-label" style={{ fontWeight: 900, fontSize: '0.8rem', textTransform: 'uppercase' }}>Professional Network (LinkedIn)</label>
+                                        <div style={{ position: 'relative' }}>
+                                            <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', width: 32, height: 32, background: 'var(--primary-50)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--brand-600)' }}><Linkedin size={16} strokeWidth={2.5} /></div>
+                                            <input className="form-control" style={{ paddingLeft: '3.75rem', height: '52px', borderRadius: '12px', fontWeight: 700 }} placeholder="linkedin.com/in/identifier" value={form.linkedIn} onChange={e => setForm(p => ({ ...p, linkedIn: e.target.value }))} />
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label" style={{ fontWeight: 900, fontSize: '0.8rem', textTransform: 'uppercase' }}>Source Repository (GitHub)</label>
+                                        <div style={{ position: 'relative' }}>
+                                            <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', width: 32, height: 32, background: 'var(--slate-100)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--slate-800)' }}><Github size={16} strokeWidth={2.5} /></div>
+                                            <input className="form-control" style={{ paddingLeft: '3.75rem', height: '52px', borderRadius: '12px', fontWeight: 700 }} placeholder="github.com/identifier" value={form.github} onChange={e => setForm(p => ({ ...p, github: e.target.value }))} />
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label" style={{ fontWeight: 900, fontSize: '0.8rem', textTransform: 'uppercase' }}>Digital Portfolio (External)</label>
+                                        <div style={{ position: 'relative' }}>
+                                            <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', width: 32, height: 32, background: 'var(--success-50)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--success-600)' }}><Globe size={16} strokeWidth={2.5} /></div>
+                                            <input className="form-control" style={{ paddingLeft: '3.75rem', height: '52px', borderRadius: '12px', fontWeight: 700 }} placeholder="institutional-yield.com" value={form.portfolio} onChange={e => setForm(p => ({ ...p, portfolio: e.target.value }))} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <div className="form-group">
-                        <label className="form-label">Bio</label>
-                        <textarea className="form-control" rows={3} placeholder="Tell us about yourself, your interests, and goals..." value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} maxLength={500} />
-                        <div className="input-hint">{form.bio.length}/500</div>
-                    </div>
-
-                    <div className="divider" />
-                    <h4 style={{ marginBottom: '1.25rem', color: 'var(--primary-400)' }}>Social & Portfolio Links</h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1rem' }}>
-                        <div className="form-group">
-                            <label className="form-label">LinkedIn</label>
-                            <div style={{ position: 'relative' }}>
-                                <Linkedin size={15} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                <input className="form-control" style={{ paddingLeft: '2.25rem' }} placeholder="linkedin.com/in/yourname" value={form.linkedIn} onChange={e => setForm(p => ({ ...p, linkedIn: e.target.value }))} />
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">GitHub</label>
-                            <div style={{ position: 'relative' }}>
-                                <Github size={15} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                <input className="form-control" style={{ paddingLeft: '2.25rem' }} placeholder="github.com/username" value={form.github} onChange={e => setForm(p => ({ ...p, github: e.target.value }))} />
-                            </div>
-                        </div>
-                        <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                            <label className="form-label">Portfolio Website</label>
-                            <div style={{ position: 'relative' }}>
-                                <Globe size={15} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                <input className="form-control" style={{ paddingLeft: '2.25rem' }} placeholder="yourportfolio.com" value={form.portfolio} onChange={e => setForm(p => ({ ...p, portfolio: e.target.value }))} />
-                            </div>
+                            <button type="submit" className="btn btn-primary" style={{ height: '64px', fontWeight: 950, fontSize: '1.1rem', borderRadius: '20px', boxShadow: 'var(--shadow-lg)' }} disabled={loading}>
+                                {loading ? <div className="spinner-sm" /> : <><Save size={22} strokeWidth={3} /><span>COMMIT IDENTITY UPDATES</span></>}
+                            </button>
                         </div>
                     </div>
-
-                    <button type="submit" className="btn btn-primary" disabled={loading}>
-                        {loading ? <><div className="spinner spinner-sm" style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: '#fff' }} /> Saving...</> : <><Save size={16} /> Save Changes</>}
-                    </button>
                 </form>
             ) : (
-                <form onSubmit={handlePasswordChange} className="card card-body">
-                    <h4 style={{ marginBottom: '1.25rem', color: 'var(--primary-400)' }}>
-                        <Key size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                        Change Password
-                    </h4>
-                    {['currentPassword', 'newPassword', 'confirmPassword'].map((field, i) => (
-                        <div key={field} className="form-group">
-                            <label className="form-label">{['Current Password', 'New Password', 'Confirm New Password'][i]}</label>
-                            <div style={{ position: 'relative' }}>
-                                <input
-                                    type={showPw[field === 'currentPassword' ? 'current' : field === 'newPassword' ? 'new' : 'confirm'] ? 'text' : 'password'}
-                                    className="form-control"
-                                    style={{ paddingRight: '2.75rem' }}
-                                    placeholder="••••••••"
-                                    value={pwForm[field]}
-                                    onChange={e => setPwForm(p => ({ ...p, [field]: e.target.value }))}
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const type = field === 'currentPassword' ? 'current' : field === 'newPassword' ? 'new' : 'confirm';
-                                        setShowPw(p => ({ ...p, [type]: !p[type] }));
-                                    }}
-                                    style={{
-                                        position: 'absolute',
-                                        right: '0.875rem',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        color: 'var(--text-muted)',
-                                        display: 'flex',
-                                        zIndex: 10
-                                    }}
-                                >
-                                    {showPw[field === 'currentPassword' ? 'current' : field === 'newPassword' ? 'new' : 'confirm'] ? <EyeOff size={16} /> : <Eye size={16} />}
-                                </button>
+                <form onSubmit={handlePasswordChange} className="animate-slide-up" style={{ maxWidth: '650px', margin: '0 auto' }}>
+                    <div className="card" style={{ padding: '3.5rem', borderRadius: '30px', border: '1px solid var(--border-primary)', boxShadow: 'var(--shadow-xl)' }}>
+                        <div style={{ marginBottom: '3rem', textAlign: 'center' }}>
+                            <div style={{ width: 80, height: 80, background: 'var(--primary-50)', color: 'var(--brand-700)', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem auto', border: '1px solid var(--primary-100)' }}>
+                                <Shield size={40} strokeWidth={1.5} />
                             </div>
+                            <h4 style={{ margin: 0, fontWeight: 950, fontSize: '1.75rem', color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Security Protocol Rotation</h4>
+                            <p style={{ margin: '0.75rem 0 0 0', fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 600, maxWidth: '400px', margin: '0.75rem auto 0 auto', lineHeight: 1.5 }}>Execute periodic cryptographic rotation to maintain absolute integrity of your institutional credentials.</p>
                         </div>
-                    ))}
-                    <button type="submit" className="btn btn-primary" disabled={pwLoading}>
-                        {pwLoading ? <><div className="spinner spinner-sm" style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: '#fff' }} /> Changing...</> : <><Key size={16} /> Change Password</>}
-                    </button>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+                            {[
+                                { id: 'currentPassword', label: 'Operational Credential', type: 'current' },
+                                { id: 'newPassword', label: 'New Cryptographic Secret', type: 'new' },
+                                { id: 'confirmPassword', label: 'Secret Authentication', type: 'confirm' }
+                            ].map(({ id, label, type }) => (
+                                <div key={id} className="form-group">
+                                    <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <input
+                                            type={showPw[type] ? 'text' : 'password'}
+                                            className="form-control"
+                                            style={{ paddingRight: '4rem', height: '60px', borderRadius: '14px', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '0.1em' }}
+                                            placeholder="••••••••••••"
+                                            value={pwForm[id]}
+                                            onChange={e => setPwForm(p => ({ ...p, [id]: e.target.value }))}
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPw(p => ({ ...p, [type]: !p[type] }))}
+                                            style={{ position: 'absolute', right: '1.25rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.5rem' }}
+                                        >
+                                            {showPw[type] ? <EyeOff size={22} /> : <Eye size={22} />}
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+
+                            <div style={{ padding: '1.5rem', background: 'var(--warning-50)', borderRadius: '16px', border: '1px solid var(--warning-100)', marginTop: '0.5rem', display: 'flex', gap: '1rem' }}>
+                                <div style={{ color: 'var(--warning-600)', flexShrink: 0 }}><Shield size={20} strokeWidth={3} /></div>
+                                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--warning-800)', fontWeight: 800, lineHeight: 1.5 }}>
+                                    Warning: Successful execution of this protocol will invalidate all active session tokens across registered endpoints.
+                                </p>
+                            </div>
+
+                            <button type="submit" className="btn btn-primary" style={{ height: '64px', fontWeight: 950, fontSize: '1.1rem', borderRadius: '20px', marginTop: '1rem', boxShadow: 'var(--shadow-lg)' }} disabled={pwLoading}>
+                                {pwLoading ? <div className="spinner-sm" /> : <><Key size={22} strokeWidth={2.5} /><span>ENFORCE PROTOCOL UPDATE</span></>}
+                            </button>
+                        </div>
+                    </div>
                 </form>
             )}
         </div>

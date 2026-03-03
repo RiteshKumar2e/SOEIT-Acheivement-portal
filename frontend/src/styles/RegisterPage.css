@@ -1,101 +1,127 @@
-/* ===== REGISTER PAGE ===== */
+/* ===== REGISTER PAGE REDESIGN — PREMIUM INSTITUTIONAL THEME ===== */
 
 .register-page {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem 1rem;
-    background:
-        radial-gradient(ellipse at 70% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
-        var(--bg-primary);
+    padding: 3rem 1.5rem;
+    background: radial-gradient(circle at top right, rgba(139, 30, 30, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at bottom left, rgba(48, 54, 87, 0.05) 0%, transparent 40%),
+        #ffffff;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-.register-wrapper {
-    width: 100%;
-    max-width: 560px;
-}
-
-.register-logo-wrap {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.register-logo-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.register-logo-icon {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
-    border-radius: var(--radius-md);
+.auth-header {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.auth-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #303657;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(48, 54, 87, 0.2);
+}
+
+.auth-divider {
+    height: 60px;
+    width: 2px;
+    background: #8B1E1E;
+}
+
+.auth-title-column {
+    text-align: left;
+    min-width: 180px;
+}
+
+.auth-university-name {
+    font-weight: 800;
+    font-size: 1.4rem;
+    line-height: 1.1;
+}
+
+.auth-name-primary {
+    color: #8B1E1E;
+}
+
+.auth-name-secondary {
+    color: #303657;
+}
+
+.auth-location {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+.auth-naac-badge {
+    background: #8B1E1E;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    align-self: center;
+    white-space: nowrap;
 }
 
 .register-card {
-    box-shadow: var(--shadow-xl);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
+    width: 100%;
 }
 
 .register-heading {
     text-align: center;
-    margin-bottom: 0.375rem;
-}
-
-.register-subheading {
-    color: var(--text-muted);
-    text-align: center;
-    font-size: 0.9rem;
-    margin-bottom: 2rem;
-}
-
-.register-grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
-.register-step-indicator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-}
-
-.register-step-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--gray-300);
-    transition: all var(--transition-base);
-}
-
-.register-step-dot.active {
-    background: var(--primary-500);
-    width: 24px;
-    border-radius: 4px;
+    color: #1e293b;
+    font-size: 2rem;
+    font-weight: 900;
+    margin-top: 2rem;
+    margin-bottom: 2.5rem;
+    letter-spacing: -0.02em;
 }
 
 .register-footer-text {
     text-align: center;
     font-size: 0.9rem;
-    color: var(--text-muted);
-    margin-top: 1.25rem;
-}
-
-.register-login-link {
-    color: var(--primary-500);
     font-weight: 600;
+    color: #64748b;
+    margin-top: 1.5rem;
 }
 
-@media (max-width: 480px) {
-    .register-grid-2 {
-        grid-template-columns: 1fr;
+.register-link {
+    color: #8B1E1E !important;
+    font-weight: 800 !important;
+    text-decoration: none;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .register-card {
+        padding: 1.5rem;
+    }
+
+    .register-heading {
+        font-size: 1.5rem;
     }
 }
