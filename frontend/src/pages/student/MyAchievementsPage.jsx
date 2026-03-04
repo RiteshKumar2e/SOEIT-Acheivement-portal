@@ -82,8 +82,8 @@ const MyAchievementsPage = () => {
 
             {/* Navigation & Control Suite */}
             <div className="card" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--slate-50)', border: '1px solid var(--border-primary)' }}>
-                <form onSubmit={handleSearch} style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 2fr) 1.2fr 1.2fr auto auto', gap: '1rem', alignItems: 'center' }}>
-                    <div className="search-wrapper" style={{ minWidth: '300px' }}>
+                <form onSubmit={handleSearch} className="filter-grid-container" style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div className="search-wrapper filter-search">
                         <input
                             className="form-control"
                             placeholder="Query by record title..."
@@ -93,22 +93,22 @@ const MyAchievementsPage = () => {
                         <Search size={18} className="search-icon" />
                     </div>
 
-                    <select className="form-control" style={{ height: '48px', fontWeight: 700 }} value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value, page: 1 }))}>
+                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700 }} value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value, page: 1 }))}>
                         <option value="">Verification Status</option>
                         {STATUSES.slice(1).map(s => <option key={s} value={s} style={{ textTransform: 'capitalize' }}>{s.toUpperCase()}</option>)}
                     </select>
 
-                    <select className="form-control" style={{ height: '48px', fontWeight: 700 }} value={filters.category} onChange={e => setFilters(p => ({ ...p, category: e.target.value, page: 1 }))}>
+                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700 }} value={filters.category} onChange={e => setFilters(p => ({ ...p, category: e.target.value, page: 1 }))}>
                         <option value="">Functional Category</option>
                         {CATEGORIES.slice(1).map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
                     </select>
 
-                    <button type="submit" className="btn btn-primary" style={{ height: '48px', padding: '0 1.5rem', fontWeight: 900 }}>
+                    <button type="submit" className="btn btn-primary filter-btn" style={{ height: '48px', padding: '0 1.5rem', fontWeight: 900 }}>
                         <Filter size={18} />
                         <span>Filter</span>
                     </button>
 
-                    <button type="button" className="btn btn-ghost" style={{ height: '48px', fontWeight: 800, border: '1px solid var(--border-primary)', background: 'white' }} onClick={() => setFilters({ status: '', category: '', search: '', page: 1 })}>
+                    <button type="button" className="btn btn-ghost filter-reset-btn" style={{ height: '48px', fontWeight: 800, border: '1px solid var(--border-primary)', background: 'white' }} onClick={() => setFilters({ status: '', category: '', search: '', page: 1 })}>
                         Reset
                     </button>
                 </form>

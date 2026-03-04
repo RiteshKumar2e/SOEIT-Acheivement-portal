@@ -74,20 +74,20 @@ const VerifyAchievementsPage = () => {
 
             {/* Advanced Filtering Ecosystem */}
             <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid var(--border-primary)' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1.5fr) 1fr 1fr auto', gap: '1rem', alignItems: 'center' }}>
-                    <div className="search-wrapper" style={{ minWidth: '300px' }}>
-                        <input className="form-control" placeholder="Search digital identifiers or record nomenclature..." value={filters.search} onChange={e => setFilters(p => ({ ...p, search: e.target.value }))} onKeyDown={e => e.key === 'Enter' && load()} />
+                <div className="filter-grid-container" style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div className="search-wrapper filter-search">
+                        <input className="form-control" placeholder="Search digital identifiers..." value={filters.search} onChange={e => setFilters(p => ({ ...p, search: e.target.value }))} onKeyDown={e => e.key === 'Enter' && load()} />
                         <Search size={20} className="search-icon" />
                     </div>
-                    <select className="form-control" style={{ height: '48px', fontWeight: 700 }} value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
+                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700 }} value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
                         <option value="">All Institutional Departments</option>
                         {DEPARTMENTS.slice(1).map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
-                    <select className="form-control" style={{ height: '48px', fontWeight: 700 }} value={filters.category} onChange={e => setFilters(p => ({ ...p, category: e.target.value, page: 1 }))}>
+                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700 }} value={filters.category} onChange={e => setFilters(p => ({ ...p, category: e.target.value, page: 1 }))}>
                         <option value="">All Domain Categories</option>
                         {CATEGORIES.slice(1).map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
-                    <button className="btn btn-primary" onClick={load} style={{ height: '48px', padding: '0 1.5rem' }}>
+                    <button className="btn btn-primary filter-btn" onClick={load} style={{ height: '48px', padding: '0 1.5rem' }}>
                         <Filter size={18} strokeWidth={2.5} />
                     </button>
                 </div>
