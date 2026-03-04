@@ -138,3 +138,79 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Dashboard Desktop Filters Alignment */
+.achievements-filter-form {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: nowrap;
+    /* Forces one line on desktop */
+}
+
+.achievements-search-wrap {
+    flex: 1;
+    position: relative;
+    min-width: 200px;
+}
+
+.achievements-search-wrap input {
+    width: 100%;
+    padding-left: 2.5rem;
+}
+
+.achievements-search-wrap .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.achievements-select {
+    height: 48px !important;
+    font-weight: 700 !important;
+    width: auto !important;
+    min-width: 200px;
+}
+
+.achievements-filter-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.achievements-action-btn {
+    height: 48px !important;
+    padding: 0 1.5rem !important;
+    font-weight: 900 !important;
+}
+
+.achievements-reset-btn {
+    font-weight: 800 !important;
+    border: 1px solid var(--border-primary) !important;
+    background: white !important;
+}
+
+/* On mobile, keep the old flow (wrapping or stacking) */
+@media (max-width: 1024px) {
+    .achievements-filter-form {
+        flex-wrap: wrap !important;
+        /* Restore wrap so tablet/mobile is unchanged */
+    }
+
+    .achievements-search-wrap,
+    .achievements-select {
+        width: 100% !important;
+        /* On mobile it was taking 100% */
+    }
+
+    .achievements-filter-actions {
+        width: 100%;
+    }
+
+    .achievements-action-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}

@@ -82,8 +82,8 @@ const MyAchievementsPage = () => {
 
             {/* Navigation & Control Suite */}
             <div className="card" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--slate-50)', border: '1px solid var(--border-primary)' }}>
-                <form onSubmit={handleSearch} className="filter-grid-container" style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <div className="search-wrapper filter-search">
+                <form onSubmit={handleSearch} className="filter-grid-container achievements-filter-form">
+                    <div className="search-wrapper filter-search achievements-search-wrap">
                         <input
                             className="form-control"
                             placeholder="Query by record title..."
@@ -93,24 +93,26 @@ const MyAchievementsPage = () => {
                         <Search size={18} className="search-icon" />
                     </div>
 
-                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700 }} value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value, page: 1 }))}>
+                    <select className="form-control filter-select achievements-select" value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value, page: 1 }))}>
                         <option value="">Verification Status</option>
                         {STATUSES.slice(1).map(s => <option key={s} value={s} style={{ textTransform: 'capitalize' }}>{s.toUpperCase()}</option>)}
                     </select>
 
-                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700 }} value={filters.category} onChange={e => setFilters(p => ({ ...p, category: e.target.value, page: 1 }))}>
+                    <select className="form-control filter-select achievements-select" value={filters.category} onChange={e => setFilters(p => ({ ...p, category: e.target.value, page: 1 }))}>
                         <option value="">Functional Category</option>
                         {CATEGORIES.slice(1).map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
                     </select>
 
-                    <button type="submit" className="btn btn-primary filter-btn" style={{ height: '48px', padding: '0 1.5rem', fontWeight: 900 }}>
-                        <Filter size={18} />
-                        <span>Filter</span>
-                    </button>
+                    <div className="achievements-filter-actions">
+                        <button type="submit" className="btn btn-primary filter-btn achievements-action-btn">
+                            <Filter size={18} />
+                            <span>Filter</span>
+                        </button>
 
-                    <button type="button" className="btn btn-ghost filter-reset-btn" style={{ height: '48px', fontWeight: 800, border: '1px solid var(--border-primary)', background: 'white' }} onClick={() => setFilters({ status: '', category: '', search: '', page: 1 })}>
-                        Reset
-                    </button>
+                        <button type="button" className="btn btn-ghost filter-reset-btn achievements-action-btn achievements-reset-btn" onClick={() => setFilters({ status: '', category: '', search: '', page: 1 })}>
+                            Reset
+                        </button>
+                    </div>
                 </form>
             </div>
 
