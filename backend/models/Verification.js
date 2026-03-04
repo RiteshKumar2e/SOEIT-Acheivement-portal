@@ -1,15 +1,29 @@
-const mongoose = require('mongoose');
+const { getDb } = require('../config/db');
 
-const verificationSchema = new mongoose.Schema(
-    {
-        achievementId: { type: mongoose.Schema.Types.ObjectId, ref: 'Achievement', required: true },
-        verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-        action: { type: String, enum: ['approved', 'rejected', 'requested_info'], required: true },
-        remarks: { type: String, maxlength: 500 },
-        previousStatus: { type: String, enum: ['pending', 'approved', 'rejected'] },
-        newStatus: { type: String, enum: ['pending', 'approved', 'rejected'] },
+const genId = async () => {
+    const { nanoid } = await import('nanoid');
+    return nanoid();
+};
+
+const Verification = {
+    create: async (data) => {
+        const db = getDb();
+        const id = await genId();
+        await db.execute({
+            sql: `INSERT INTO verifications (id, achievement_id, verified_by, action, remarks, previous_status, new_status)
+                  VALUES (?,?,?,?,?,?,?)`,
+            args: [
+                id,
+                data.achievementId,
+                data.verifiedBy,
+                data.action,
+                data.remarks || null,
+                data.previousStatus || null,
+                data.newStatus || null,
+            ],
+        });
+        return { _id: id, id, ...data };
     },
-    { timestamps: true }
-);
+};
 
-module.exports = mongoose.model('Verification', verificationSchema);
+module.exports = Verification;

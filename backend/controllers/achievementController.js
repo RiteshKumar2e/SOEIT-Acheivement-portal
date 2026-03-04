@@ -11,20 +11,28 @@ exports.createAchievement = async (req, res, next) => {
 
         if (req.files && req.files.length > 0) {
             req.files.forEach((file) => {
-                proofFiles.push({ filename: file.filename, originalname: file.originalname, url: `/uploads/certificates/${file.filename}` });
+                proofFiles.push({
+                    filename: file.filename,
+                    originalname: file.originalname,
+                    url: `/uploads/certificates/${file.filename}`,
+                });
             });
         }
 
         const achievement = await Achievement.create({
-            studentId: req.user.id, title, category, description, level, date, institution,
+            studentId: req.user.id,
+            title, category, description, level, date, institution,
             tags: tags ? tags.split(',').map(t => t.trim()) : [],
             isPublic: isPublic !== undefined ? isPublic : true,
             proofFiles,
             certificateUrl: proofFiles.length > 0 ? proofFiles[0].url : '',
         });
 
-        await achievement.populate('studentId', 'name email department studentId');
-        res.status(201).json({ success: true, message: 'Achievement submitted successfully! Awaiting verification.', data: achievement });
+        res.status(201).json({
+            success: true,
+            message: 'Achievement submitted successfully! Awaiting verification.',
+            data: achievement,
+        });
     } catch (error) {
         next(error);
     }
@@ -34,21 +42,25 @@ exports.createAchievement = async (req, res, next) => {
 // @route   GET /api/achievements/my
 exports.getMyAchievements = async (req, res, next) => {
     try {
-        const { status, category, level, page = 1, limit = 10, search } = req.query;
+        const { status, category, level, page = 1, limit = 10 } = req.query;
+
         const query = { studentId: req.user.id };
         if (status) query.status = status;
         if (category) query.category = category;
         if (level) query.level = level;
-        if (search) query.$or = [{ title: { $regex: search, $options: 'i' } }, { description: { $regex: search, $options: 'i' } }];
 
         const total = await Achievement.countDocuments(query);
         const achievements = await Achievement.find(query)
-            .populate('verifiedBy', 'name role')
             .sort({ createdAt: -1 })
             .skip((page - 1) * limit)
             .limit(parseInt(limit));
 
-        res.status(200).json({ success: true, total, page: parseInt(page), pages: Math.ceil(total / limit), data: achievements });
+        res.status(200).json({
+            success: true, total,
+            page: parseInt(page),
+            pages: Math.ceil(total / limit),
+            data: achievements,
+        });
     } catch (error) {
         next(error);
     }
@@ -58,11 +70,10 @@ exports.getMyAchievements = async (req, res, next) => {
 // @route   GET /api/achievements/:id
 exports.getAchievement = async (req, res, next) => {
     try {
-        const achievement = await Achievement.findById(req.params.id).populate('studentId', 'name email department studentId profileImage').populate('verifiedBy', 'name role');
+        const achievement = await Achievement.findById(req.params.id);
         if (!achievement) return res.status(404).json({ success: false, message: 'Achievement not found' });
 
-        // Only owner or admin/faculty can view
-        if (achievement.studentId._id.toString() !== req.user.id && !['admin', 'faculty'].includes(req.user.role)) {
+        if (achievement.studentId !== req.user.id && !['admin', 'faculty'].includes(req.user.role)) {
             return res.status(403).json({ success: false, message: 'Not authorized' });
         }
 
@@ -76,9 +87,9 @@ exports.getAchievement = async (req, res, next) => {
 // @route   PUT /api/achievements/:id
 exports.updateAchievement = async (req, res, next) => {
     try {
-        let achievement = await Achievement.findById(req.params.id);
+        const achievement = await Achievement.findById(req.params.id);
         if (!achievement) return res.status(404).json({ success: false, message: 'Achievement not found' });
-        if (achievement.studentId.toString() !== req.user.id) return res.status(403).json({ success: false, message: 'Not authorized' });
+        if (achievement.studentId !== req.user.id) return res.status(403).json({ success: false, message: 'Not authorized' });
         if (achievement.status === 'approved') return res.status(400).json({ success: false, message: 'Cannot edit an approved achievement' });
 
         const { title, category, description, level, date, institution, tags, isPublic } = req.body;
@@ -86,13 +97,17 @@ exports.updateAchievement = async (req, res, next) => {
         if (tags) updates.tags = tags.split(',').map(t => t.trim());
 
         if (req.files && req.files.length > 0) {
-            const proofFiles = req.files.map((file) => ({ filename: file.filename, originalname: file.originalname, url: `/uploads/certificates/${file.filename}` }));
-            updates.proofFiles = [...achievement.proofFiles, ...proofFiles];
-            if (!achievement.certificateUrl) updates.certificateUrl = proofFiles[0].url;
+            const newFiles = req.files.map((file) => ({
+                filename: file.filename,
+                originalname: file.originalname,
+                url: `/uploads/certificates/${file.filename}`,
+            }));
+            updates.proofFiles = [...achievement.proofFiles, ...newFiles];
+            if (!achievement.certificateUrl) updates.certificateUrl = newFiles[0].url;
         }
 
-        achievement = await Achievement.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true }).populate('studentId', 'name email');
-        res.status(200).json({ success: true, message: 'Achievement updated successfully', data: achievement });
+        const updated = await Achievement.findByIdAndUpdate(req.params.id, updates, { new: true });
+        res.status(200).json({ success: true, message: 'Achievement updated successfully', data: updated });
     } catch (error) {
         next(error);
     }
@@ -104,7 +119,7 @@ exports.deleteAchievement = async (req, res, next) => {
     try {
         const achievement = await Achievement.findById(req.params.id);
         if (!achievement) return res.status(404).json({ success: false, message: 'Achievement not found' });
-        if (achievement.studentId.toString() !== req.user.id && req.user.role !== 'admin') {
+        if (achievement.studentId !== req.user.id && req.user.role !== 'admin') {
             return res.status(403).json({ success: false, message: 'Not authorized' });
         }
         await achievement.deleteOne();
@@ -118,10 +133,15 @@ exports.deleteAchievement = async (req, res, next) => {
 // @route   GET /api/achievements/portfolio/:userId
 exports.getPublicPortfolio = async (req, res, next) => {
     try {
-        const student = await User.findById(req.params.userId).select('-password -resetPasswordToken -resetPasswordExpire');
+        const student = await User.findById(req.params.userId);
         if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
 
-        const achievements = await Achievement.find({ studentId: req.params.userId, status: 'approved', isPublic: true }).sort({ createdAt: -1 });
+        const achievements = await Achievement.find({
+            studentId: req.params.userId,
+            status: 'approved',
+            isPublic: true,
+        }).sort({ createdAt: -1 });
+
         const stats = {
             total: achievements.length,
             byCategory: {},
@@ -133,7 +153,13 @@ exports.getPublicPortfolio = async (req, res, next) => {
             stats.byLevel[a.level] = (stats.byLevel[a.level] || 0) + 1;
         });
 
-        res.status(200).json({ success: true, student, achievements, stats });
+        // Remove sensitive info from student object
+        const studentData = student.toObject ? student.toObject() : { ...student };
+        delete studentData.password;
+        delete studentData.resetPasswordToken;
+        delete studentData.resetPasswordExpire;
+
+        res.status(200).json({ success: true, student: studentData, achievements, stats });
     } catch (error) {
         next(error);
     }
@@ -144,6 +170,7 @@ exports.getPublicPortfolio = async (req, res, next) => {
 exports.getStudentStats = async (req, res, next) => {
     try {
         const studentId = req.user.id;
+
         const [all, approved, pending, rejected] = await Promise.all([
             Achievement.countDocuments({ studentId }),
             Achievement.countDocuments({ studentId, status: 'approved' }),
@@ -151,26 +178,30 @@ exports.getStudentStats = async (req, res, next) => {
             Achievement.countDocuments({ studentId, status: 'rejected' }),
         ]);
 
-        const byCategory = await Achievement.aggregate([
-            { $match: { studentId: require('mongoose').Types.ObjectId.createFromHexString(studentId) } },
-            { $group: { _id: '$category', count: { $sum: 1 } } },
+        const [byCategory, byLevel, totalPointsResult, recent] = await Promise.all([
+            Achievement.aggregate([
+                { $match: { studentId } },
+                { $group: { _id: '$category', count: { $sum: 1 } } },
+            ]),
+            Achievement.aggregate([
+                { $match: { studentId, status: 'approved' } },
+                { $group: { _id: '$level', count: { $sum: 1 } } },
+            ]),
+            Achievement.aggregate([
+                { $match: { studentId, status: 'approved' } },
+                { $group: { _id: null, total: { $sum: '$points' } } },
+            ]),
+            Achievement.find({ studentId }).sort({ createdAt: -1 }).limit(5),
         ]);
-
-        const byLevel = await Achievement.aggregate([
-            { $match: { studentId: require('mongoose').Types.ObjectId.createFromHexString(studentId), status: 'approved' } },
-            { $group: { _id: '$level', count: { $sum: 1 } } },
-        ]);
-
-        const totalPoints = await Achievement.aggregate([
-            { $match: { studentId: require('mongoose').Types.ObjectId.createFromHexString(studentId), status: 'approved' } },
-            { $group: { _id: null, total: { $sum: '$points' } } },
-        ]);
-
-        const recent = await Achievement.find({ studentId }).sort({ createdAt: -1 }).limit(5).populate('verifiedBy', 'name');
 
         res.status(200).json({
             success: true,
-            stats: { all, approved, pending, rejected, totalPoints: totalPoints[0]?.total || 0, byCategory, byLevel },
+            stats: {
+                all, approved, pending, rejected,
+                totalPoints: totalPointsResult[0]?.total || 0,
+                byCategory,
+                byLevel,
+            },
             recentActivity: recent,
         });
     } catch (error) {

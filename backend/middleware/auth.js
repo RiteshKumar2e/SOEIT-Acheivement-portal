@@ -16,13 +16,26 @@ exports.protect = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = await User.findById(decoded.id).select('-password');
-        if (!req.user) {
+        const user = await User.findById(decoded.id);
+
+        if (!user) {
             return res.status(401).json({ success: false, message: 'User not found' });
         }
-        if (!req.user.isActive) {
+        if (!user.isActive) {
             return res.status(401).json({ success: false, message: 'Account is deactivated' });
         }
+
+        // Attach plain object (without methods) for downstream use
+        req.user = {
+            id: user.id,
+            _id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            department: user.department,
+            isActive: user.isActive,
+        };
+
         next();
     } catch (error) {
         return res.status(401).json({ success: false, message: 'Not authorized, token failed' });

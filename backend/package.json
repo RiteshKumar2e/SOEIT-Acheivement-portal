@@ -1,7 +1,7 @@
 {
   "name": "soeit-achievements-backend",
-  "version": "1.0.0",
-  "description": "",
+  "version": "2.0.0",
+  "description": "SOEIT Achievements Portal — Backend (Turso/LibSQL)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@libsql/client": "^0.14.0",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -20,13 +21,12 @@
     "express-validator": "^7.3.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.2.3",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
+    "nanoid": "^5.1.5",
     "nodemailer": "^8.0.1"
   },
   "devDependencies": {
-    "mongodb-memory-server": "^11.0.1",
     "nodemon": "^3.1.14"
   }
 }

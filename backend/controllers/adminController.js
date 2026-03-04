@@ -1,7 +1,7 @@
 const Achievement = require('../models/Achievement');
 const User = require('../models/User');
 const Verification = require('../models/Verification');
-const mongoose = require('mongoose');
+const { getDb } = require('../config/db');
 
 // @desc    Admin dashboard stats
 // @route   GET /api/admin/dashboard
@@ -16,26 +16,19 @@ exports.getDashboardStats = async (req, res, next) => {
             Achievement.countDocuments({ status: 'rejected' }),
         ]);
 
-        const byCategory = await Achievement.aggregate([
-            { $group: { _id: '$category', count: { $sum: 1 }, approved: { $sum: { $cond: [{ $eq: ['$status', 'approved'] }, 1, 0] } } } },
-            { $sort: { count: -1 } },
-        ]);
-
-        const byDepartment = await Achievement.aggregate([
-            { $lookup: { from: 'users', localField: 'studentId', foreignField: '_id', as: 'student' } },
-            { $unwind: '$student' },
-            { $group: { _id: '$student.department', count: { $sum: 1 }, approved: { $sum: { $cond: [{ $eq: ['$status', 'approved'] }, 1, 0] } } } },
-            { $sort: { count: -1 } },
-        ]);
-
-        const monthlyTrend = await Achievement.aggregate([
-            { $group: { _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } }, count: { $sum: 1 } } },
-            { $sort: { '_id.year': 1, '_id.month': 1 } },
-            { $limit: 12 },
+        const [byCategory, byDepartment, monthlyTrend] = await Promise.all([
+            Achievement.aggregate([
+                { $group: { _id: '$category', count: { $sum: 1 }, approved: { $sum: 1 } } },
+            ]),
+            Achievement.aggregate([
+                { $group: { _id: '$student.department', count: { $sum: 1 }, approved: { $sum: 1 } } },
+            ]),
+            Achievement.aggregate([
+                { $group: { _id: { year: '$year', month: '$month' }, count: { $sum: 1 } } },
+            ]),
         ]);
 
         const recentAchievements = await Achievement.find({ status: 'pending' })
-            .populate('studentId', 'name department studentId profileImage')
             .sort({ createdAt: -1 })
             .limit(5);
 
@@ -54,20 +47,56 @@ exports.getDashboardStats = async (req, res, next) => {
 exports.getPendingAchievements = async (req, res, next) => {
     try {
         const { page = 1, limit = 10, category, department, search } = req.query;
-        let pipeline = [
-            { $match: { status: 'pending' } },
-            { $lookup: { from: 'users', localField: 'studentId', foreignField: '_id', as: 'student' } },
-            { $unwind: '$student' },
-        ];
-        if (department) pipeline.push({ $match: { 'student.department': department } });
-        if (category) pipeline.push({ $match: { category } });
-        if (search) pipeline.push({ $match: { $or: [{ title: { $regex: search, $options: 'i' } }, { 'student.name': { $regex: search, $options: 'i' } }] } });
+        const db = getDb();
+        let sql = `
+            SELECT
+                a.*,
+                u.name        AS student_name,
+                u.email       AS student_email,
+                u.department  AS student_department,
+                u.student_id  AS student_student_id,
+                u.profile_image AS student_profile_image
+            FROM achievements a
+            LEFT JOIN users u ON a.student_id = u.id
+            WHERE a.status = 'pending'
+        `;
+        const args = [];
 
-        const total = (await Achievement.aggregate([...pipeline, { $count: 'total' }]))[0]?.total || 0;
-        pipeline.push({ $sort: { createdAt: -1 } }, { $skip: (page - 1) * limit }, { $limit: parseInt(limit) });
+        if (department) { sql += ' AND u.department = ?'; args.push(department); }
+        if (category) { sql += ' AND a.category = ?'; args.push(category); }
+        if (search) { sql += ' AND (a.title LIKE ? OR u.name LIKE ?)'; args.push(`%${search}%`, `%${search}%`); }
 
-        const achievements = await Achievement.aggregate(pipeline);
-        res.status(200).json({ success: true, total, page: parseInt(page), pages: Math.ceil(total / limit), data: achievements });
+        // Count
+        const countRes = await db.execute({
+            sql: sql.replace('a.*, u.name AS student_name, u.email AS student_email, u.department AS student_department, u.student_id AS student_student_id, u.profile_image AS student_profile_image', 'COUNT(*) AS cnt'),
+            args,
+        });
+        const total = Number(countRes.rows[0]?.cnt || 0);
+
+        sql += ` ORDER BY a.created_at DESC LIMIT ? OFFSET ?`;
+        args.push(parseInt(limit), (page - 1) * parseInt(limit));
+
+        const res2 = await db.execute({ sql, args });
+
+        // Shape data like old populate
+        const data = res2.rows.map(row => ({
+            _id: row.id, id: row.id,
+            title: row.title, category: row.category,
+            description: row.description, level: row.level,
+            date: row.date, status: row.status, remarks: row.remarks,
+            points: row.points, certificateUrl: row.certificate_url,
+            proofFiles: (() => { try { return JSON.parse(row.proof_files || '[]'); } catch { return []; } })(),
+            createdAt: row.created_at, updatedAt: row.updated_at,
+            student: {
+                _id: row.student_id, id: row.student_id,
+                name: row.student_name, email: row.student_email,
+                department: row.student_department,
+                studentId: row.student_student_id,
+                profileImage: row.student_profile_image || '',
+            },
+        }));
+
+        res.status(200).json({ success: true, total, page: parseInt(page), pages: Math.ceil(total / limit), data });
     } catch (error) {
         next(error);
     }
@@ -86,18 +115,22 @@ exports.verifyAchievement = async (req, res, next) => {
         if (!achievement) return res.status(404).json({ success: false, message: 'Achievement not found' });
 
         const previousStatus = achievement.status;
-        achievement.status = action;
-        achievement.remarks = remarks || '';
-        achievement.verifiedBy = req.user.id;
-        achievement.verifiedAt = new Date();
-        await achievement.save();
 
-        await Verification.create({ achievementId: achievement._id, verifiedBy: req.user.id, action, remarks, previousStatus, newStatus: action });
+        await Achievement.findByIdAndUpdate(req.params.id, {
+            status: action,
+            remarks: remarks || '',
+            verifiedBy: req.user.id,
+            verifiedAt: new Date(),
+        }, { new: false });
 
-        await achievement.populate('studentId', 'name email department');
-        await achievement.populate('verifiedBy', 'name role');
+        await Verification.create({
+            achievementId: achievement.id,
+            verifiedBy: req.user.id,
+            action, remarks, previousStatus, newStatus: action,
+        });
 
-        res.status(200).json({ success: true, message: `Achievement ${action} successfully`, data: achievement });
+        const updated = await Achievement.findById(req.params.id);
+        res.status(200).json({ success: true, message: `Achievement ${action} successfully`, data: updated });
     } catch (error) {
         next(error);
     }
@@ -108,19 +141,55 @@ exports.verifyAchievement = async (req, res, next) => {
 exports.getAllAchievements = async (req, res, next) => {
     try {
         const { page = 1, limit = 10, status, category, department, search } = req.query;
-        let pipeline = [
-            { $lookup: { from: 'users', localField: 'studentId', foreignField: '_id', as: 'student' } },
-            { $unwind: '$student' },
-        ];
-        if (status) pipeline.push({ $match: { status } });
-        if (department) pipeline.push({ $match: { 'student.department': department } });
-        if (category) pipeline.push({ $match: { category } });
-        if (search) pipeline.push({ $match: { $or: [{ title: { $regex: search, $options: 'i' } }, { 'student.name': { $regex: search, $options: 'i' } }] } });
+        const db = getDb();
+        let sql = `
+            SELECT
+                a.*,
+                u.name        AS student_name,
+                u.email       AS student_email,
+                u.department  AS student_department,
+                u.student_id  AS student_student_id,
+                u.profile_image AS student_profile_image
+            FROM achievements a
+            LEFT JOIN users u ON a.student_id = u.id
+            WHERE 1=1
+        `;
+        const args = [];
 
-        const total = (await Achievement.aggregate([...pipeline, { $count: 'total' }]))[0]?.total || 0;
-        pipeline.push({ $sort: { createdAt: -1 } }, { $skip: (page - 1) * limit }, { $limit: parseInt(limit) });
-        const achievements = await Achievement.aggregate(pipeline);
-        res.status(200).json({ success: true, total, page: parseInt(page), pages: Math.ceil(total / limit), data: achievements });
+        if (status) { sql += ' AND a.status = ?'; args.push(status); }
+        if (department) { sql += ' AND u.department = ?'; args.push(department); }
+        if (category) { sql += ' AND a.category = ?'; args.push(category); }
+        if (search) { sql += ' AND (a.title LIKE ? OR u.name LIKE ?)'; args.push(`%${search}%`, `%${search}%`); }
+
+        const countRes = await db.execute({
+            sql: sql.replace(/SELECT[\s\S]*?FROM achievements/, 'SELECT COUNT(*) AS cnt FROM achievements'),
+            args,
+        });
+        const total = Number(countRes.rows[0]?.cnt || 0);
+
+        sql += ` ORDER BY a.created_at DESC LIMIT ? OFFSET ?`;
+        args.push(parseInt(limit), (page - 1) * parseInt(limit));
+
+        const res2 = await db.execute({ sql, args });
+
+        const data = res2.rows.map(row => ({
+            _id: row.id, id: row.id,
+            title: row.title, category: row.category,
+            description: row.description, level: row.level,
+            date: row.date, status: row.status, remarks: row.remarks,
+            points: row.points, certificateUrl: row.certificate_url,
+            proofFiles: (() => { try { return JSON.parse(row.proof_files || '[]'); } catch { return []; } })(),
+            createdAt: row.created_at, updatedAt: row.updated_at,
+            student: {
+                _id: row.student_id, id: row.student_id,
+                name: row.student_name, email: row.student_email,
+                department: row.student_department,
+                studentId: row.student_student_id,
+                profileImage: row.student_profile_image || '',
+            },
+        }));
+
+        res.status(200).json({ success: true, total, page: parseInt(page), pages: Math.ceil(total / limit), data });
     } catch (error) {
         next(error);
     }
@@ -139,35 +208,33 @@ exports.getStudents = async (req, res, next) => {
         if (batch) query.batch = batch;
         if (semester) query.semester = parseInt(semester);
         if (section) query.section = section;
-
         if (search) {
             query.$or = [
-                { name: { $regex: search, $options: 'i' } },
-                { email: { $regex: search, $options: 'i' } },
-                { studentId: { $regex: search, $options: 'i' } },
-                { enrollmentNo: { $regex: search, $options: 'i' } }
+                { name: { $regex: search } }, { email: { $regex: search } },
+                { studentId: { $regex: search } }, { enrollmentNo: { $regex: search } },
             ];
         }
 
         const total = await User.countDocuments(query);
-        const students = await User.find(query)
-            .select('-password')
-            .sort({ name: 1 })
-            .skip((pageNum - 1) * limitNum)
-            .limit(limitNum);
+        const students = await User.find(query).sort({ name: 1 }).skip((pageNum - 1) * limitNum).limit(limitNum);
 
         // Attach achievement counts
         const enriched = await Promise.all(students.map(async (student) => {
-            const counts = {
-                total: await Achievement.countDocuments({ studentId: student._id }),
-                approved: await Achievement.countDocuments({ studentId: student._id, status: 'approved' }),
-                pending: await Achievement.countDocuments({ studentId: student._id, status: 'pending' }),
-                points: (await Achievement.aggregate([{ $match: { studentId: student._id, status: 'approved' } }, { $group: { _id: null, total: { $sum: '$points' } } }]))[0]?.total || 0,
-            };
-            return { ...student.toObject(), achievementCounts: counts };
+            const [total, approved, pending] = await Promise.all([
+                Achievement.countDocuments({ studentId: student.id }),
+                Achievement.countDocuments({ studentId: student.id, status: 'approved' }),
+                Achievement.countDocuments({ studentId: student.id, status: 'pending' }),
+            ]);
+            const pointsRes = await Achievement.aggregate([
+                { $match: { studentId: student.id, status: 'approved' } },
+                { $group: { _id: null, total: { $sum: '$points' } } },
+            ]);
+            const s = student.toObject ? student.toObject() : { ...student };
+            delete s.password;
+            return { ...s, achievementCounts: { total, approved, pending, points: pointsRes[0]?.total || 0 } };
         }));
 
-        res.status(200).json({ success: true, total, page: parseInt(page), pages: Math.ceil(total / limit), data: enriched });
+        res.status(200).json({ success: true, total, page: pageNum, pages: Math.ceil(total / limitNum), data: enriched });
     } catch (error) {
         next(error);
     }
@@ -179,17 +246,18 @@ exports.getFaculty = async (req, res, next) => {
     try {
         const { search } = req.query;
         const query = { role: 'faculty' };
-
         if (search) {
             query.$or = [
-                { name: { $regex: search, $options: 'i' } },
-                { email: { $regex: search, $options: 'i' } },
-                { studentId: { $regex: search, $options: 'i' } } // faculty id is stored in studentId field for now
+                { name: { $regex: search } }, { email: { $regex: search } },
             ];
         }
-
-        const faculty = await User.find(query).select('-password').sort({ name: 1 });
-        res.status(200).json({ success: true, count: faculty.length, data: faculty });
+        const faculty = await User.find(query).sort({ name: 1 });
+        const data = faculty.map(f => {
+            const obj = f.toObject ? f.toObject() : { ...f };
+            delete obj.password;
+            return obj;
+        });
+        res.status(200).json({ success: true, count: data.length, data });
     } catch (error) {
         next(error);
     }
@@ -200,28 +268,24 @@ exports.getFaculty = async (req, res, next) => {
 exports.getReports = async (req, res, next) => {
     try {
         const [categoryStats, levelStats, departmentStats, topPerformers, monthlyTrend] = await Promise.all([
-            Achievement.aggregate([{ $match: { status: 'approved' } }, { $group: { _id: '$category', count: { $sum: 1 }, points: { $sum: '$points' } } }, { $sort: { count: -1 } }]),
-            Achievement.aggregate([{ $match: { status: 'approved' } }, { $group: { _id: '$level', count: { $sum: 1 } } }, { $sort: { count: -1 } }]),
             Achievement.aggregate([
                 { $match: { status: 'approved' } },
-                { $lookup: { from: 'users', localField: 'studentId', foreignField: '_id', as: 'student' } },
-                { $unwind: '$student' },
-                { $group: { _id: '$student.department', count: { $sum: 1 }, points: { $sum: '$points' } } },
-                { $sort: { count: -1 } },
+                { $group: { _id: '$category', count: { $sum: 1 }, points: { $sum: 1 } } },
+            ]),
+            Achievement.aggregate([
+                { $match: { status: 'approved' } },
+                { $group: { _id: '$level', count: { $sum: 1 } } },
+            ]),
+            Achievement.aggregate([
+                { $match: { status: 'approved' } },
+                { $group: { _id: '$student.department', count: { $sum: 1 }, points: { $sum: 1 } } },
             ]),
             Achievement.aggregate([
                 { $match: { status: 'approved' } },
                 { $group: { _id: '$studentId', totalPoints: { $sum: '$points' }, achievementCount: { $sum: 1 } } },
-                { $sort: { totalPoints: -1 } },
-                { $limit: 10 },
-                { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'student' } },
-                { $unwind: '$student' },
-                { $project: { 'student.name': 1, 'student.department': 1, 'student.profileImage': 1, 'student.studentId': 1, totalPoints: 1, achievementCount: 1 } },
             ]),
             Achievement.aggregate([
-                { $group: { _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } }, submitted: { $sum: 1 }, approved: { $sum: { $cond: [{ $eq: ['$status', 'approved'] }, 1, 0] } } } },
-                { $sort: { '_id.year': 1, '_id.month': 1 } },
-                { $limit: 12 },
+                { $group: { _id: { year: '$year', month: '$month' }, submitted: { $sum: 1 }, approved: { $sum: 1 } } },
             ]),
         ]);
 
@@ -240,9 +304,12 @@ exports.manageUser = async (req, res, next) => {
         if (isActive !== undefined) updates.isActive = isActive;
         if (role && req.user.role === 'admin') updates.role = role;
 
-        const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true }).select('-password');
+        const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true });
         if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-        res.status(200).json({ success: true, message: 'User updated successfully', user });
+
+        const userObj = user.toObject ? user.toObject() : { ...user };
+        delete userObj.password;
+        res.status(200).json({ success: true, message: 'User updated successfully', user: userObj });
     } catch (error) {
         next(error);
     }

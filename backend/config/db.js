@@ -1,117 +1,152 @@
-const mongoose = require('mongoose');
-const User = require('../models/User');
+const { createClient } = require('@libsql/client');
+const bcrypt = require('bcryptjs');
 
-let mongoServer = null;
+let db = null;
 
-const seedDemoUsers = async () => {
-  try {
-    const demoUsers = [
-      {
-        name: 'Demo Student',
-        email: 'student@soeit.ac.in',
-        enrollmentNo: 'AJU/221403',
-        password: 'Test@123',
-        role: 'student',
-        department: 'CSE',
-        batch: '2022',
-        semester: 4,
-        isActive: true
-      },
-      {
-        name: 'Demo Faculty',
-        email: 'faculty@soeit.ac.in',
-        enrollmentNo: 'AJU/FACULTY',
-        password: 'Faculty@123',
-        role: 'faculty',
-        department: 'CSE',
-        isActive: true
-      },
-      {
-        name: 'System Admin',
-        email: 'admin@soeit.ac.in',
-        enrollmentNo: 'AJU/ADMIN',
-        password: 'Admin@123',
-        role: 'admin',
-        department: 'Other',
-        isActive: true
-      }
-    ];
+const getDb = () => {
+  if (!db) throw new Error('Database not initialized. Call connectDB() first.');
+  return db;
+};
 
-    for (const user of demoUsers) {
-      const exists = await User.findOne({ email: user.email });
-      if (!exists) {
-        await User.create(user);
-        console.log(`👤 Demo ${user.role} created (${user.enrollmentNo})`);
-      } else {
-        // Update existing demo users to have the correct enrollmentNo
-        exists.enrollmentNo = user.enrollmentNo;
-        exists.role = user.role; // Ensure roles are correct
-        await exists.save();
-        console.log(`🔄 Demo ${user.role} updated (${user.enrollmentNo})`);
-      }
+const initSchema = async (client) => {
+  await client.batch([
+    `CREATE TABLE IF NOT EXISTS users (
+            id              TEXT PRIMARY KEY,
+            name            TEXT NOT NULL,
+            email           TEXT NOT NULL UNIQUE,
+            password        TEXT NOT NULL,
+            role            TEXT NOT NULL DEFAULT 'student',
+            department      TEXT NOT NULL,
+            enrollment_no   TEXT UNIQUE,
+            student_id      TEXT,
+            phone           TEXT,
+            bio             TEXT,
+            profile_image   TEXT DEFAULT '',
+            batch           TEXT,
+            semester        INTEGER,
+            section         TEXT,
+            is_active       INTEGER DEFAULT 1,
+            is_verified     INTEGER DEFAULT 0,
+            linked_in       TEXT DEFAULT '',
+            github          TEXT DEFAULT '',
+            portfolio       TEXT DEFAULT '',
+            reset_password_token    TEXT,
+            reset_password_expire   TEXT,
+            last_login      TEXT,
+            created_at      TEXT DEFAULT (datetime('now')),
+            updated_at      TEXT DEFAULT (datetime('now'))
+        )`,
+    `CREATE TABLE IF NOT EXISTS achievements (
+            id              TEXT PRIMARY KEY,
+            student_id      TEXT NOT NULL,
+            title           TEXT NOT NULL,
+            category        TEXT NOT NULL,
+            description     TEXT NOT NULL,
+            level           TEXT NOT NULL,
+            date            TEXT NOT NULL,
+            institution     TEXT,
+            certificate_url TEXT DEFAULT '',
+            proof_files     TEXT DEFAULT '[]',
+            status          TEXT DEFAULT 'pending',
+            remarks         TEXT,
+            verified_by     TEXT,
+            verified_at     TEXT,
+            is_public       INTEGER DEFAULT 1,
+            tags            TEXT DEFAULT '[]',
+            points          INTEGER DEFAULT 0,
+            created_at      TEXT DEFAULT (datetime('now')),
+            updated_at      TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (student_id) REFERENCES users(id),
+            FOREIGN KEY (verified_by) REFERENCES users(id)
+        )`,
+    `CREATE TABLE IF NOT EXISTS verifications (
+            id              TEXT PRIMARY KEY,
+            achievement_id  TEXT NOT NULL,
+            verified_by     TEXT NOT NULL,
+            action          TEXT NOT NULL,
+            remarks         TEXT,
+            previous_status TEXT,
+            new_status      TEXT,
+            created_at      TEXT DEFAULT (datetime('now')),
+            updated_at      TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (achievement_id) REFERENCES achievements(id),
+            FOREIGN KEY (verified_by) REFERENCES users(id)
+        )`,
+    `CREATE TABLE IF NOT EXISTS events (
+            id                  TEXT PRIMARY KEY,
+            title               TEXT NOT NULL,
+            description         TEXT NOT NULL,
+            category            TEXT NOT NULL,
+            date                TEXT NOT NULL,
+            venue               TEXT NOT NULL,
+            registration_link   TEXT,
+            created_by          TEXT NOT NULL,
+            created_at          TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (created_by) REFERENCES users(id)
+        )`,
+    `CREATE TABLE IF NOT EXISTS notices (
+            id          TEXT PRIMARY KEY,
+            title       TEXT NOT NULL,
+            content     TEXT NOT NULL,
+            priority    TEXT DEFAULT 'Medium',
+            created_by  TEXT NOT NULL,
+            created_at  TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (created_by) REFERENCES users(id)
+        )`,
+  ], 'write');
+};
+
+const seedDemoUsers = async (client) => {
+  const demoUsers = [
+    { name: 'Demo Student', email: 'student@soeit.ac.in', enrollmentNo: 'AJU/221403', password: 'Test@123', role: 'student', department: 'CSE', batch: '2022', semester: 4 },
+    { name: 'Demo Faculty', email: 'faculty@soeit.ac.in', enrollmentNo: 'AJU/FACULTY', password: 'Faculty@123', role: 'faculty', department: 'CSE' },
+    { name: 'System Admin', email: 'admin@soeit.ac.in', enrollmentNo: 'AJU/ADMIN', password: 'Admin@123', role: 'admin', department: 'Other' },
+  ];
+
+  for (const u of demoUsers) {
+    const existing = await client.execute({ sql: 'SELECT id FROM users WHERE email = ?', args: [u.email] });
+    if (existing.rows.length === 0) {
+      const salt = await bcrypt.genSalt(12);
+      const hashed = await bcrypt.hash(u.password, salt);
+      const { nanoid } = await import('nanoid');
+      const id = nanoid();
+      await client.execute({
+        sql: `INSERT INTO users (id, name, email, password, role, department, enrollment_no, batch, semester, is_active)
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+        args: [id, u.name, u.email, hashed, u.role, u.department, u.enrollmentNo, u.batch || null, u.semester || null],
+      });
+      console.log(`👤 Demo ${u.role} created (${u.enrollmentNo})`);
+    } else {
+      console.log(`🔄 Demo ${u.role} already exists, skipping.`);
     }
-  } catch (err) {
-    console.error('❌ Seeding error:', err.message);
   }
 };
 
 const connectDB = async () => {
   try {
-    // 1. Try connecting to the URI in .env if it exists
-    let uri = process.env.MONGODB_URI;
-    let connected = false;
+    const url = process.env.TURSO_URL;
 
-    if (uri) {
-      try {
-        // Short timeout for the first attempt to local DB
-        await mongoose.connect(uri, { serverSelectionTimeoutMS: 3000 });
-        console.log(`✅ MongoDB Connected to: ${uri}`);
-        connected = true;
-      } catch (err) {
-        console.log('⚠️  Local MongoDB not found, attempting in-memory database...');
-      }
-    }
+    if (!url) throw new Error('TURSO_URL is not set in environment variables');
 
-    // 2. If not connected and we're in dev, use MongoMemoryServer
-    if (!connected && process.env.NODE_ENV !== 'production') {
-      const { MongoMemoryServer } = require('mongodb-memory-server');
-      if (!mongoServer) {
-        // Note: This might take a while on first run to download the binary
-        mongoServer = await MongoMemoryServer.create({
-          instance: { dbName: 'soeit_achievements' },
-        });
-      }
-      uri = mongoServer.getUri();
-      await mongoose.connect(uri);
-      console.log('🗄️  In-memory MongoDB connected (Dev Mode)');
-      connected = true;
-    }
+    const client = createClient({ url });
 
-    if (!connected) {
-      throw new Error('Could not connect to any MongoDB instance');
-    }
+    // Verify connection
+    await client.execute('SELECT 1');
+    console.log('✅ Turso (LibSQL) Connected');
 
-    // 3. Seed demo data
-    await seedDemoUsers();
+    await initSchema(client);
+    console.log('📐 Schema initialized');
 
-    mongoose.connection.on('error', (err) => {
-      console.error('❌ MongoDB runtime error:', err.message);
-    });
+    db = client;
+
+    await seedDemoUsers(client);
+    console.log('🌱 Demo users seeded');
 
   } catch (error) {
-    console.error(`❌ MongoDB Connection Failed: ${error.message}`);
+    console.error('❌ Turso Connection Failed:', error.message);
     console.log('🔄 Retrying in 5 seconds...');
     setTimeout(connectDB, 5000);
   }
 };
 
-process.on('SIGINT', async () => {
-  try {
-    await mongoose.connection.close();
-    if (mongoServer) await mongoServer.stop();
-    console.log('\n✅ DB shut down cleanly.');
-  } catch (e) { }
-  process.exit(0);
-});
-
-module.exports = connectDB;
+module.exports = { connectDB, getDb };

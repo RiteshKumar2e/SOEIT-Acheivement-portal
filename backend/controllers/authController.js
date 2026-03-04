@@ -7,8 +7,8 @@ const generateToken = (id) => {
 };
 
 const sendTokenResponse = (user, statusCode, res, message = 'Success') => {
-    const token = generateToken(user._id);
-    const userObj = user.toObject ? user.toObject() : user;
+    const token = generateToken(user.id || user._id);
+    const userObj = user.toObject ? user.toObject() : { ...user };
     delete userObj.password;
     res.status(statusCode).json({ success: true, message, token, user: userObj });
 };
@@ -19,22 +19,17 @@ exports.register = async (req, res, next) => {
     try {
         const { name, email, password, department, studentId, enrollmentNo, batch, semester, section } = req.body;
 
-        // Build duplicate-check query — only include enrollmentNo when provided
+        // Check duplicates
         const orConditions = [{ email: email?.toLowerCase() }];
-        if (enrollmentNo && enrollmentNo.trim()) {
-            orConditions.push({ enrollmentNo: enrollmentNo.trim() });
-        }
+        if (enrollmentNo && enrollmentNo.trim()) orConditions.push({ enrollmentNo: enrollmentNo.trim() });
+
         const existingUser = await User.findOne({ $or: orConditions });
         if (existingUser) return res.status(400).json({ success: false, message: 'Email or Enrollment No. already registered' });
 
-        // Coerce semester to Number; schema requires Number (min 1 – max 8)
         const semesterNum = semester ? parseInt(semester, 10) : undefined;
 
         const user = await User.create({
-            name,
-            email,
-            password,
-            department,
+            name, email, password, department,
             studentId: studentId?.trim() || undefined,
             enrollmentNo: enrollmentNo?.trim() || undefined,
             batch: batch?.trim() || undefined,
@@ -42,9 +37,10 @@ exports.register = async (req, res, next) => {
             section: section?.trim() || undefined,
             role: 'student',
         });
+
         sendTokenResponse(user, 201, res, 'Registration successful! Welcome to SOEIT Portal.');
     } catch (error) {
-        console.error('[Register Error]', error.message, error.errors ?? '');
+        console.error('[Register Error]', error.message);
         next(error);
     }
 };
@@ -53,16 +49,12 @@ exports.register = async (req, res, next) => {
 // @route   POST /api/auth/login
 exports.login = async (req, res, next) => {
     try {
-        const { email, password } = req.body; // email field here acts as "Username" (email or enrollmentNo)
+        const { email, password } = req.body;
         if (!email || !password) return res.status(400).json({ success: false, message: 'Please provide username and password' });
 
-        // Find user by email OR enrollmentNo
         const user = await User.findOne({
-            $or: [
-                { email: email.toLowerCase() },
-                { enrollmentNo: email }
-            ]
-        }).select('+password');
+            $or: [{ email: email.toLowerCase() }, { enrollmentNo: email }],
+        });
 
         if (!user) return res.status(401).json({ success: false, message: 'Invalid credentials' });
         if (!user.isActive) return res.status(401).json({ success: false, message: 'Account is deactivated. Contact admin.' });
@@ -71,7 +63,8 @@ exports.login = async (req, res, next) => {
         if (!isMatch) return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
         user.lastLogin = new Date();
-        await user.save({ validateBeforeSave: false });
+        await user.save();
+
         sendTokenResponse(user, 200, res, 'Login successful');
     } catch (error) {
         next(error);
@@ -99,7 +92,7 @@ exports.updateProfile = async (req, res, next) => {
 
         if (req.file) updates.profileImage = `/uploads/profiles/${req.file.filename}`;
 
-        const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true, runValidators: true });
+        const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true });
         res.status(200).json({ success: true, message: 'Profile updated successfully', user });
     } catch (error) {
         next(error);
@@ -111,12 +104,18 @@ exports.updateProfile = async (req, res, next) => {
 exports.changePassword = async (req, res, next) => {
     try {
         const { currentPassword, newPassword } = req.body;
-        const user = await User.findById(req.user.id).select('+password');
+        const user = await User.findById(req.user.id);
+
         const isMatch = await user.matchPassword(currentPassword);
         if (!isMatch) return res.status(400).json({ success: false, message: 'Current password is incorrect' });
 
         user.password = newPassword;
+        // Re-hash and save
+        const bcrypt = require('bcryptjs');
+        const salt = await bcrypt.genSalt(12);
+        user.password = await bcrypt.hash(newPassword, salt);
         await user.save();
+
         sendTokenResponse(user, 200, res, 'Password changed successfully');
     } catch (error) {
         next(error);
@@ -131,13 +130,12 @@ exports.forgotPassword = async (req, res, next) => {
         if (!user) return res.status(404).json({ success: false, message: 'No user found with that email' });
 
         const resetToken = user.getResetPasswordToken();
-        await user.save({ validateBeforeSave: false });
+        await user.save();
 
-        // In production, send email. For now, return token in response.
         res.status(200).json({
             success: true,
             message: 'Password reset token generated',
-            resetToken, // Remove this in production - only send via email
+            resetToken, // In production: send via email only
         });
     } catch (error) {
         next(error);
@@ -148,13 +146,20 @@ exports.forgotPassword = async (req, res, next) => {
 // @route   PUT /api/auth/reset-password/:resettoken
 exports.resetPassword = async (req, res, next) => {
     try {
-        const resetPasswordToken = crypto.createHash('sha256').update(req.params.resettoken).digest('hex');
-        const user = await User.findOne({ resetPasswordToken, resetPasswordExpire: { $gt: Date.now() } });
+        const hashedToken = crypto.createHash('sha256').update(req.params.resettoken).digest('hex');
+
+        const user = await User.findOne({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpire: { $gt: Date.now() },
+        });
+
         if (!user) return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
 
-        user.password = req.body.password;
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpire = undefined;
+        const bcrypt = require('bcryptjs');
+        const salt = await bcrypt.genSalt(12);
+        user.password = await bcrypt.hash(req.body.password, salt);
+        user.resetPasswordToken = null;
+        user.resetPasswordExpire = null;
         await user.save();
 
         sendTokenResponse(user, 200, res, 'Password reset successful');

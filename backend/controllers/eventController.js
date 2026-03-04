@@ -10,26 +10,21 @@ exports.createEvent = async (req, res, next) => {
         const { title, description, category, date, venue, registrationLink } = req.body;
 
         const event = await Event.create({
-            title,
-            description,
-            category,
-            date,
-            venue,
+            title, description, category, date, venue,
             registrationLink,
-            createdBy: req.user.id
+            createdBy: req.user.id,
         });
 
-        // Get all students to notify + Test Email
-        const students = await User.find({ role: 'student', isActive: true }).select('email');
+        // Get all students to notify
+        const students = await User.find({ role: 'student', isActive: true });
         let studentEmails = students.map(s => s.email);
 
-        // Add specific test email for verification
         if (!studentEmails.includes('riteshkumar90359@gmail.com')) {
             studentEmails.push('riteshkumar90359@gmail.com');
         }
 
         if (studentEmails.length > 0) {
-            const emailOptions = {
+            sendEmail({
                 to: studentEmails.join(','),
                 subject: `New Event: ${title}`,
                 message: `Hello Students,\n\nA new event has been added: ${title}.\n\nCategory: ${category}\nVenue: ${venue}\nDate: ${new Date(date).toLocaleDateString()}\n\nPlease login to the SOEIT portal to view more details.\n\nBest Regards,\nSOEIT Portal`,
@@ -48,18 +43,11 @@ exports.createEvent = async (req, res, next) => {
                         <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/login" style="display: inline-block; padding: 10px 20px; background-color: #3b82f6; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;">Login to Portal</a>
                         <p style="margin-top: 20px; font-size: 0.8rem; color: #64748b;">This is an automated notification from SOEIT Portal. Please do not reply.</p>
                     </div>
-                `
-            };
-
-            // Non-blocking email sending
-            sendEmail(emailOptions).catch(err => console.error('Email failed:', err));
+                `,
+            }).catch(err => console.error('Email failed:', err));
         }
 
-        res.status(201).json({
-            success: true,
-            message: 'Event created and notifications sent',
-            data: event
-        });
+        res.status(201).json({ success: true, message: 'Event created and notifications sent', data: event });
     } catch (error) {
         next(error);
     }
@@ -74,15 +62,9 @@ exports.getEvents = async (req, res, next) => {
         const query = {};
         if (category && category !== 'All') query.category = category;
 
-        const events = await Event.find(query)
-            .populate('createdBy', 'name email department profileImage')
-            .sort({ date: -1 });
+        const events = await Event.find(query).sort({ date: -1 });
 
-        res.status(200).json({
-            success: true,
-            count: events.length,
-            data: events
-        });
+        res.status(200).json({ success: true, count: events.length, data: events });
     } catch (error) {
         next(error);
     }
@@ -93,25 +75,16 @@ exports.getEvents = async (req, res, next) => {
 // @access  Private (Admin/Faculty)
 exports.updateEvent = async (req, res, next) => {
     try {
-        let event = await Event.findById(req.params.id);
-
+        const event = await Event.findById(req.params.id);
         if (!event) return res.status(404).json({ success: false, message: 'Event not found' });
 
-        // Check ownership (admins can edit any, faculty only their own)
-        if (req.user.role !== 'admin' && event.createdBy.toString() !== req.user.id) {
+        const creatorId = typeof event.createdBy === 'object' ? event.createdBy.id : event.createdBy;
+        if (req.user.role !== 'admin' && creatorId !== req.user.id) {
             return res.status(401).json({ success: false, message: 'Not authorized to update this event' });
         }
 
-        event = await Event.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true
-        });
-
-        res.status(200).json({
-            success: true,
-            message: 'Event updated successfully',
-            data: event
-        });
+        const updated = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.status(200).json({ success: true, message: 'Event updated successfully', data: updated });
     } catch (error) {
         next(error);
     }
@@ -123,16 +96,14 @@ exports.updateEvent = async (req, res, next) => {
 exports.deleteEvent = async (req, res, next) => {
     try {
         const event = await Event.findById(req.params.id);
-
         if (!event) return res.status(404).json({ success: false, message: 'Event not found' });
 
-        // Check ownership (admins can delete any, faculty only their own)
-        if (req.user.role !== 'admin' && event.createdBy.toString() !== req.user.id) {
+        const creatorId = typeof event.createdBy === 'object' ? event.createdBy.id : event.createdBy;
+        if (req.user.role !== 'admin' && creatorId !== req.user.id) {
             return res.status(401).json({ success: false, message: 'Not authorized to delete this event' });
         }
 
         await event.deleteOne();
-
         res.status(200).json({ success: true, message: 'Event removed' });
     } catch (error) {
         next(error);
