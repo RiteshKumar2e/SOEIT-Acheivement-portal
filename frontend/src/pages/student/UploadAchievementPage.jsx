@@ -71,16 +71,16 @@ const UploadAchievementPage = () => {
     return (
         <div className="animate-fade-in" style={{ maxWidth: '1000px', margin: '0 auto' }}>
             {/* Submission Suite Header */}
-            <div className="page-header" style={{ marginBottom: '3rem', textAlign: 'center' }}>
+            <div className="page-header upload-header-suite" style={{ marginBottom: '3rem', textAlign: 'center' }}>
                 <h2 className="heading-display">Institutional Credential Submission</h2>
-                <p className="page-subtitle" style={{ maxWidth: '600px', margin: '0.5rem auto 0 auto' }}>Document official milestones, certifications, and academic excellence within the institutional registry.</p>
+                <p className="page-subtitle upload-subtitle" style={{ maxWidth: '600px', margin: '0.5rem auto 0 auto' }}>Document official milestones, certifications, and academic excellence within the institutional registry.</p>
             </div>
 
             <form onSubmit={handleSubmit}>
-                <div className="grid-stack grid-stack-2" style={{ gap: '2rem' }}>
+                <div className="upload-grid-layout" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '2rem' }}>
                     {/* Primary Documentation */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                        <div className="card" style={{ padding: '2.5rem' }}>
+                    <div className="documentation-section-res" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                        <div className="card upload-form-card" style={{ padding: '2.5rem' }}>
                             <div className="card-header" style={{ marginBottom: '2rem', padding: 0 }}>
                                 <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.25rem' }}>Core Narrative</h4>
                                 <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>Specify the primary details of the institutional achievement.</p>
@@ -98,7 +98,7 @@ const UploadAchievementPage = () => {
                                 {errors.title && <div className="input-error" style={{ fontWeight: 700, fontSize: '0.75rem' }}><AlertCircle size={14} />{errors.title}</div>}
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                            <div className="form-fields-grid-res" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                                 <div className="form-group">
                                     <label className="form-label" style={{ fontWeight: 800 }}>Classification <span style={{ color: 'var(--error-500)' }}>*</span></label>
                                     <select
@@ -126,7 +126,7 @@ const UploadAchievementPage = () => {
                                 </div>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                            <div className="form-fields-grid-res" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                                 <div className="form-group">
                                     <label className="form-label" style={{ fontWeight: 800 }}>Registry Date <span style={{ color: 'var(--error-500)' }}>*</span></label>
                                     <input
@@ -169,7 +169,7 @@ const UploadAchievementPage = () => {
                     </div>
 
                     {/* Evidence & Merit Summary */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    <div className="evidence-sidebar-res" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                         {/* Impact Level Merit Indicator */}
                         {form.level && (
                             <div className="card animate-slide-up" style={{ padding: '1.5rem', background: 'linear-gradient(135deg, var(--brand-700), var(--brand-900))', color: 'white', border: 'none' }}>
