@@ -487,26 +487,7 @@
 /* --- Impact Section --- */
 .impact-section {
     padding: 6rem 0;
-    background-color: #001529;
-    /* Dark Institutional Blue */
-    color: white;
-    position: relative;
-    overflow: hidden;
-}
-
-.impact-bg-decoration {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 33.333333%;
-    height: 100%;
-    opacity: 0.1;
-    pointer-events: none;
-}
-
-.impact-bg-decoration svg {
-    width: 100%;
-    height: 100%;
+    transition: all 0.5s ease;
 }
 
 .impact-grid {
@@ -527,30 +508,35 @@
 }
 
 .impact-stat-value {
-    font-size: 1.875rem;
-    font-weight: 700;
+    font-size: 2.25rem;
+    font-weight: 800;
     margin-bottom: 0.25rem;
 }
 
 .impact-stat-label {
-    font-size: 0.875rem;
-    color: #91d5ff;
+    font-size: 0.9rem;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
 }
 
-.impact-testimonial {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 2.5rem;
-    border-radius: 1rem;
+.impact-testimonial.light {
+    background: white;
+    box-shadow: 0 20px 40px -10px rgba(0, 33, 71, 0.08);
+    border: 1px solid var(--border-primary);
+    padding: 3rem;
+    border-radius: 1.25rem;
+    position: relative;
 }
 
 .testimonial-quote {
     font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--gray-800);
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
     font-style: italic;
-    color: #e6f7ff;
-    margin-bottom: 2rem;
-    line-height: 1.6;
 }
 
 .testimonial-author {
@@ -560,24 +546,73 @@
 }
 
 .testimonial-avatar {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 9999px;
-    background-color: var(--brand-500);
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 12px;
+    background-color: var(--brand-50);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    color: white;
+    font-weight: 800;
+    color: var(--brand-600);
+    font-size: 1.25rem;
+    border: 1px solid var(--brand-100);
 }
 
 .author-name {
     font-weight: 700;
+    color: var(--gray-900);
 }
 
 .author-role {
-    font-size: 0.875rem;
-    color: #40a9ff;
+    font-size: 0.85rem;
+    color: var(--brand-600);
+    font-weight: 600;
+}
+
+.testimonial-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.testimonial-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--brand-50);
+    color: var(--brand-600);
+    border: 1px solid var(--brand-100);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.testimonial-btn.prev {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+}
+
+.testimonial-btn.next {
+    padding: 0 1rem;
+    height: 2.25rem;
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 700;
+    gap: 0.4rem;
+}
+
+.testimonial-btn:hover {
+    background: var(--brand-600);
+    color: white;
+}
+
+.testimonial-btn.prev:hover {
+    transform: translateX(-3px);
+}
+
+.testimonial-btn.next:hover {
+    transform: translateX(3px);
 }
 
 /* --- FAQ Section (Accordion) --- */

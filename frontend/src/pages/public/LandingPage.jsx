@@ -5,7 +5,7 @@ import PublicNavbar from '../../components/common/PublicNavbar';
 import Footer from '../../components/common/Footer';
 import {
     Trophy, Shield, BarChart3, CheckCircle,
-    Users, Star, ArrowRight, Zap, Globe, Award, BookOpen, Clock, GraduationCap, FileCheck, Briefcase, ChevronDown,
+    Users, Star, ArrowRight, ArrowLeft, Zap, Globe, Award, BookOpen, Clock, GraduationCap, FileCheck, Briefcase, ChevronDown,
     Github, Linkedin, Code, Library, Terminal
 } from 'lucide-react';
 
@@ -73,11 +73,83 @@ const faqs = [
     }
 ];
 
+const testimonials = [
+    {
+        quote: "The ability to track every technical milestone in a centralized repository has revolutionized how we prepare for accreditation and showcase our students' true potential.",
+        author: "Dean's Office",
+        role: "School of Engineering & IT",
+        initial: "D"
+    },
+    {
+        quote: "This portal has streamlined our NAAC documentation process significantly. What used to take weeks now takes only a few clicks with verified data.",
+        author: "Quality Assurance Cell",
+        role: "Institutional Coordination",
+        initial: "Q"
+    },
+    {
+        quote: "For students, this is more than a portal—it's a digital resume that grows with every project they complete. Industry partners love the verified dossiers.",
+        author: "Placement Cell",
+        role: "Industry Relations",
+        initial: "P"
+    },
+    {
+        quote: "A significant step toward a paperless, transparent ecosystem where every student's hard work is digitally preserved and faculty-vetted.",
+        author: "Vice Chancellor",
+        role: "Executive Administration",
+        initial: "V"
+    },
+    {
+        quote: "Mapping student achievements to academic credits has become seamless. It encourages a healthy competitive spirit among our budding engineers.",
+        author: "HOD Computer Science",
+        role: "Department Management",
+        initial: "H"
+    },
+    {
+        quote: "The automated verification workflow ensures that no fake certifications enter the system, maintaining the high integrity of our institutional records.",
+        author: "Registrar Office",
+        role: "Academic Records",
+        initial: "R"
+    },
+    {
+        quote: "As a student, seeing my dashboard grow with verified badges motivates me to participate in more hackathons and technical certifications.",
+        author: "Final Year Student",
+        role: "Student Community",
+        initial: "S"
+    },
+    {
+        quote: "The ability to export a faculty-verified achievement dossier gives our students a massive edge during high-stakes technical interviews.",
+        author: "Career Development",
+        role: "Skill Advancement",
+        initial: "C"
+    },
+    {
+        quote: "Integrating global achievements from platforms like GitHub and LeetCode into one portal is exactly what a modern engineering school needs.",
+        author: "Innovation Lab",
+        role: "Research & Development",
+        initial: "I"
+    },
+    {
+        quote: "We now have real-time analytics on which skills are trending in our student body, allowing us to align our curriculum with industry demands.",
+        author: "Academic Council",
+        role: "Curriculum Design",
+        initial: "A"
+    }
+];
+
 const LandingPage = () => {
     const [activeFaq, setActiveFaq] = useState(null);
+    const [activeTestimonial, setActiveTestimonial] = useState(0);
 
     const toggleFaq = (idx) => {
         setActiveFaq(activeFaq === idx ? null : idx);
+    };
+
+    const nextTestimonial = () => {
+        setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
+    };
+
+    const prevTestimonial = () => {
+        setActiveTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
     };
 
     return (
@@ -111,19 +183,6 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* Stats Strip */}
-            <section className="stats-strip">
-                <div className="container">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
-                        {stats.map((stat) => (
-                            <div key={stat.label} className="stat-item">
-                                <div className="stat-value">{stat.value}</div>
-                                <div className="stat-label">{stat.label}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
             {/* Features Section */}
             <section className="py-24 bg-white">
@@ -221,39 +280,53 @@ const LandingPage = () => {
             </section>
 
             {/* Institutional Impact Section */}
-            <section className="impact-section">
-                <div className="impact-bg-decoration">
-                    <svg viewBox="0 0 100 100">
-                        <circle cx="100" cy="50" r="50" fill="currentColor" />
-                    </svg>
-                </div>
-                <div className="container relative z-10">
+            <section className="impact-section py-24 bg-gray-50 border-y">
+                <div className="container">
                     <div className="impact-grid">
-                        <div className="impact-text">
-                            <h2 className="text-4xl font-extrabold mb-6 leading-tight">Driving Institutional <br /><span className="text-brand-400">Digital Transformation</span></h2>
-                            <p className="text-brand-100 text-lg mb-10 leading-relaxed">
+                        <div data-aos="fade-right">
+                            <h2 className="text-4xl font-bold mb-6 text-gray-900 leading-tight">
+                                Driving Institutional <br />
+                                <span className="text-brand-600">Digital Transformation</span>
+                            </h2>
+                            <p className="text-gray-600 mb-10 text-lg">
                                 We go beyond simple record-keeping. The SOEIT Achievement Portal is a strategic asset for the university, providing data-driven insights into student performance and departmental growth.
                             </p>
                             <div className="impact-stats">
-                                <div className="impact-stat-item">
-                                    <h4 className="impact-stat-value">98%</h4>
-                                    <p className="impact-stat-label">Audit Data Readiness</p>
+                                <div>
+                                    <div className="impact-stat-value text-brand-600">98%</div>
+                                    <div className="impact-stat-label">Audit Data Readiness</div>
                                 </div>
-                                <div className="impact-stat-item">
-                                    <h4 className="impact-stat-value">15k+</h4>
-                                    <p className="impact-stat-label">Verified Milestone Records</p>
+                                <div>
+                                    <div className="impact-stat-value text-brand-600">15k+</div>
+                                    <div className="impact-stat-label">Verified Milestone Records</div>
                                 </div>
                             </div>
                         </div>
-                        <div className="impact-testimonial">
-                            <blockquote className="testimonial-quote">
-                                "The ability to track every technical milestone in a centralized repository has revolutionized how we prepare for accreditation and showcase our students' true potential."
-                            </blockquote>
-                            <div className="testimonial-author">
-                                <div className="testimonial-avatar">D</div>
-                                <div className="testimonial-author-info">
-                                    <div className="author-name">Dean's Office</div>
-                                    <div className="author-role">School of Engineering & IT</div>
+
+                        <div className="relative" data-aos="fade-left">
+                            <div className="impact-testimonial light">
+                                <p className="testimonial-quote">
+                                    "{testimonials[activeTestimonial].quote}"
+                                </p>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-6">
+                                        <button onClick={prevTestimonial} className="testimonial-btn prev" aria-label="Previous Insight">
+                                            <ArrowLeft size={18} />
+                                        </button>
+                                        <div className="testimonial-author">
+                                            <div className="testimonial-avatar">
+                                                {testimonials[activeTestimonial].initial}
+                                            </div>
+                                            <div>
+                                                <div className="author-name text-gray-900">{testimonials[activeTestimonial].author}</div>
+                                                <div className="author-role">{testimonials[activeTestimonial].role}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onClick={nextTestimonial} className="testimonial-btn next" aria-label="Next Insight">
+                                        <span>Next Insight</span>
+                                        <ArrowRight size={18} />
+                                    </button>
                                 </div>
                             </div>
                         </div>
