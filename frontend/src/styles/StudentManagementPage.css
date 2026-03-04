@@ -81,3 +81,138 @@
     gap: 1rem;
     flex-wrap: wrap;
 }
+
+/* Responsive Extensions */
+.student-header-suite {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.875rem;
+}
+
+.filter-intelligence-grid {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr 1fr auto;
+    gap: 1rem;
+    align-items: center;
+}
+
+.search-wrapper-responsive {
+    min-width: 350px;
+}
+
+.pagination-footer-responsive {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.show-mobile {
+    display: none;
+}
+
+/* Mobile Responsiveness Strategy */
+@media (max-width: 1024px) {
+    .filter-intelligence-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .search-wrapper-responsive {
+        grid-column: span 2;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .student-header-suite {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+        margin-bottom: 2rem !important;
+        display: flex !important;
+    }
+
+    .header-content {
+        width: 100%;
+    }
+
+    .header-actions {
+        width: 100%;
+        display: flex;
+        gap: 0.5rem;
+        justify-content: space-between;
+    }
+
+    .header-actions .btn {
+        flex: 1;
+        justify-content: center;
+        padding: 0.75rem 0.5rem !important;
+        font-size: 0.75rem;
+        height: 44px;
+    }
+
+    .filter-intelligence-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem;
+        display: grid !important;
+    }
+
+    .search-wrapper-responsive {
+        grid-column: span 1 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .filter-select-responsive {
+        width: 100% !important;
+    }
+
+    .filter-btn-responsive {
+        width: 100% !important;
+        height: 48px !important;
+        border-radius: var(--radius-md) !important;
+    }
+
+    .pagination-footer-responsive {
+        flex-direction: column;
+        gap: 1.25rem;
+        text-align: center;
+        padding: 1.5rem 1rem !important;
+        display: flex !important;
+    }
+
+    .pagination-status {
+        font-size: 0.7rem !important;
+    }
+
+    .hide-mobile {
+        display: none !important;
+    }
+
+    .show-mobile {
+        display: inline !important;
+    }
+
+    .pagination-btn-res {
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    /* Table optimization for mobile */
+    .table-container {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    .table th,
+    .table td {
+        white-space: nowrap;
+        padding: 0.75rem 1rem !important;
+    }
+}

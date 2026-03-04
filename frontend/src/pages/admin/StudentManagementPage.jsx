@@ -1,7 +1,7 @@
 import '../../styles/StudentManagementPage.css';
 import { useState, useEffect } from 'react';
 import { adminAPI } from '../../services/api';
-import { Users, Search, Trophy, Star, Eye, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { Users, Search, Trophy, Star, Eye, ChevronLeft, ChevronRight, Download, XCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { jsPDF } from 'jspdf';
@@ -115,12 +115,12 @@ const StudentManagementPage = () => {
     return (
         <div className="animate-fade-in">
             {/* Header Suite */}
-            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                <div>
+            <div className="page-header student-header-suite" style={{ marginBottom: '2.5rem' }}>
+                <div className="header-content">
                     <h2 className="heading-display">Scholar Registry</h2>
                     <p className="page-subtitle">Unified surveillance of the institutional scholar population and their cumulative merit yields.</p>
                 </div>
-                <div style={{ display: 'flex', gap: '0.875rem' }}>
+                <div className="header-actions">
                     {selectedIds.length > 0 && (
                         <button className="btn btn-danger animate-fade-in" onClick={handleDeleteSelected} disabled={deleting} style={{ fontWeight: 800, padding: '0 1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <XCircle size={18} />
@@ -129,31 +129,33 @@ const StudentManagementPage = () => {
                     )}
                     <button className="btn btn-ghost" onClick={() => exportStudentData('excel')} style={{ border: '1px solid var(--border-primary)', fontWeight: 800 }}>
                         <Download size={18} />
-                        <span>Excel Archive</span>
+                        <span className="hide-mobile">Excel Archive</span>
+                        <span className="show-mobile">Excel</span>
                     </button>
                     <button className="btn btn-primary" onClick={() => exportStudentData('pdf')} style={{ fontWeight: 800, padding: '0 1.5rem' }}>
                         <Users size={18} />
-                        <span>Generate Master Report</span>
+                        <span className="hide-mobile">Generate Master Report</span>
+                        <span className="show-mobile">Report</span>
                     </button>
                 </div>
             </div>
 
             {/* Advanced Filtering Intelligence */}
-            <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid var(--border-primary)' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr 1fr auto', gap: '1rem', alignItems: 'center' }}>
-                    <div className="search-wrapper" style={{ minWidth: '350px' }}>
+            <div className="card filter-card" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid var(--border-primary)' }}>
+                <div className="filter-intelligence-grid">
+                    <div className="search-wrapper search-wrapper-responsive">
                         <input className="form-control" placeholder="Search nomenclature, enrollment numbers, or digital identifiers..." value={filters.search} onChange={e => setFilters(p => ({ ...p, search: e.target.value }))} onKeyDown={e => e.key === 'Enter' && load()} />
                         <Search size={20} className="search-icon" />
                     </div>
-                    <select className="form-control" style={{ height: '48px', fontWeight: 700 }} value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
+                    <select className="form-control filter-select-responsive" style={{ height: '48px', fontWeight: 700 }} value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
                         <option value="">All Institutional Departments</option>
                         {['CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE'].map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
-                    <select className="form-control" style={{ height: '48px', fontWeight: 700 }} value={filters.semester} onChange={e => setFilters(p => ({ ...p, semester: e.target.value, page: 1 }))}>
+                    <select className="form-control filter-select-responsive" style={{ height: '48px', fontWeight: 700 }} value={filters.semester} onChange={e => setFilters(p => ({ ...p, semester: e.target.value, page: 1 }))}>
                         <option value="">All Academic Terms</option>
                         {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>Semester Sequence {s}</option>)}
                     </select>
-                    <button className="btn btn-primary" style={{ height: '48px', width: '48px', padding: 0 }} onClick={load}>
+                    <button className="btn btn-primary filter-btn-responsive" style={{ height: '48px', width: '48px', padding: 0 }} onClick={load}>
                         <Search size={20} strokeWidth={3} />
                     </button>
                 </div>
@@ -241,16 +243,16 @@ const StudentManagementPage = () => {
 
                             {/* Sequential Pagination */}
                             {pages > 1 && (
-                                <div style={{ borderTop: '1px solid var(--border-primary)', padding: '1.25rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--slate-50)' }}>
-                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+                                <div className="pagination-footer-responsive" style={{ borderTop: '1px solid var(--border-primary)', padding: '1.25rem 2rem', background: 'var(--slate-50)' }}>
+                                    <div className="pagination-status" style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 700 }}>
                                         SYNCHRONIZED SCHOLARS: <strong style={{ color: 'var(--text-primary)' }}>{total}</strong> REGISTERED ENTITIES
                                     </div>
                                     <div className="pagination" style={{ margin: 0, gap: '0.5rem' }}>
-                                        <button className="btn btn-ghost" style={{ padding: 0, width: 40, height: 40, background: 'white', border: '1px solid var(--border-primary)' }} onClick={() => setFilters(p => ({ ...p, page: p.page - 1 }))} disabled={filters.page === 1}><ChevronLeft size={18} /></button>
+                                        <button className="btn btn-ghost pagination-btn-res" onClick={() => setFilters(p => ({ ...p, page: p.page - 1 }))} disabled={filters.page === 1}><ChevronLeft size={18} /></button>
                                         {[...Array(pages)].map((_, i) => (
-                                            <button key={i} className={`btn ${filters.page === i + 1 ? 'btn-primary' : 'btn-ghost'}`} style={{ padding: 0, width: 40, height: 40, fontWeight: 800, background: filters.page === i + 1 ? 'var(--brand-600)' : 'white', border: filters.page !== i + 1 ? '1px solid var(--border-primary)' : 'none' }} onClick={() => setFilters(p => ({ ...p, page: i + 1 }))}>{i + 1}</button>
+                                            <button key={i} className={`btn pagination-btn-res ${filters.page === i + 1 ? 'btn-primary' : 'btn-ghost'}`} style={{ padding: 0, width: 40, height: 40, fontWeight: 800, background: filters.page === i + 1 ? 'var(--brand-600)' : 'white', border: filters.page !== i + 1 ? '1px solid var(--border-primary)' : 'none' }} onClick={() => setFilters(p => ({ ...p, page: i + 1 }))}>{i + 1}</button>
                                         ))}
-                                        <button className="btn btn-ghost" style={{ padding: 0, width: 40, height: 40, background: 'white', border: '1px solid var(--border-primary)' }} onClick={() => setFilters(p => ({ ...p, page: p.page + 1 }))} disabled={filters.page === pages}><ChevronRight size={18} /></button>
+                                        <button className="btn btn-ghost pagination-btn-res" onClick={() => setFilters(p => ({ ...p, page: p.page + 1 }))} disabled={filters.page === pages}><ChevronRight size={18} /></button>
                                     </div>
                                 </div>
                             )}
