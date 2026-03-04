@@ -4,102 +4,203 @@
     animation: fadeIn 0.5s ease;
 }
 
-/* Welcome Banner */
-.dashboard-welcome-banner {
-    background: linear-gradient(135deg, var(--primary-50), #ede9fe);
-    border: 1px solid var(--primary-200);
+/* Header Suite */
+.dashboard-header-suite {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1.5rem;
+}
+
+.dashboard-header-btn {
+    height: 48px;
+    padding: 0 1.5rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Welcome Institutional Banner */
+.welcome-institutional-banner {
+    padding: 2rem 2.5rem;
+}
+
+.banner-inner-content {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.banner-icon-container {
+    width: 80px;
+    height: 80px;
+}
+
+/* Performance Metrics Grid */
+.dashboard-perf-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+/* Analytical Distribution Suite */
+.dashboard-analytical-distribution {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Recent Activity Chronology */
+.recent-chronology-card {
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-primary);
     border-radius: var(--radius-xl);
-    padding: 1.5rem 2rem;
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-    box-shadow: var(--shadow-sm);
 }
 
-.dashboard-welcome-name {
-    margin-bottom: 0.25rem;
+/* Table Responsiveness */
+.recent-chronology-card .table th,
+.recent-chronology-card .table td {
+    white-space: nowrap;
 }
 
-.dashboard-welcome-meta {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
-/* Stat Cards Grid */
-.dashboard-stat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-}
-
-/* Charts Row */
-.dashboard-charts-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-}
-
-.dashboard-chart-card-header h4 {
-    font-size: 1rem;
-}
-
-/* Recharts Tooltip — light theme */
-.recharts-tooltip-wrapper .recharts-default-tooltip {
-    background: #fff !important;
-    border: 1px solid var(--border-primary) !important;
-    border-radius: var(--radius-md) !important;
-    color: var(--text-primary) !important;
-    font-size: 12px !important;
-    box-shadow: var(--shadow-md) !important;
-}
-
-/* Recent Activity */
-.dashboard-activity-card {
-    margin-bottom: 0;
-}
-
-.dashboard-activity-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.dashboard-activity-link {
-    font-size: 0.85rem;
-    color: var(--primary-500);
-    font-weight: 500;
-    transition: color var(--transition-fast);
-}
-
-.dashboard-activity-link:hover {
-    color: var(--primary-700);
-}
-
-/* Skeleton loaders */
+/* Skeleton Loaders */
 .dashboard-skeleton-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.25rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
 }
 
 .dashboard-skeleton-charts {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
+    grid-template-columns: 1.8fr 1fr;
+    gap: 1.5rem;
 }
 
-@media (max-width: 768px) {
-    .dashboard-charts-row {
-        grid-template-columns: 1fr;
+/* Utility Utilities */
+.show-mobile {
+    display: none;
+}
+
+/* Breakpoints */
+
+/* Tablet Breakpoint (1200px) */
+@media (max-width: 1200px) {
+
+    .dashboard-perf-metrics-grid,
+    .dashboard-skeleton-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
     }
 
+    .dashboard-analytical-distribution,
     .dashboard-skeleton-charts {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Mobile Breakpoint (768px) */
+@media (max-width: 768px) {
+    .dashboard-header-suite {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1.25rem;
+    }
+
+    .dashboard-header-btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    .welcome-institutional-banner {
+        padding: 1.5rem !important;
+    }
+
+    .banner-inner-content {
+        flex-direction: column !important;
+        text-align: center;
+        gap: 1.25rem !important;
+    }
+
+    .banner-icon-container {
+        width: 64px !important;
+        height: 64px !important;
+        margin: 0 auto;
+    }
+
+    .welcome-headline {
+        font-size: 1.4rem !important;
+    }
+
+    .banner-meta-row {
+        justify-content: center !important;
+        gap: 0.75rem !important;
+    }
+
+    .meta-divider {
+        display: none !important;
+    }
+
+    .banner-meta-text {
+        font-size: 0.7rem !important;
+        width: 100%;
+    }
+
+    .dashboard-perf-metrics-grid,
+    .dashboard-skeleton-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.25rem !important;
+    }
+
+    .stat-card-responsive {
+        padding: 1.25rem !important;
+    }
+
+    .stat-card-value {
+        font-size: 1.85rem !important;
+    }
+
+    .stat-card-label {
+        font-size: 0.75rem !important;
+    }
+
+    .analytical-card-res {
+        padding: 1.25rem !important;
+    }
+
+    .analytical-header h4 {
+        font-size: 1rem !important;
+    }
+
+    .analytical-chart-wrap {
+        margin: 0 -0.5rem;
+    }
+
+    .chronology-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 1rem;
+        padding: 1.25rem !important;
+    }
+
+    .chronology-action-btn {
+        width: 100% !important;
+        justify-content: center !important;
+        background: var(--slate-100) !important;
+    }
+
+    .hide-mobile {
+        display: none !important;
+    }
+
+    .show-mobile {
+        display: flex !important;
+    }
+
+    .banner-motif-1,
+    .banner-motif-2 {
+        display: none;
     }
 }
