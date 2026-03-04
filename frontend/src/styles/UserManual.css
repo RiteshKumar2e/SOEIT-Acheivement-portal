@@ -22,7 +22,8 @@
 .book-container {
     position: relative;
     width: 500px;
-    height: 380px;
+    height: 440px;
+    /* Increased height for better visibility */
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     transform-style: preserve-3d;
     filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.12));
@@ -76,7 +77,8 @@
 /* Interior Borders and Professional Touches */
 .page-inner-border {
     border: 1px solid rgba(0, 0, 0, 0.05);
-    height: 100%;
+    height: calc(100% - 30px);
+    /* Leave room for page number at bottom */
     padding: 12px;
     display: flex;
     flex-direction: column;
@@ -135,19 +137,20 @@
 
 .book-page-number {
     position: absolute;
-    bottom: 20px;
-    font-size: 0.7rem;
+    bottom: 10px;
+    font-size: 0.65rem;
     font-weight: 800;
     color: #94a3b8;
     letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
 .page-front .book-page-number {
-    right: 25px;
+    right: 20px;
 }
 
 .page-back .book-page-number {
-    left: 25px;
+    left: 20px;
 }
 
 /* Page Content Styling */

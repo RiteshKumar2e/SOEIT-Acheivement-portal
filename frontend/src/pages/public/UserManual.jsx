@@ -57,7 +57,7 @@ const UserManual = () => {
                             </h2>
                             <div className="book-container">
                                 {/* Page 4: Final */}
-                                <div className={`book-page ${studentFlipped[3] ? 'flipped' : ''}`} style={{ zIndex: 1 }} onClick={() => toggleStudentPage(3)}>
+                                <div className={`book-page ${studentFlipped[3] ? 'flipped' : ''}`} style={{ zIndex: studentFlipped[3] ? 13 : 1 }} onClick={() => toggleStudentPage(3)}>
                                     <div className="page-front">
                                         <div className="page-inner-border">
                                             <div className="content-header">
@@ -82,7 +82,7 @@ const UserManual = () => {
                                 </div>
 
                                 {/* Page 3: Verification */}
-                                <div className={`book-page ${studentFlipped[2] ? 'flipped' : ''}`} style={{ zIndex: 2 }} onClick={() => toggleStudentPage(2)}>
+                                <div className={`book-page ${studentFlipped[2] ? 'flipped' : ''}`} style={{ zIndex: studentFlipped[2] ? 12 : 2 }} onClick={() => toggleStudentPage(2)}>
                                     <div className="page-front">
                                         <div className="page-inner-border">
                                             <div className="content-header">
@@ -112,7 +112,7 @@ const UserManual = () => {
                                 </div>
 
                                 {/* Page 2: Upload */}
-                                <div className={`book-page ${studentFlipped[1] ? 'flipped' : ''}`} style={{ zIndex: 3 }} onClick={() => toggleStudentPage(1)}>
+                                <div className={`book-page ${studentFlipped[1] ? 'flipped' : ''}`} style={{ zIndex: studentFlipped[1] ? 11 : 3 }} onClick={() => toggleStudentPage(1)}>
                                     <div className="page-front">
                                         <div className="page-inner-border">
                                             <div className="content-header">
@@ -142,7 +142,7 @@ const UserManual = () => {
                                 </div>
 
                                 {/* Page 1 (Cover) */}
-                                <div className={`book-page ${studentFlipped[0] ? 'flipped' : ''}`} style={{ zIndex: 4 }} onClick={() => toggleStudentPage(0)}>
+                                <div className={`book-page ${studentFlipped[0] ? 'flipped' : ''}`} style={{ zIndex: studentFlipped[0] ? 10 : 4 }} onClick={() => toggleStudentPage(0)}>
                                     <div className="page-front book-cover student">
                                         <div style={{ transform: 'translateY(-10px)' }}>
                                             <GraduationCap size={50} style={{ marginBottom: '1rem', color: 'rgba(255,255,255,0.9)' }} />
@@ -172,7 +172,7 @@ const UserManual = () => {
                             </h2>
                             <div className="book-container">
                                 {/* Page 4: Final */}
-                                <div className={`book-page ${facultyFlipped[3] ? 'flipped' : ''}`} style={{ zIndex: 1 }} onClick={() => toggleFacultyPage(3)}>
+                                <div className={`book-page ${facultyFlipped[3] ? 'flipped' : ''}`} style={{ zIndex: facultyFlipped[3] ? 13 : 1 }} onClick={() => toggleFacultyPage(3)}>
                                     <div className="page-front">
                                         <div className="page-inner-border">
                                             <div className="content-header">
@@ -194,7 +194,7 @@ const UserManual = () => {
                                 </div>
 
                                 {/* Page 3: Integrity */}
-                                <div className={`book-page ${facultyFlipped[2] ? 'flipped' : ''}`} style={{ zIndex: 2 }} onClick={() => toggleFacultyPage(2)}>
+                                <div className={`book-page ${facultyFlipped[2] ? 'flipped' : ''}`} style={{ zIndex: facultyFlipped[2] ? 12 : 2 }} onClick={() => toggleFacultyPage(2)}>
                                     <div className="page-front">
                                         <div className="page-inner-border">
                                             <div className="content-header">
@@ -224,7 +224,7 @@ const UserManual = () => {
                                 </div>
 
                                 {/* Page 2: Queue */}
-                                <div className={`book-page ${facultyFlipped[1] ? 'flipped' : ''}`} style={{ zIndex: 3 }} onClick={() => toggleFacultyPage(1)}>
+                                <div className={`book-page ${facultyFlipped[1] ? 'flipped' : ''}`} style={{ zIndex: facultyFlipped[1] ? 11 : 3 }} onClick={() => toggleFacultyPage(1)}>
                                     <div className="page-front">
                                         <div className="page-inner-border">
                                             <div className="content-header">
@@ -254,7 +254,7 @@ const UserManual = () => {
                                 </div>
 
                                 {/* Page 1 (Cover) */}
-                                <div className={`book-page ${facultyFlipped[0] ? 'flipped' : ''}`} style={{ zIndex: 4 }} onClick={() => toggleFacultyPage(0)}>
+                                <div className={`book-page ${facultyFlipped[0] ? 'flipped' : ''}`} style={{ zIndex: facultyFlipped[0] ? 10 : 4 }} onClick={() => toggleFacultyPage(0)}>
                                     <div className="page-front book-cover faculty">
                                         <div style={{ transform: 'translateY(-10px)' }}>
                                             <ShieldCheck size={50} style={{ marginBottom: '1rem', color: 'rgba(255,255,255,0.9)' }} />
