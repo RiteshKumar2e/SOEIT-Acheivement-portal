@@ -239,7 +239,7 @@ const ProfilePage = () => {
                                 <Shield size={40} strokeWidth={1.5} />
                             </div>
                             <h4 style={{ margin: 0, fontWeight: 950, fontSize: '1.75rem', color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Security Protocol Rotation</h4>
-                            <p style={{ margin: '0.75rem 0 0 0', fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 600, maxWidth: '400px', margin: '0.75rem auto 0 auto', lineHeight: 1.5 }}>Execute periodic cryptographic rotation to maintain absolute integrity of your institutional credentials.</p>
+                            <p style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 600, maxWidth: '400px', margin: '0.75rem auto 0 auto', lineHeight: 1.5 }}>Execute periodic cryptographic rotation to maintain absolute integrity of your institutional credentials.</p>
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>

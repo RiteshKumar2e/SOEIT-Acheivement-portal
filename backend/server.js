@@ -37,27 +37,32 @@ const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
     'https://soeit-acheivement-portal.vercel.app',
+    'https://soeit-acheivement-portal.onrender.com',
     process.env.CLIENT_URL
 ].filter(Boolean);
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl)
+        // Log origin for debugging (check Render logs)
+        if (origin) console.log(`Incoming request from origin: ${origin}`);
+
         if (!origin) return callback(null, true);
 
         const isAllowed = allowedOrigins.includes(origin) ||
-            origin.endsWith('.vercel.app') ||
+            origin.includes('vercel.app') ||
+            origin.includes('onrender.com') ||
             origin.includes('localhost:');
 
         if (isAllowed) {
             callback(null, true);
         } else {
+            console.warn(`CORS blocked for: ${origin}`);
             callback(null, false);
         }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
     exposedHeaders: ['Set-Cookie']
 }));
 

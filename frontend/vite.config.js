@@ -7,11 +7,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://soeit-backend.onrender.com',
+        target: 'https://soeit-acheivement-portal.onrender.com',
         changeOrigin: true,
       },
       '/uploads': {
-        target: 'https://soeit-backend.onrender.com',
+        target: 'https://soeit-acheivement-portal.onrender.com',
         changeOrigin: true,
       },
     },
