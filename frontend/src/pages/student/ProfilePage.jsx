@@ -74,14 +74,14 @@ const ProfilePage = () => {
     return (
         <div className="animate-fade-in" style={{ maxWidth: '1100px', margin: '0 auto' }}>
             {/* Profile Identity Banner — Light Theme */}
-            <div className="card" style={{ marginBottom: '2.5rem', padding: '2.5rem', background: 'linear-gradient(135deg, #f0f7ff 0%, #e8f4fd 50%, #f0f3ff 100%)', border: '1px solid var(--brand-200)', position: 'relative', overflow: 'hidden', borderRadius: '20px', boxShadow: 'var(--shadow-md)' }}>
+            <div className="card profile-identity-banner" style={{ marginBottom: '2.5rem', background: 'linear-gradient(135deg, #f0f7ff 0%, #e8f4fd 50%, #f0f3ff 100%)', border: '1px solid var(--brand-200)', position: 'relative', overflow: 'hidden', borderRadius: '20px', boxShadow: 'var(--shadow-md)' }}>
                 {/* Subtle geometric motifs */}
-                <div style={{ position: 'absolute', top: '-20%', right: '-8%', width: '380px', height: '380px', background: 'rgba(0, 33, 71, 0.04)', borderRadius: '80px', transform: 'rotate(25deg)' }}></div>
-                <div style={{ position: 'absolute', bottom: '-30%', left: '-10%', width: '320px', height: '320px', background: 'rgba(0, 33, 71, 0.03)', borderRadius: '100px', transform: 'rotate(-15deg)' }}></div>
+                <div className="geometric-motif-1" style={{ position: 'absolute', top: '-20%', right: '-8%', width: '380px', height: '380px', background: 'rgba(0, 33, 71, 0.04)', borderRadius: '80px', transform: 'rotate(25deg)' }}></div>
+                <div className="geometric-motif-2" style={{ position: 'absolute', bottom: '-30%', left: '-10%', width: '320px', height: '320px', background: 'rgba(0, 33, 71, 0.03)', borderRadius: '100px', transform: 'rotate(-15deg)' }}></div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '2.5rem', position: 'relative', zIndex: 1 }}>
-                    <div style={{ position: 'relative', flexShrink: 0 }}>
-                        <div style={{ position: 'relative', width: 120, height: 120, borderRadius: '28px', overflow: 'hidden', padding: '5px', background: 'white', boxShadow: '0 8px 24px rgba(0, 33, 71, 0.18)', border: '1px solid var(--brand-200)' }}>
+                <div className="profile-identity-inner">
+                    <div className="profile-avatar-container" style={{ position: 'relative', flexShrink: 0 }}>
+                        <div className="profile-avatar-frame" style={{ position: 'relative', width: 120, height: 120, borderRadius: '28px', overflow: 'hidden', padding: '5px', background: 'white', boxShadow: '0 8px 24px rgba(0, 33, 71, 0.18)', border: '1px solid var(--brand-200)' }}>
                             {imagePreview ? (
                                 <img src={imagePreview} alt="Profile" style={{ width: '100%', height: '100%', borderRadius: '22px', objectFit: 'cover' }} />
                             ) : (
@@ -94,24 +94,24 @@ const ProfilePage = () => {
                         <input id="profileImg" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageChange} />
                     </div>
 
-                    <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.625rem', flexWrap: 'wrap' }}>
-                            <h2 style={{ fontSize: '2.25rem', fontWeight: 900, margin: 0, letterSpacing: '-0.04em', lineHeight: 1.1, color: 'var(--brand-700)' }}>{user?.name}</h2>
-                            <div style={{ padding: '0.35rem 0.85rem', background: 'white', border: '1px solid var(--brand-200)', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--brand-600)', boxShadow: 'var(--shadow-sm)' }}>VERIFIED OFFICIAL</div>
+                    <div className="profile-info-main" style={{ flex: 1 }}>
+                        <div className="name-badge-container" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.625rem', flexWrap: 'wrap' }}>
+                            <h2 className="profile-full-name" style={{ fontSize: '2.25rem', fontWeight: 900, margin: 0, letterSpacing: '-0.04em', lineHeight: 1.1, color: 'var(--brand-700)' }}>{user?.name}</h2>
+                            <div className="verified-badge" style={{ padding: '0.35rem 0.85rem', background: 'white', border: '1px solid var(--brand-200)', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--brand-600)', boxShadow: 'var(--shadow-sm)' }}>VERIFIED OFFICIAL</div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div className="contact-info-grid" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+                            <div className="contact-item" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <div style={{ width: 30, height: 30, background: 'white', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border-primary)', color: 'var(--brand-600)' }}><Mail size={15} /></div>
                                 <span style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{user?.email}</span>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <div className="contact-item" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <div style={{ width: 30, height: 30, background: 'white', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border-primary)', color: 'var(--brand-600)' }}><BookOpen size={15} /></div>
                                 <span style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{user?.enrollmentNo || user?.studentId || 'Admin'}</span>
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        <div className="metadata-badges-container" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                             <div style={{ padding: '0.5rem 1rem', background: 'white', color: 'var(--brand-700)', borderRadius: '10px', fontWeight: 800, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.04em', border: '1px solid var(--brand-200)', boxShadow: 'var(--shadow-sm)' }}>{user?.department}</div>
                             <div style={{ padding: '0.5rem 1rem', background: 'var(--primary-100)', color: 'var(--primary-700)', borderRadius: '10px', fontWeight: 800, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.04em', border: '1px solid var(--primary-200)' }}>{user?.role}</div>
                             {user?.batch && <div style={{ padding: '0.5rem 1rem', background: 'var(--success-50)', color: 'var(--success-600)', borderRadius: '10px', fontWeight: 800, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.04em', border: '1px solid var(--success-100)' }}>COHORT {user.batch}</div>}
@@ -121,55 +121,55 @@ const ProfilePage = () => {
             </div>
 
             {/* Protocol Navigation Control */}
-            <div style={{ display: 'flex', gap: '1.25rem', marginBottom: '3rem', background: 'var(--slate-50)', padding: '0.625rem', borderRadius: '20px', border: '1px solid var(--border-primary)' }}>
+            <div className="protocol-nav-header" style={{ marginBottom: '3rem', background: 'var(--slate-50)', padding: '0.625rem', borderRadius: '20px', border: '1px solid var(--border-primary)' }}>
                 {[
                     { key: 'profile', label: 'Identity Configuration', icon: User },
                     { key: 'password', label: 'Security Enforcement', icon: Shield }
                 ].map(({ key, label, icon: Icon }) => (
                     <button key={key} onClick={() => setTab(key)}
-                        className={`btn ${tab === key ? 'btn-primary' : 'btn-ghost'}`}
-                        style={{ flex: 1, height: '52px', fontWeight: 900, borderRadius: '14px', background: tab === key ? 'var(--brand-600)' : 'transparent', color: tab === key ? 'white' : 'var(--text-muted)', fontSize: '0.95rem' }}>
+                        className={`btn protocol-nav-btn ${tab === key ? 'btn-primary active' : 'btn-ghost'}`}
+                        style={{ height: '52px', fontWeight: 900, borderRadius: '14px', background: tab === key ? 'var(--brand-600)' : 'transparent', color: tab === key ? 'white' : 'var(--text-muted)', fontSize: '0.95rem' }}>
                         <Icon size={20} strokeWidth={2.5} />
-                        <span>{label}</span>
+                        <span className="btn-label">{label}</span>
                     </button>
                 ))}
             </div>
 
             {tab === 'profile' ? (
                 <form onSubmit={handleSubmit} className="animate-slide-up">
-                    <div style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: '2rem' }}>
+                    <div className="identity-form-layout" style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: '2rem' }}>
                         {/* Institutional Attribute Architecture */}
-                        <div className="card" style={{ padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--border-primary)', boxShadow: 'var(--shadow-sm)' }}>
+                        <div className="card profile-form-card" style={{ padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--border-primary)', boxShadow: 'var(--shadow-sm)' }}>
                             <div style={{ marginBottom: '2.5rem' }}>
                                 <h4 style={{ margin: 0, fontWeight: 950, fontSize: '1.5rem', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>Academic Personnel Mapping</h4>
                                 <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.95rem', color: 'var(--text-muted)', fontWeight: 600 }}>Formal document synchronization for the institutional archival registry.</p>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.75rem', marginBottom: '2rem' }}>
+                            <div className="form-fields-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.75rem', marginBottom: '2rem' }}>
                                 <div className="form-group">
-                                    <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Personnel Nomenclature</label>
+                                    <label className="form-label field-label-res">Personnel Nomenclature</label>
                                     <input className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Communication Endpoint</label>
+                                    <label className="form-label field-label-res">Communication Endpoint</label>
                                     <input className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} placeholder="+91 00000 00000" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} />
                                 </div>
 
                                 {user?.role === 'student' && (
                                     <>
                                         <div className="form-group">
-                                            <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Institutional Batch</label>
+                                            <label className="form-label field-label-res">Institutional Batch</label>
                                             <input className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} placeholder="Cohorts Year (e.g., 2026)" value={form.batch} onChange={e => setForm(p => ({ ...p, batch: e.target.value }))} />
                                         </div>
                                         <div className="form-group">
-                                            <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Semester Resolution</label>
+                                            <label className="form-label field-label-res">Semester Resolution</label>
                                             <select className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} value={form.semester} onChange={e => setForm(p => ({ ...p, semester: e.target.value }))}>
                                                 <option value="">Resolution Sequence</option>
                                                 {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>Semester Matrix {s}</option>)}
                                             </select>
                                         </div>
-                                        <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                                            <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Academic Section Marker</label>
+                                        <div className="form-group span-full-res" style={{ gridColumn: 'span 2' }}>
+                                            <label className="form-label field-label-res">Academic Section Marker</label>
                                             <input className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} placeholder="Section Indicator (e.g., Alpha-7)" value={form.section} onChange={e => setForm(p => ({ ...p, section: e.target.value }))} />
                                         </div>
                                     </>
@@ -177,17 +177,16 @@ const ProfilePage = () => {
                             </div>
 
                             <div className="form-group">
-                                <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Professional Abstract Summary</label>
+                                <label className="form-label field-label-res">Professional Abstract Summary</label>
                                 <textarea className="form-control" style={{ borderRadius: '14px', padding: '1.25rem', fontWeight: 600, lineHeight: 1.6, resize: 'none' }} rows={6} placeholder="Document your academic specialization, technical yields, and professional trajectories..." value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} maxLength={500} />
-                                <div style={{ textAlign: 'right', fontSize: '0.75rem', fontWeight: 900, color: 'var(--text-muted)', marginTop: '0.75rem', letterSpacing: '0.02em' }}>{form.bio.length} / 500 UNITS DOCUMENTED</div>
+                                <div className="char-counter" style={{ textAlign: 'right', fontSize: '0.75rem', fontWeight: 900, color: 'var(--text-muted)', marginTop: '0.75rem', letterSpacing: '0.02em' }}>{form.bio.length} / 500 UNITS DOCUMENTED</div>
                             </div>
                         </div>
 
-                        {/* Digital Connectivity Connectivity */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                            <div className="card" style={{ padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--border-primary)', boxShadow: 'var(--shadow-sm)' }}>
+                        <div className="connectivity-sidebar-res" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                            <div className="card connectivity-card" style={{ padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--border-primary)', boxShadow: 'var(--shadow-sm)' }}>
                                 <div style={{ marginBottom: '2rem' }}>
-                                    <h4 style={{ margin: 0, fontWeight: 950, fontSize: '1.25rem', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>Global Connectivity</h4>
+                                    <h4 className="sidebar-section-title" style={{ margin: 0, fontWeight: 950, fontSize: '1.25rem', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>Global Connectivity</h4>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                                     {/* LinkedIn */}
@@ -233,7 +232,7 @@ const ProfilePage = () => {
                 </form>
             ) : (
                 <form onSubmit={handlePasswordChange} className="animate-slide-up" style={{ maxWidth: '650px', margin: '0 auto' }}>
-                    <div className="card" style={{ padding: '3.5rem', borderRadius: '30px', border: '1px solid var(--border-primary)', boxShadow: 'var(--shadow-xl)' }}>
+                    <div className="card password-security-card" style={{ padding: '3.5rem', borderRadius: '30px', border: '1px solid var(--border-primary)', boxShadow: 'var(--shadow-xl)' }}>
                         <div style={{ marginBottom: '3rem', textAlign: 'center' }}>
                             <div style={{ width: 80, height: 80, background: 'var(--primary-50)', color: 'var(--brand-700)', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem auto', border: '1px solid var(--primary-100)' }}>
                                 <Shield size={40} strokeWidth={1.5} />
