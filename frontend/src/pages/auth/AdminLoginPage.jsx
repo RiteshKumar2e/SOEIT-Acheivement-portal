@@ -6,17 +6,19 @@ import { ShieldAlert, Lock, Eye, EyeOff, RefreshCw, ArrowLeft } from 'lucide-rea
 import toast from 'react-hot-toast';
 
 const UniversityHeader = () => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.25rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
-        <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#8B1E1E', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.5rem', fontWeight: 800, flexShrink: 0, boxShadow: '0 4px 12px rgba(139,30,30,0.2)' }}>JGi</div>
-        <div style={{ height: '60px', width: '2px', background: '#303657' }} className="hidden md:block" />
-        <div style={{ textAlign: 'left', minWidth: '180px' }}>
-            <div style={{ fontWeight: 800, fontSize: '1.4rem', lineHeight: 1.1 }}>
-                <span style={{ color: '#8B1E1E' }}>ARKA JAIN</span><br />
-                <span style={{ color: '#303657' }}>UNIVERSITY</span>
+    <div className="auth-header">
+        <div className="auth-logo-group">
+            <div className="auth-logo" style={{ background: '#8B1E1E' }}>JGi</div>
+            <div className="auth-divider" style={{ background: '#303657' }} />
+            <div className="auth-title-column">
+                <div className="auth-university-name">
+                    <span className="auth-name-primary">ARKA JAIN</span><br />
+                    <span className="auth-name-secondary">UNIVERSITY</span>
+                </div>
+                <div className="auth-location">Jharkhand</div>
             </div>
-            <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '4px' }}>Jharkhand</div>
         </div>
-        <div style={{ background: '#303657', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '0.35rem 0.75rem', borderRadius: '4px', alignSelf: 'center', whiteSpace: 'nowrap' }}>ADMIN PORTAL</div>
+        <div className="auth-naac-badge" style={{ background: '#303657' }}>ADMIN PORTAL</div>
     </div>
 );
 
@@ -75,7 +77,7 @@ const AdminLoginPage = () => {
     };
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', padding: '1.5rem', position: 'relative' }}>
+        <div className="admin-login-page">
             {/* Top Left Back Button */}
             <div style={{ position: 'absolute', top: '2rem', left: '2rem' }}>
                 <Link to="/" className="btn btn-secondary btn-sm" style={{ fontWeight: 600, boxShadow: 'var(--shadow-sm)' }}>
@@ -176,3 +178,4 @@ const AdminLoginPage = () => {
 };
 
 export default AdminLoginPage;
+

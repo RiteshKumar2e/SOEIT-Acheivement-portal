@@ -21,6 +21,13 @@
     flex-wrap: wrap;
 }
 
+/* Inner wrapper for logo + divider + name group */
+.auth-logo-group {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
 .auth-logo {
     width: 80px;
     height: 80px;
@@ -129,6 +136,11 @@
 }
 
 @media (max-width: 640px) {
+    .register-page {
+        padding-top: 5rem;
+        align-items: flex-start;
+    }
+
     .register-card {
         padding: 1.5rem;
     }
@@ -145,16 +157,45 @@
 
     .auth-header {
         flex-direction: column;
-        text-align: center;
-        gap: 0.875rem;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 0.75rem;
         margin-bottom: 1.5rem;
     }
 
-    .auth-title-column {
-        text-align: center;
+    .auth-logo-group {
+        gap: 0.75rem;
+    }
+
+    .auth-logo {
+        width: 55px;
+        height: 55px;
+        font-size: 1.1rem;
     }
 
     .auth-divider {
-        display: none;
+        height: 40px;
+        width: 1.5px;
+        display: block;
+    }
+
+    .auth-title-column {
+        text-align: left;
+        min-width: unset;
+    }
+
+    .auth-university-name {
+        font-size: 1.05rem;
+    }
+
+    .auth-location {
+        font-size: 0.75rem;
+    }
+
+    .auth-naac-badge {
+        font-size: 0.65rem;
+        padding: 0.3rem 0.8rem;
+        margin-left: 0;
+        align-self: center;
     }
 }

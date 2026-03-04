@@ -10,6 +10,18 @@
         radial-gradient(circle at bottom right, rgba(48, 54, 87, 0.05) 0%, transparent 40%),
         #ffffff;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    position: relative;
+}
+
+.admin-login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: #f8fafc;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    position: relative;
 }
 
 .auth-header {
@@ -20,6 +32,13 @@
     margin-bottom: 2.5rem;
     flex-wrap: wrap;
     animation: fadeIn 0.8s ease-out;
+}
+
+/* Inner wrapper for logo + divider + name group */
+.auth-logo-group {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
 }
 
 .auth-logo {
@@ -232,20 +251,54 @@
 @media (max-width: 640px) {
     .auth-header {
         flex-direction: column;
-        text-align: center;
-        gap: 0.875rem;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 0.75rem;
         margin-bottom: 1.5rem;
     }
 
-    .auth-title-column {
-        text-align: center;
+    .auth-logo-group {
+        gap: 0.75rem;
+    }
+
+    .auth-logo {
+        width: 55px;
+        height: 55px;
+        font-size: 1.1rem;
     }
 
     .auth-divider {
-        display: none;
+        height: 40px;
+        width: 1.5px;
+        display: block;
+    }
+
+    .auth-title-column {
+        text-align: left;
+        min-width: unset;
+    }
+
+    .auth-university-name {
+        font-size: 1.05rem;
+    }
+
+    .auth-location {
+        font-size: 0.75rem;
+    }
+
+    .auth-naac-badge {
+        font-size: 0.65rem;
+        padding: 0.3rem 0.8rem;
+        margin-left: 0;
+        align-self: center;
     }
 
     .login-card {
         padding: 1.5rem;
+    }
+
+    .admin-login-page {
+        padding-top: 5rem;
+        align-items: flex-start;
     }
 }

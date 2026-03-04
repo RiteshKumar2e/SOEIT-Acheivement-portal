@@ -7,14 +7,16 @@ import toast from 'react-hot-toast';
 
 const UniversityHeader = () => (
     <div className="auth-header">
-        <div className="auth-logo">JGi</div>
-        <div className="auth-divider" />
-        <div className="auth-title-column">
-            <div className="auth-university-name">
-                <span className="auth-name-primary">ARKA JAIN</span><br />
-                <span className="auth-name-secondary">UNIVERSITY</span>
+        <div className="auth-logo-group">
+            <div className="auth-logo">JGi</div>
+            <div className="auth-divider" />
+            <div className="auth-title-column">
+                <div className="auth-university-name">
+                    <span className="auth-name-primary">ARKA JAIN</span><br />
+                    <span className="auth-name-secondary">UNIVERSITY</span>
+                </div>
+                <div className="auth-location">Jharkhand</div>
             </div>
-            <div className="auth-location">Jharkhand</div>
         </div>
         <div className="auth-naac-badge">NAAC GRADE A</div>
     </div>
