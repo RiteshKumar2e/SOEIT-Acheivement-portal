@@ -151,6 +151,13 @@ const StudentProfilePage = () => {
                                 {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>Semester {s}</option>)}
                             </select>
                         </div>
+                        <div className="form-group">
+                            <label className="form-label">Section</label>
+                            <select className="form-control" value={form.section} onChange={e => setForm(p => ({ ...p, section: e.target.value }))}>
+                                <option value="">Select Section</option>
+                                {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(s => <option key={s} value={s}>Section {s}</option>)}
+                            </select>
+                        </div>
                     </div>
 
                     <div className="form-group">

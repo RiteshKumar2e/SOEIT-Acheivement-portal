@@ -6,8 +6,8 @@ import {
     Search, Filter, ChevronRight, Eye, Download, UsersRound, XCircle, X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const FacultyDashboard = () => {
     const [stats, setStats] = useState(null);
@@ -89,7 +89,7 @@ const FacultyDashboard = () => {
             s.achievementCounts?.points || 0
         ]);
 
-        doc.autoTable({
+        autoTable(doc, {
             startY: 65,
             head: [['#', 'Scholar Name', 'Enrollment ID', 'Academic Unit', 'Total', 'Verified', 'Score']],
             body: tableData,
@@ -309,22 +309,22 @@ const FacultyDashboard = () => {
             {/* Institutional Broadcasting Modal */}
             {showNoticeModal && (
                 <div className="modal-overlay animate-fade-in" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
-                    <div className="card animate-slide-up" style={{ width: '100%', maxWidth: '600px', padding: 0, overflow: 'hidden' }}>
-                        <div className="card-header" style={{ padding: '1.5rem', background: 'var(--brand-700)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className="card animate-slide-up" style={{ width: '100%', maxWidth: '600px', padding: 0, overflow: 'hidden', boxShadow: 'var(--shadow-xl)', borderRadius: '20px', border: 'none' }}>
+                        <div className="card-header" style={{ padding: '1.75rem', background: 'var(--brand-700)', color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: 'none' }}>
                             <div>
-                                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Broadcast Institutional Notice</h3>
-                                <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.8 }}>Formal communication suite for academic oversight.</p>
+                                <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.02em' }}>Broadcast Institutional Notice</h3>
+                                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', opacity: 0.9, color: '#ffffff', fontWeight: 500 }}>Formal communication suite for academic oversight.</p>
                             </div>
-                            <button onClick={() => setShowNoticeModal(false)} className="btn btn-ghost" style={{ padding: '0.25rem', color: 'white' }}><XCircle size={24} /></button>
+                            <button onClick={() => setShowNoticeModal(false)} className="btn btn-ghost" style={{ padding: '0.5rem', color: '#ffffff', background: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}><X size={24} /></button>
                         </div>
                         <div className="card-body" style={{ padding: '2rem' }}>
                             <form onSubmit={handlePostNotice} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                 <div className="form-group">
-                                    <label className="form-label" style={{ fontWeight: 800 }}>Communication Title</label>
+                                    <label className="form-label" style={{ fontWeight: 800, color: 'var(--text-primary)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>Communication Title</label>
                                     <input className="form-control" placeholder="Identify the core subject of this broadcast..." required value={noticeData.title} onChange={e => setNoticeData({ ...noticeData, title: e.target.value })} />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label" style={{ fontWeight: 800 }}>Priority Resolution</label>
+                                    <label className="form-label" style={{ fontWeight: 800, color: 'var(--text-primary)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>Priority Resolution</label>
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
                                         {['Low', 'Medium', 'High', 'Urgent'].map(p => (
                                             <button key={p} type="button" onClick={() => setNoticeData({ ...noticeData, priority: p })}
@@ -336,7 +336,7 @@ const FacultyDashboard = () => {
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label" style={{ fontWeight: 800 }}>Broadcast Content</label>
+                                    <label className="form-label" style={{ fontWeight: 800, color: 'var(--text-primary)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>Broadcast Content</label>
                                     <textarea className="form-control" rows="6" placeholder="Document the detailed narrative of the institutional notice..." required style={{ resize: 'none' }} value={noticeData.content} onChange={e => setNoticeData({ ...noticeData, content: e.target.value })} />
                                 </div>
                                 <div style={{ padding: '1rem', background: 'var(--error-50)', borderRadius: '12px', border: '1px solid var(--error-100)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -358,7 +358,7 @@ const FacultyDashboard = () => {
                     <div className="card animate-scale-in" style={{ width: '100%', maxWidth: '480px', padding: 0, overflow: 'hidden' }}>
                         <div style={{ background: 'linear-gradient(135deg, var(--brand-700), var(--brand-900))', padding: '2.5rem 1.5rem', textAlign: 'center', color: 'white' }}>
                             <div className="avatar avatar-xl" style={{ width: 96, height: 96, background: 'rgba(255,255,255,0.15)', border: '4px solid rgba(255,255,255,0.2)', margin: '0 auto 1.5rem auto', fontSize: '2.5rem', fontWeight: 900 }}>
-                                {student.name.charAt(0)}
+                                {selectedStudent.name.charAt(0)}
                             </div>
                             <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{selectedStudent.name}</h3>
                             <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.9rem', opacity: 0.9, fontWeight: 600 }}>{selectedStudent.enrollmentNo || 'Institutional Entry: ' + selectedStudent._id.slice(-6).toUpperCase()}</p>

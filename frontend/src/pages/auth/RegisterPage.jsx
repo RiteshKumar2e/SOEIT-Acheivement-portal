@@ -56,7 +56,8 @@ const RegisterPage = () => {
         department: '',
         enrollmentNo: '',
         batch: '',
-        semester: ''
+        semester: '',
+        section: ''
     });
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -131,7 +132,20 @@ const RegisterPage = () => {
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1.25rem' }}>
                             <Field name="batch" label="Batch Year" placeholder="e.g. 2022-26" form={form} setForm={setForm} errors={errors} />
-                            <Field name="semester" label="Current Semester" placeholder="1-8" form={form} setForm={setForm} errors={errors} />
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 0.75rem' }}>
+                                <Field name="semester" label="Semester" placeholder="1-8" form={form} setForm={setForm} errors={errors} />
+                                <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                                    <label className="form-label">Section</label>
+                                    <select
+                                        className="form-control"
+                                        value={form.section}
+                                        onChange={e => setForm(p => ({ ...p, section: e.target.value }))}
+                                    >
+                                        <option value="">Select</option>
+                                        {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(s => <option key={s} value={s}>{s}</option>)}
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1.25rem' }}>
