@@ -22,10 +22,10 @@ const ReportsPage = () => {
 
     if (loading) return (
         <div className="animate-fade-in">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
+            <div className="skeleton-grid-stats" style={{ marginBottom: '2.5rem' }}>
                 {[...Array(4)].map((_, i) => <div key={i} className="skeleton" style={{ height: 120, borderRadius: 'var(--radius-lg)' }} />)}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem', marginBottom: '1.5rem' }}>
+            <div className="skeleton-grid-charts" style={{ marginBottom: '1.5rem' }}>
                 {[...Array(2)].map((_, i) => <div key={i} className="skeleton" style={{ height: 350, borderRadius: 'var(--radius-lg)' }} />)}
             </div>
         </div>
@@ -100,44 +100,45 @@ const ReportsPage = () => {
     return (
         <div className="animate-fade-in">
             {/* Header Suite */}
-            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                <div>
+            <div className="page-header reports-header-suite" style={{ marginBottom: '2.5rem' }}>
+                <div className="reports-header-content">
                     <h2 className="heading-display">Analytical Intelligence</h2>
                     <p className="page-subtitle">Unified narrative of institutional growth, departmental performance, and excellence metrics.</p>
                 </div>
-                <button className="btn btn-primary" onClick={exportReportsPDF} style={{ height: '48px', padding: '0 1.5rem', fontWeight: 800 }}>
+                <button className="btn btn-primary reports-header-btn" onClick={exportReportsPDF}>
                     <Download size={18} />
-                    <span>Generate Academic Report</span>
+                    <span className="hide-mobile">Generate Academic Report</span>
+                    <span className="show-mobile">Report</span>
                 </button>
             </div>
 
             {/* Performance Overview Cards */}
-            <div className="grid-res grid-res-4" style={{ marginBottom: '2.5rem' }}>
+            <div className="reports-stats-grid" style={{ marginBottom: '2.5rem' }}>
                 {[
                     { label: 'Cumulative Yield', value: data?.topPerformers?.reduce((acc, p) => acc + p.totalPoints, 0) || 0, icon: Star, color: 'var(--brand-600)', bg: 'var(--primary-50)' },
                     { label: 'Evaluation Density', value: data?.categoryStats?.reduce((acc, c) => acc + c.count, 0) || 0, icon: BarChart3, color: 'var(--purple-600)', bg: 'var(--purple-50)' },
                     { label: 'Excellence Points', value: data?.topPerformers?.[0]?.totalPoints || 0, icon: Trophy, color: 'var(--warning-600)', bg: 'var(--warning-50)' },
                     { label: 'Active Domains', value: data?.categoryStats?.length || 0, icon: Award, color: 'var(--success-600)', bg: 'var(--success-50)' },
                 ].map(({ label, value, icon: Icon, color, bg }) => (
-                    <div key={label} className="card" style={{ padding: '1.5rem', border: '1px solid var(--border-primary)' }}>
+                    <div key={label} className="card stats-card-res" style={{ padding: '1.5rem', border: '1px solid var(--border-primary)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                             <div style={{ width: 40, height: 40, background: bg, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: color }}>
                                 <Icon size={20} />
                             </div>
-                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+                            <span className="stats-label" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
                         </div>
-                        <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1 }}>{value.toLocaleString()}</div>
+                        <div className="stats-value" style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1 }}>{value.toLocaleString()}</div>
                     </div>
                 ))}
             </div>
 
             {/* Charts Ecosystem */}
-            <div className="grid-res grid-res-2" style={{ gridTemplateColumns: '', marginBottom: '2rem' }}>
-                <div className="card" style={{ border: '1px solid var(--border-primary)' }}>
+            <div className="reports-charts-ecosystem" style={{ marginBottom: '2rem' }}>
+                <div className="card chart-card-res" style={{ border: '1px solid var(--border-primary)' }}>
                     <div className="card-header" style={{ borderBottom: '1px solid var(--border-primary)', padding: '1.5rem' }}>
                         <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.1rem' }}>Longitudinal Submission Analytics</h4>
                     </div>
-                    <div className="card-body" style={{ padding: '2rem 1rem 1rem 1rem' }}>
+                    <div className="card-body chart-body-res" style={{ padding: '2rem 1rem 1rem 1rem' }}>
                         <ResponsiveContainer width="100%" height={300}>
                             <AreaChart data={monthlyData}>
                                 <defs>
@@ -154,11 +155,11 @@ const ReportsPage = () => {
                     </div>
                 </div>
 
-                <div className="card" style={{ border: '1px solid var(--border-primary)' }}>
+                <div className="card chart-card-res" style={{ border: '1px solid var(--border-primary)' }}>
                     <div className="card-header" style={{ borderBottom: '1px solid var(--border-primary)', padding: '1.5rem' }}>
                         <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.1rem' }}>Categorical Distribution</h4>
                     </div>
-                    <div className="card-body" style={{ padding: '1.5rem' }}>
+                    <div className="card-body chart-body-res" style={{ padding: '1.5rem' }}>
                         <ResponsiveContainer width="100%" height={300}>
                             <PieChart>
                                 <Pie
