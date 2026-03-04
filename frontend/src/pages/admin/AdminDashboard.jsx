@@ -68,7 +68,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Premium Stat Architecture */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
+            <div className="grid-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
                 {statCards.map(({ label, value, icon: Icon, color, bg, delta, iconColor }) => (
                     <div key={label} className="card" style={{ padding: '1.75rem', position: 'relative', overflow: 'hidden', border: '1px solid var(--border-primary)', borderRadius: '20px', boxShadow: 'var(--shadow-sm)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>

@@ -205,8 +205,8 @@ const FacultyDashboard = () => {
                         <div style={{ height: '1px', flex: 1, background: 'var(--border-primary)' }}></div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                    <div className="semester-select-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div className="semester-btn-group" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                             <button
                                 onClick={() => { setSemester('all'); setSection('all'); }}
                                 className={`btn ${semester === 'all' ? 'btn-primary' : 'btn-ghost'}`}
@@ -237,7 +237,7 @@ const FacultyDashboard = () => {
                         <div className="animate-fade-in" style={{ padding: '1rem', background: 'var(--primary-50)', borderRadius: '12px', border: '1px solid var(--primary-100)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
                             <Filter size={16} className="text-brand" />
                             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--brand-700)' }}>Section Resolution:</span>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <div className="section-btn-group" style={{ display: 'flex', gap: '0.5rem' }}>
                                 <button onClick={() => setSection('all')} className={`btn btn-sm ${section === 'all' ? 'btn-primary' : 'btn-ghost'}`} style={{ fontSize: '0.75rem' }}>All Sections</button>
                                 {(semester === '1' || semester === '2' ? ['A', 'B', 'C', 'D', 'E', 'F', 'G'] : ['A', 'B', 'C', 'D', 'E', 'F']).map(s => (
                                     <button key={s} onClick={() => setSection(s)} className={`btn btn-sm ${section === s ? 'btn-primary' : 'btn-ghost'}`} style={{ fontSize: '0.75rem' }}>Section {s}</button>
