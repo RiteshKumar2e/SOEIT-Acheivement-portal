@@ -3,6 +3,7 @@ import { toast } from 'react-hot-toast';
 import { Users, Clock, Search, Filter } from 'lucide-react';
 import { hackathonAPI } from '../../services/api';
 import '../../styles/HackathonsPage.css';
+import ScrollToTopButton from '../../components/common/ScrollToTopButton';
 
 // Stable, always-available Unsplash images (by topic/keyword - reliable CDN)
 const IMGS = {
@@ -270,6 +271,8 @@ const HackathonsPage = () => {
                     </div>
                 )}
             </div>
+
+            <ScrollToTopButton />
         </div>
     );
 };
