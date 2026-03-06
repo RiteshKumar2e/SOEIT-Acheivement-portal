@@ -19,13 +19,19 @@ const pageTitles = {
 
 const DashboardLayout = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [collapsed, setCollapsed] = useState(false);
     const { pathname } = useLocation();
     const title = pageTitles[pathname] || 'SOEIT Portal';
 
     return (
-        <div className="dashboard-layout">
-            <Sidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
-            <div className="main-content">
+        <div className={`dashboard-layout ${collapsed ? 'sidebar-collapsed' : ''}`}>
+            <Sidebar
+                mobileOpen={mobileOpen}
+                onClose={() => setMobileOpen(false)}
+                collapsed={collapsed}
+                onToggleCollapse={() => setCollapsed(!collapsed)}
+            />
+            <div className={`main-content ${collapsed ? 'collapsed' : ''}`}>
                 <Topbar onMenuClick={() => setMobileOpen(true)} title={title} />
                 <main className="page-content">
                     <Outlet />

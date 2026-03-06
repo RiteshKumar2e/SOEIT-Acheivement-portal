@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
     LayoutDashboard, Trophy, Upload, User, BarChart3,
     CheckCircle, Users, Settings, LogOut, GraduationCap,
-    FileText, X, Shield, Star, Calendar
+    FileText, X, Shield, Star, Calendar, ChevronLeft, ChevronRight
 } from 'lucide-react';
 
 const studentLinks = [
@@ -25,7 +25,7 @@ const adminLinks = [
     { to: '/profile', icon: User, label: 'My Profile' },
 ];
 
-const Sidebar = ({ mobileOpen, onClose }) => {
+const Sidebar = ({ mobileOpen, onClose, collapsed, onToggleCollapse }) => {
     const { user, logout, isStudent } = useAuth();
     const navigate = useNavigate();
     const links = isStudent ? studentLinks : adminLinks;
@@ -52,29 +52,89 @@ const Sidebar = ({ mobileOpen, onClose }) => {
             {mobileOpen && (
                 <div className="mobile-overlay" onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.4)', zIndex: 99, backdropFilter: 'blur(4px)' }} />
             )}
-            <aside className={`sidebar ${mobileOpen ? 'mobile-open' : ''}`} style={{ background: 'white', borderRight: '1px solid var(--border-primary)', display: 'flex', flexDirection: 'column' }}>
-                {/* Institutional Branding */}
-                <div className="sidebar-header" style={{ padding: '2rem 1.5rem', borderBottom: '1px solid var(--border-primary)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
+            <aside className={`sidebar ${mobileOpen ? 'mobile-open' : ''} ${collapsed ? 'collapsed' : ''}`}
+                style={{
+                    background: 'white',
+                    borderRight: '1px solid var(--border-primary)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}>
+
+                {/* Institutional Branding Container */}
+                <div className="sidebar-header" style={{
+                    padding: '2rem 1.5rem',
+                    borderBottom: '1px solid var(--border-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    position: 'relative',
+                    transition: 'all 0.3s'
+                }}>
+                    <div className="branding-content" style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', overflow: 'hidden' }}>
                         <div style={{ width: 44, height: 44, background: 'linear-gradient(135deg, var(--brand-700), var(--brand-900))', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: 'var(--shadow-sm)' }}>
                             <GraduationCap size={24} color="#fff" />
                         </div>
-                        <div style={{ minWidth: 0 }}>
+                        <div className="sidebar-text-expand" style={{ minWidth: 0, opacity: 1, transition: 'opacity 0.2s' }}>
                             <div style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.03em', lineHeight: 1 }}>SOEIT</div>
                             <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Credential Portal</div>
                         </div>
                     </div>
+
+                    {/* Toggle Button for Desktop */}
+                    <button
+                        onClick={onToggleCollapse}
+                        className="sidebar-toggle display-desktop"
+                        style={{
+                            position: 'absolute',
+                            right: '-14px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            background: '#fff',
+                            border: '1px solid var(--border-primary)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                            cursor: 'pointer',
+                            zIndex: 10,
+                            color: 'var(--brand-700)'
+                        }}
+                        title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+                    >
+                        {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+                    </button>
+
+                    {/* Mobile Close Button (shown via mobileOpen) */}
+                    {mobileOpen && (
+                        <button onClick={onClose} className="display-mobile" style={{ padding: '0.5rem', borderRadius: '8px', color: 'var(--text-muted)' }}>
+                            <X size={20} />
+                        </button>
+                    )}
                 </div>
 
                 {/* Identity Suite */}
-                <div style={{ padding: '1.25rem 1rem', borderBottom: '1px solid var(--border-primary)', background: 'var(--slate-50)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: 'white', borderRadius: '14px', border: '1px solid var(--border-primary)', boxShadow: 'var(--shadow-xs)' }}>
+                <div style={{ padding: '1.25rem 1rem', borderBottom: '1px solid var(--border-primary)', background: 'var(--slate-50)', transition: 'all 0.3s' }}>
+                    <div className="identity-card" style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        padding: '0.75rem',
+                        background: 'white',
+                        borderRadius: '14px',
+                        border: '1px solid var(--border-primary)',
+                        boxShadow: 'var(--shadow-xs)',
+                        transition: 'all 0.3s'
+                    }}>
                         {user?.profileImage ? (
                             <img src={`${import.meta.env.VITE_UPLOADS_URL || ''}${user.profileImage}`} alt={user.name} style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--slate-100)' }} />
                         ) : (
                             <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--primary-100)', color: 'var(--brand-700)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.8rem', border: '2px solid var(--slate-100)' }}>{getInitials(user?.name)}</div>
                         )}
-                        <div style={{ minWidth: 0 }}>
+                        <div className="sidebar-text-expand" style={{ minWidth: 0 }}>
                             <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.name}</div>
                             <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>{user?.role} RESOLUTION</div>
                         </div>
@@ -82,12 +142,13 @@ const Sidebar = ({ mobileOpen, onClose }) => {
                 </div>
 
                 {/* Navigation Ecosystem */}
-                <nav style={{ flex: 1, padding: '1.5rem 0.75rem', overflowY: 'auto' }}>
-                    <div style={{ fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--text-muted)', padding: '0 1rem 1rem', opacity: 0.6 }}>Operational Control</div>
+                <nav className="sidebar-nav" style={{ flex: 1, padding: '1.5rem 0.75rem', overflowY: 'auto' }}>
+                    <div className="sidebar-text-expand" style={{ fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--text-muted)', padding: '0 1rem 1rem', opacity: 0.6 }}>Operational Control</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                         {filteredLinks.map(({ to, icon: Icon, label }) => (
-                            <NavLink key={to} to={to} onClick={onClose}
+                            <NavLink key={to} to={to} onClick={mobileOpen ? onClose : undefined}
                                 className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+                                title={collapsed ? label : ""}
                                 style={({ isActive }) => ({
                                     display: 'flex',
                                     alignItems: 'center',
@@ -104,8 +165,8 @@ const Sidebar = ({ mobileOpen, onClose }) => {
                                 })}>
                                 {({ isActive }) => (
                                     <>
-                                        <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-                                        <span>{label}</span>
+                                        <Icon size={20} strokeWidth={isActive ? 2.5 : 2} style={{ flexShrink: 0 }} />
+                                        <span className="sidebar-text-expand" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
                                     </>
                                 )}
                             </NavLink>
@@ -116,16 +177,49 @@ const Sidebar = ({ mobileOpen, onClose }) => {
                 {/* Administrative Actions */}
                 <div style={{ padding: '1rem 0.75rem', borderTop: '1px solid var(--border-primary)' }}>
                     {isStudent && (
-                        <NavLink to={`/portfolio/${user?._id}`} onClick={onClose}
-                            style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', padding: '0.875rem 1rem', borderRadius: '12px', fontWeight: 700, fontSize: '0.9rem', color: 'var(--success-700)', background: 'var(--success-50)', textDecoration: 'none', marginBottom: '0.5rem', border: '1px solid var(--success-100)' }}>
-                            <Star size={20} fill="var(--success-600)" />
-                            <span>Public Portfolio</span>
+                        <NavLink to={`/portfolio/${user?._id}`} onClick={mobileOpen ? onClose : undefined}
+                            className="admin-link-btn"
+                            title={collapsed ? "Public Portfolio" : ""}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.875rem',
+                                padding: '0.875rem 1rem',
+                                borderRadius: '12px',
+                                fontWeight: 700,
+                                fontSize: '0.9rem',
+                                color: 'var(--success-700)',
+                                background: 'var(--success-50)',
+                                textDecoration: 'none',
+                                marginBottom: '0.5rem',
+                                border: '1px solid var(--success-100)',
+                                transition: 'all 0.3s'
+                            }}>
+                            <Star size={20} fill="var(--success-600)" style={{ flexShrink: 0 }} />
+                            <span className="sidebar-text-expand">Public Portfolio</span>
                         </NavLink>
                     )}
                     <button onClick={handleLogout}
-                        style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', padding: '0.875rem 1rem', borderRadius: '12px', fontWeight: 700, fontSize: '0.9rem', color: 'var(--error-600)', background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.1)', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
-                        <LogOut size={20} />
-                        <span>Sign Out Portal</span>
+                        className="admin-link-btn"
+                        title={collapsed ? "Sign Out Portal" : ""}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.875rem',
+                            padding: '0.875rem 1rem',
+                            borderRadius: '12px',
+                            fontWeight: 700,
+                            fontSize: '0.9rem',
+                            color: 'var(--error-600)',
+                            background: 'rgba(239, 68, 68, 0.05)',
+                            border: '1px solid rgba(239, 68, 68, 0.1)',
+                            cursor: 'pointer',
+                            width: '100%',
+                            textAlign: 'left',
+                            transition: 'all 0.3s'
+                        }}>
+                        <LogOut size={20} style={{ flexShrink: 0 }} />
+                        <span className="sidebar-text-expand">Sign Out Portal</span>
                     </button>
                 </div>
             </aside>
