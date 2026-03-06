@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../../styles/LandingPage.css';
 import { Link } from 'react-router-dom';
 import PublicNavbar from '../../components/common/PublicNavbar';
@@ -81,22 +81,22 @@ const testimonials = [
         initial: "D"
     },
     {
-        quote: "This portal has streamlined our NAAC documentation process significantly. What used to take weeks now takes only a few clicks with verified data.",
-        author: "Quality Assurance Cell",
-        role: "Institutional Coordination",
-        initial: "Q"
+        quote: "This portal has streamlined our documentation process significantly. It ensures that every student's achievement is recognized and verified with high precision.",
+        author: "Rakhi Jha",
+        role: "Assistant Professor, CSE",
+        initial: "R"
     },
     {
-        quote: "For students, this is more than a portal—it's a digital resume that grows with every project they complete. Industry partners love the verified dossiers.",
+        quote: "For students, this is more than a portal—it's a digital resume that grows with every project they complete. It bridges the gap between academics and industry.",
         author: "Placement Cell",
         role: "Industry Relations",
         initial: "P"
     },
     {
-        quote: "A significant step toward a paperless, transparent ecosystem where every student's hard work is digitally preserved and faculty-vetted.",
-        author: "Vice Chancellor",
-        role: "Executive Administration",
-        initial: "V"
+        quote: "We've observed a marked increase in students' participation in research and certifications since the launch of this achievement portal.",
+        author: "Mamatha V",
+        role: "Assistant Professor, IT",
+        initial: "M"
     },
     {
         quote: "Mapping student achievements to academic credits has become seamless. It encourages a healthy competitive spirit among our budding engineers.",
@@ -105,22 +105,22 @@ const testimonials = [
         initial: "H"
     },
     {
+        quote: "The transparency offered by this system allows us to mentor students more effectively based on their real-time growth and technical interests.",
+        author: "Saayantani De",
+        role: "Assistant Professor, CSE",
+        initial: "S"
+    },
+    {
         quote: "The automated verification workflow ensures that no fake certifications enter the system, maintaining the high integrity of our institutional records.",
         author: "Registrar Office",
         role: "Academic Records",
         initial: "R"
     },
     {
-        quote: "As a student, seeing my dashboard grow with verified badges motivates me to participate in more hackathons and technical certifications.",
-        author: "Final Year Student",
-        role: "Student Community",
+        quote: "Digital preservation of student achievements is crucial for future-proofing their careers. This portal manages it exceptionally well.",
+        author: "Syed Rashid Anwar",
+        role: "Assistant Professor, ECE",
         initial: "S"
-    },
-    {
-        quote: "The ability to export a faculty-verified achievement dossier gives our students a massive edge during high-stakes technical interviews.",
-        author: "Career Development",
-        role: "Skill Advancement",
-        initial: "C"
     },
     {
         quote: "Integrating global achievements from platforms like GitHub and LeetCode into one portal is exactly what a modern engineering school needs.",
@@ -129,10 +129,10 @@ const testimonials = [
         initial: "I"
     },
     {
-        quote: "We now have real-time analytics on which skills are trending in our student body, allowing us to align our curriculum with industry demands.",
-        author: "Academic Council",
-        role: "Curriculum Design",
-        initial: "A"
+        quote: "Mentoring students on their technical journey is much more data-driven now. We can see exactly where each student is excelling.",
+        author: "Dr Nidhi Dua",
+        role: "Associate Professor, CSE",
+        initial: "N"
     },
     {
         quote: "The public portfolio feature has been a game changer. Recruiters can directly verify our students' accomplishments without any manual paperwork.",
@@ -141,10 +141,22 @@ const testimonials = [
         initial: "T"
     },
     {
-        quote: "I submitted my national-level coding competition win and it was verified within 24 hours. The process is fast, transparent, and incredibly reliable.",
-        author: "3rd Year Student, CSE",
-        role: "Student Innovator",
+        quote: "As a student, seeing my dashboard grow with verified badges motivates me to participate in more hackathons and technical certifications.",
+        author: "Final Year Student",
+        role: "Student Community",
         initial: "S"
+    },
+    {
+        quote: "We now have real-time analytics on which skills are trending in our student body, allowing us to align our curriculum with industry demands.",
+        author: "Academic Council",
+        role: "Curriculum Design",
+        initial: "A"
+    },
+    {
+        quote: "I submitted my national-level coding competition win and it was verified within 24 hours. The process is fast, transparent, and incredibly reliable.",
+        author: "Ankit Kumar",
+        role: "3rd Year Student, CSE",
+        initial: "A"
     },
     {
         quote: "Having a centralized platform to monitor all departmental achievements has drastically improved our NIRF submission quality and turnaround time.",
@@ -153,34 +165,58 @@ const testimonials = [
         initial: "N"
     },
     {
-        quote: "The merit point system has brought a new level of engagement. Students are proactively seeking certifications to climb the institutional leaderboard.",
+        quote: "The merit point system has brought a new level of engagement. Students are proactively seeking certifications to climb the leaderboard.",
         author: "Faculty Coordinator",
         role: "Student Affairs",
         initial: "F"
     },
     {
-        quote: "This portal reflects SOEIT's commitment to digital excellence. Every verified achievement here tells the story of a student who dared to go beyond the classroom.",
+        quote: "This portal reflects SOEIT's commitment to digital excellence. Every verified achievement here tells a story of perseverance.",
         author: "Principal",
         role: "School of Engineering & IT",
         initial: "P"
     },
+    {
+        quote: "The portal's ability to categorize achievements by skill sets helps us identify the diverse talents within our student groups.",
+        author: "Laboratory In-charge",
+        role: "Department of IT",
+        initial: "L"
+    },
+    {
+        quote: "Verified dossiers from this portal have become a standard part of our student evaluation and recommendation process.",
+        author: "Evaluation Committee",
+        role: "Academic Audit",
+        initial: "E"
+    },
+    {
+        quote: "It's heartening to see our students so enthusiastic about building their digital portfolios through this achievement tracking system.",
+        author: "Alumni Relations",
+        role: "Institutional Growth",
+        initial: "A"
+    }
 ];
 
 const LandingPage = () => {
     const [activeFaq, setActiveFaq] = useState(null);
     const [activeTestimonial, setActiveTestimonial] = useState(0);
+    const [isPaused, setIsPaused] = useState(false);
 
     const toggleFaq = (idx) => {
         setActiveFaq(activeFaq === idx ? null : idx);
     };
 
-    const nextTestimonial = () => {
-        setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
-    };
-
-    const prevTestimonial = () => {
-        setActiveTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-    };
+    // Randomly rotate testimonials every 4s
+    useEffect(() => {
+        if (isPaused) return;
+        const timer = setInterval(() => {
+            let nextIdx;
+            do {
+                nextIdx = Math.floor(Math.random() * testimonials.length);
+            } while (nextIdx === activeTestimonial && testimonials.length > 1);
+            setActiveTestimonial(nextIdx);
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [isPaused, activeTestimonial]);
 
     return (
         <div className="landing-page">
@@ -353,61 +389,92 @@ const LandingPage = () => {
             </section>
 
 
-            {/* Impact Section */}
-            <section className="impact-section py-24 bg-gray-50 border-y">
+            {/* Testimonials — The SOEIT Gazette */}
+            <section className="gazette-section">
                 <div className="container">
-                    <div className="impact-grid">
-                        <div>
-                            <span className="section-tag">Institutional Scale</span>
-                            <h2 className="text-4xl font-black mb-6 text-gray-900 leading-tight">
-                                Driving Digital <br />
-                                <span className="text-brand-600">Transformation</span>
-                            </h2>
-                            <p className="text-gray-600 mb-10 text-lg leading-relaxed">
-                                We go beyond simple record-keeping. The SOEIT Achievement Portal is a strategic asset, providing data-driven insights into student performance and departmental growth.
+
+                    {/* Masthead */}
+                    <div className="gazette-masthead">
+                        <div className="gazette-rule" />
+                        <div className="gazette-masthead-inner">
+                            <div className="gazette-edition">
+                                Vol. {new Date().getFullYear()} · Issue {activeTestimonial + 1}
+                            </div>
+                            <h2 className="gazette-title">THE SOEIT GAZETTE</h2>
+                            <div className="gazette-tagline">Voices · Achievements · Excellence</div>
+                        </div>
+                        <div className="gazette-rule" />
+                        <div className="gazette-subline">
+                            <span>VERIFIED TESTIMONIALS</span>
+                            <span className="gazette-dot">◆</span>
+                            <span>FACULTY, STUDENTS &amp; ADMINISTRATION</span>
+                            <span className="gazette-dot">◆</span>
+                            <span>{new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                        </div>
+                        <div className="gazette-rule gazette-rule-thin" />
+                    </div>
+
+                    {/* Newspaper Grid */}
+                    <div
+                        className="gazette-grid"
+                        onMouseEnter={() => setIsPaused(true)}
+                        onMouseLeave={() => setIsPaused(false)}
+                    >
+                        {/* Featured Column */}
+                        <div className="gazette-feature-col">
+                            <div className="gazette-label">FEATURED VOICE</div>
+                            <div className="gazette-big-q">❝</div>
+                            <p className="gazette-feature-quote" key={activeTestimonial}>
+                                {testimonials[activeTestimonial].quote}
                             </p>
-                            <div className="impact-stats">
-                                <div className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                                    <div className="impact-stat-value text-brand-600">98%</div>
-                                    <div className="impact-stat-label">Data Readiness</div>
+                            <div className="gazette-byline">
+                                <div className="gazette-byline-avatar">
+                                    {testimonials[activeTestimonial].initial}
                                 </div>
-                                <div className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                                    <div className="impact-stat-value text-brand-600">15k+</div>
-                                    <div className="impact-stat-label">Milestones</div>
+                                <div>
+                                    <div className="gazette-byline-name">— {testimonials[activeTestimonial].author}</div>
+                                    <div className="gazette-byline-role">{testimonials[activeTestimonial].role}</div>
                                 </div>
+                            </div>
+                            {/* Nav arrows */}
+                            <div className="gazette-nav">
+                                <button className="gazette-nav-btn" onClick={() => setActiveTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length)}>
+                                    ← Prev
+                                </button>
+                                <span className="gazette-nav-count">
+                                    {String(activeTestimonial + 1).padStart(2, '0')} of {String(testimonials.length).padStart(2, '0')}
+                                </span>
+                                <button className="gazette-nav-btn" onClick={() => setActiveTestimonial((prev) => (prev + 1) % testimonials.length)}>
+                                    Next →
+                                </button>
                             </div>
                         </div>
 
-                        <div className="relative">
-                            <div className="impact-testimonial light">
-                                <div className="testimonial-watermark">
-                                    <MessageSquare size={120} />
-                                </div>
-                                <p className="testimonial-quote relative z-10">
-                                    "{testimonials[activeTestimonial].quote}"
-                                </p>
-                                <div className="flex items-center justify-between mt-10">
-                                    <div className="flex items-center gap-4">
-                                        <div className="testimonial-avatar">
-                                            {testimonials[activeTestimonial].initial}
+                        {/* Column Divider */}
+                        <div className="gazette-col-divider" />
+
+                        {/* Sidebar Column */}
+                        <div className="gazette-sidebar-col">
+                            <div className="gazette-label">MORE VOICES</div>
+                            {[1, 2, 3].map((offset) => {
+                                const idx = (activeTestimonial + offset) % testimonials.length;
+                                return (
+                                    <div key={idx} className="gazette-snippet" onClick={() => setActiveTestimonial(idx)}>
+                                        <div className="gazette-snippet-q">"</div>
+                                        <p className="gazette-snippet-text">
+                                            {testimonials[idx].quote.slice(0, 100)}…
+                                        </p>
+                                        <div className="gazette-snippet-author">
+                                            — {testimonials[idx].author}
+                                            <span className="gazette-snippet-role">, {testimonials[idx].role}</span>
                                         </div>
-                                        <div>
-                                            <div className="author-name">{testimonials[activeTestimonial].author}</div>
-                                            <div className="author-role">{testimonials[activeTestimonial].role}</div>
-                                        </div>
+                                        {offset < 3 && <div className="gazette-snippet-divider" />}
                                     </div>
-                                    <div className="flex gap-2">
-                                        <button onClick={prevTestimonial} className="testimonial-btn prev">
-                                            <ArrowLeft size={18} />
-                                        </button>
-                                        <button onClick={nextTestimonial} className="testimonial-btn prev">
-                                            <ArrowRight size={18} />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                                );
+                            })}
                         </div>
                     </div>
+
                 </div>
             </section>
 
