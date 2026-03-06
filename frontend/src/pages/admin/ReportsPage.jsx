@@ -6,6 +6,7 @@ import { Trophy, Star, TrendingUp, Award, Download, BarChart3 } from 'lucide-rea
 import toast from 'react-hot-toast';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899', '#84cc16'];
 
@@ -97,6 +98,44 @@ const ReportsPage = () => {
         }
     };
 
+    const exportReportsExcel = () => {
+        try {
+            const wb = XLSX.utils.book_new();
+
+            // 1. Monthly Trends
+            const wsMonthly = XLSX.utils.json_to_sheet(monthlyData.map(d => ({
+                'Month': d.name,
+                'Submissions Received': d.submitted,
+                'Verified Achievements': d.approved
+            })));
+            XLSX.utils.book_append_sheet(wb, wsMonthly, "Monthly Trends");
+
+            // 2. Department Stats
+            const wsDept = XLSX.utils.json_to_sheet((data?.departmentStats || []).map(d => ({
+                'Department': d._id,
+                'Achievement Count': d.count
+            })));
+            XLSX.utils.book_append_sheet(wb, wsDept, "Department Stats");
+
+            // 3. Excellence Leaderboard
+            const wsPerformers = XLSX.utils.json_to_sheet((data?.topPerformers || []).map((p, i) => ({
+                'Rank': i + 1,
+                'Scholar Name': p.student?.name,
+                'Department': p.student?.department,
+                'Enrollment No': p.student?.enrollmentNo || p.student?.studentId,
+                'Achievement Count': p.achievementCount,
+                'Total Points': p.totalPoints
+            })));
+            XLSX.utils.book_append_sheet(wb, wsPerformers, "Excellence Leaderboard");
+
+            const date = new Date().toLocaleDateString().replace(/\//g, '-');
+            XLSX.writeFile(wb, `SOEIT_Academic_Report_${date}.xlsx`);
+            toast.success('Excel projection synchronized and exported');
+        } catch (error) {
+            toast.error('Excel export failed! ' + error.message);
+        }
+    };
+
     return (
         <div className="animate-fade-in">
             {/* Header Suite */}
@@ -105,11 +144,18 @@ const ReportsPage = () => {
                     <h2 className="heading-display">Analytical Intelligence</h2>
                     <p className="page-subtitle">Unified narrative of institutional growth, departmental performance, and excellence metrics.</p>
                 </div>
-                <button className="btn btn-primary reports-header-btn" onClick={exportReportsPDF}>
-                    <Download size={18} />
-                    <span className="hide-mobile">Generate Academic Report</span>
-                    <span className="show-mobile">Report</span>
-                </button>
+                <div className="reports-header-actions" style={{ display: 'flex', gap: '1rem' }}>
+                    <button className="btn btn-ghost reports-header-btn" style={{ border: '1px solid var(--border-primary)', fontWeight: 800 }} onClick={exportReportsExcel}>
+                        <Download size={18} />
+                        <span className="hide-mobile">Export Excel</span>
+                        <span className="show-mobile">Excel</span>
+                    </button>
+                    <button className="btn btn-primary reports-header-btn" onClick={exportReportsPDF}>
+                        <Download size={18} />
+                        <span className="hide-mobile">Generate Academic Report</span>
+                        <span className="show-mobile">Report</span>
+                    </button>
+                </div>
             </div>
 
             {/* Performance Overview Cards */}

@@ -8,6 +8,7 @@ import {
 import toast from 'react-hot-toast';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 const FacultyDashboard = () => {
     const [stats, setStats] = useState(null);
@@ -106,6 +107,38 @@ const FacultyDashboard = () => {
         toast.success('Professional report exported successfully');
     };
 
+    const exportToExcel = () => {
+        if (students.length === 0) {
+            toast.error('No empirical data available for export');
+            return;
+        }
+
+        try {
+            const excelData = students.map((s, i) => ({
+                'S.No': i + 1,
+                'Scholar Name': s.name,
+                'Enrollment ID': s.enrollmentNo || s.studentId,
+                'Department': s.department,
+                'Semester': s.semester || 'N/A',
+                'Section': s.section || 'N/A',
+                'Batch': s.batch || 'N/A',
+                'Total Submissions': s.achievementCounts?.total || 0,
+                'Verified': s.achievementCounts?.approved || 0,
+                'Institutional Points': s.achievementCounts?.points || 0
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Scholar Analytics");
+
+            const date = new Date().toLocaleDateString().replace(/\//g, '-');
+            XLSX.writeFile(wb, `SOEIT_Faculty_Oversight_${date}.xlsx`);
+            toast.success('Excel analytics synchronized and exported');
+        } catch (error) {
+            toast.error('Excel export failure');
+        }
+    };
+
     const handlePostNotice = async (e) => {
         e.preventDefault();
         try {
@@ -170,11 +203,16 @@ const FacultyDashboard = () => {
                     <p className="page-subtitle">Administrative oversight, scholar progress tracking, and institutional broadcasting.</p>
                 </div>
                 <div style={{ display: 'flex', gap: '1rem' }}>
-                    <button className="btn btn-secondary" onClick={exportToPDF}>
+                    <button className="btn btn-ghost" onClick={exportToExcel} style={{ border: '1px solid var(--border-primary)', fontWeight: 800 }}>
+                        <Download size={18} />
+                        <span className="hide-mobile">Export Excel</span>
+                        <span className="show-mobile">Excel</span>
+                    </button>
+                    <button className="btn btn-secondary" onClick={exportToPDF} style={{ fontWeight: 800 }}>
                         <Download size={18} />
                         <span>Export Analytics</span>
                     </button>
-                    <button className="btn btn-primary" onClick={() => setShowNoticeModal(true)}>
+                    <button className="btn btn-primary" onClick={() => setShowNoticeModal(true)} style={{ fontWeight: 800 }}>
                         <GraduationCap size={18} />
                         <span>Dispatch Notice</span>
                     </button>

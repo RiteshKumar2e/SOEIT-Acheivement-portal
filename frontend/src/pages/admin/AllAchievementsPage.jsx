@@ -1,9 +1,12 @@
 import '../../styles/AllAchievementsPage.css';
 import { useState, useEffect } from 'react';
 import { adminAPI } from '../../services/api';
-import { Search, Filter, Trophy, ChevronLeft, ChevronRight, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Search, Filter, Trophy, ChevronLeft, ChevronRight, Clock, CheckCircle, XCircle, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 const STATUSES = ['', 'pending', 'approved', 'rejected'];
 const DEPARTMENTS = ['', 'CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE'];
@@ -49,12 +52,84 @@ const AllAchievementsPage = () => {
 
     useEffect(() => { load(); }, [filters.status, filters.category, filters.department, filters.page]);
 
+    const exportAchievements = (type) => {
+        if (achievements.length === 0) {
+            toast.error('No empirical records available for export');
+            return;
+        }
+
+        try {
+            const date = new Date().toLocaleDateString().replace(/\//g, '-');
+            if (type === 'excel') {
+                const excelData = achievements.map(a => ({
+                    'Achievement Title': a.title,
+                    'Scholar Name': a.student?.name,
+                    'ID/Enrollment': a.student?.idNumber || 'N/A',
+                    'Department': a.student?.department,
+                    'Category': a.category,
+                    'Level': a.level,
+                    'Status': a.status,
+                    'Points': a.status === 'approved' ? a.points : 0,
+                    'Date Recorded': format(new Date(a.createdAt), 'MMM dd, yyyy')
+                }));
+                const ws = XLSX.utils.json_to_sheet(excelData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Achievements");
+                XLSX.writeFile(wb, `SOEIT_Achievements_${date}.xlsx`);
+                toast.success('Excel archive: Achievement registry exported');
+            } else {
+                const doc = new jsPDF('l', 'mm', 'a4');
+                doc.setFillColor(30, 41, 59);
+                doc.rect(0, 0, 297, 30, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(20);
+                doc.text('SOEIT INSTITUTIONAL ACHIEVEMENT REPOSITORY', 148, 15, { align: 'center' });
+                doc.setFontSize(10);
+                doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 148, 22, { align: 'center' });
+
+                autoTable(doc, {
+                    startY: 40,
+                    head: [['Achievement Record', 'Scholar', 'Department', 'Category', 'Status', 'Points', 'Date']],
+                    body: achievements.map(a => [
+                        a.title,
+                        a.student?.name,
+                        a.student?.department,
+                        a.category,
+                        a.status,
+                        a.status === 'approved' ? a.points : 0,
+                        format(new Date(a.createdAt), 'MMM dd, yyyy')
+                    ]),
+                    theme: 'grid',
+                    headStyles: { fillColor: [59, 130, 246] },
+                });
+                doc.save(`SOEIT_Achievements_Registry_${date}.pdf`);
+                toast.success('PDF report: Achievement registry generated');
+            }
+        } catch (error) {
+            toast.error('Registry export failure');
+        }
+    };
+
     return (
         <div className="animate-fade-in">
             {/* Professional Header */}
-            <div className="page-header" style={{ marginBottom: '2.5rem' }}>
-                <h2 className="heading-display">Institutional Achievement Repository</h2>
-                <p className="page-subtitle">Historical ledger containing all validated and pending achievements across SOEIT.</p>
+            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <div>
+                    <h2 className="heading-display">Institutional Achievement Repository</h2>
+                    <p className="page-subtitle">Historical ledger containing all validated and pending achievements across SOEIT.</p>
+                </div>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                    <button className="btn btn-ghost" onClick={() => exportAchievements('excel')} style={{ border: '1px solid var(--border-primary)', fontWeight: 800 }}>
+                        <Download size={18} />
+                        <span className="hide-mobile">Excel Archive</span>
+                        <span className="show-mobile">Excel</span>
+                    </button>
+                    <button className="btn btn-primary" onClick={() => exportAchievements('pdf')} style={{ fontWeight: 800 }}>
+                        <Download size={18} />
+                        <span className="hide-mobile">Generate PDF Report</span>
+                        <span className="show-mobile">PDF</span>
+                    </button>
+                </div>
             </div>
 
             {/* Admin Filter Center */}
