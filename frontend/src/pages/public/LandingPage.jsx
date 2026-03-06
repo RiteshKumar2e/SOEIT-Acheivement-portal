@@ -24,32 +24,36 @@ const liveChallenges = [
         type: 'SIH | Govt of India',
         img: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=800',
         prize: '₹1,00,000 Per Theme',
-        stats: { students: '25k+', days: 'Starts Sept' },
-        badge: 'Premier'
+        stats: { students: '25k+', days: 'Aug – Sept 2026' },
+        badge: 'Premier',
+        link: 'https://www.sih.gov.in/'
     },
     {
-        title: 'MLH Global Hack Week',
-        type: 'Open Source | MLH',
-        img: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=800',
-        prize: 'Exclusive Swag + Prizes',
-        stats: { students: '10k+', days: 'Monthly' },
-        badge: 'Ongoing'
-    },
-    {
-        title: 'Google Solution Challenge',
+        title: 'Google Solution Challenge 2026',
         type: 'GDSC | Global',
         img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800',
         prize: '$12,000 + Mentorship',
-        stats: { students: '15k+', days: 'Jan - Mar' },
-        badge: 'Elite'
+        stats: { students: '15k+', days: 'Jan – Mar 2026' },
+        badge: 'Elite',
+        link: 'https://developers.google.com/community/gdsc-solution-challenge'
     },
     {
-        title: 'Amazon ML Challenge',
-        type: 'Machine Learning',
+        title: 'HackWithInfy 2026',
+        type: 'Infosys | National',
+        img: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=800',
+        prize: '₹2,00,000 + Pre-Placement',
+        stats: { students: '18k+', days: 'Apr – June 2026' },
+        badge: 'Top Tier',
+        link: 'https://hackwithinfy.com/'
+    },
+    {
+        title: 'Amazon ML Challenge 2026',
+        type: 'Machine Learning | Amazon',
         img: 'https://images.unsplash.com/photo-1527474305487-b87b222841cc?auto=format&fit=crop&q=80&w=800',
         prize: '₹10L + PPO Opportunities',
-        stats: { students: '12k+', days: 'Aug 2025' },
-        badge: 'High Impact'
+        stats: { students: '12k+', days: 'July – Aug 2026' },
+        badge: 'High Impact',
+        link: 'https://www.amazon.science/ml-challenge'
     },
 ];
 
@@ -310,7 +314,7 @@ const LandingPage = () => {
                                         <span><Users size={14} /> {comp.stats.students}</span>
                                         <span><Clock size={14} /> {comp.stats.days} Left</span>
                                     </div>
-                                    <Link to="/login" className="btn btn-primary w-full rounded-lg bg-brand-600 border-none py-2 font-bold text-sm">Apply Now</Link>
+                                    <a href={comp.link} target="_blank" rel="noopener noreferrer" className="btn btn-primary w-full rounded-lg bg-brand-600 border-none py-2 font-bold text-sm">Apply Now ↗</a>
                                 </div>
                                 <div className="comp-footer">
                                     <div className="text-gray-500">Prize Pool</div>
