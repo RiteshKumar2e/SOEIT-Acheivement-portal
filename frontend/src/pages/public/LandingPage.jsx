@@ -312,7 +312,7 @@ const LandingPage = () => {
                         <h2 className="text-2xl md:text-3xl font-black text-gray-900">Explore <span className="text-brand-600">Opportunities</span></h2>
                     </div>
 
-                    <div className="flex flex-row flex-nowrap md:flex-wrap justify-start md:justify-center gap-10 overflow-x-auto md:overflow-visible pb-6 md:pb-0 snap-x snap-mandatory">
+                    <div className="flex flex-wrap justify-center gap-6 md:gap-10">
                         {liveChallenges.map((comp, idx) => (
                             <div key={idx} className="comp-card snap-center mb-4">
                                 <div className="comp-image">
