@@ -82,6 +82,10 @@
         text-align: center;
         gap: 3rem;
     }
+
+    .desktop-only-hero {
+        display: none;
+    }
 }
 
 .hero-content {

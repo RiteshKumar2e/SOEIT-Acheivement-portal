@@ -202,14 +202,14 @@ const LandingPage = () => {
                         </div>
                     </div>
 
-                    <div className="hero-visual">
+                    <div className="hero-visual desktop-only-hero">
                         <div className="hero-main-card">
                             <div className="flex items-center justify-between mb-8">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 font-bold border border-brand-100">JD</div>
+                                    <div className="w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 font-bold border border-brand-100">RK</div>
                                     <div>
-                                        <div className="font-bold text-gray-900">John Doe</div>
-                                        <div className="text-xs text-gray-500">B.Tech CS | 3rd Year</div>
+                                        <div className="font-bold text-gray-900">Ritesh Kumar</div>
+                                        <div className="text-xs text-gray-500">B.Tech | 4th Year</div>
                                     </div>
                                 </div>
                                 <Award className="text-accent-gold" size={24} />
