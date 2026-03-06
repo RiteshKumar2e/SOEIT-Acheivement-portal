@@ -107,6 +107,14 @@ const initSchema = async (client) => {
             updated_at      TEXT DEFAULT (datetime('now')),
             FOREIGN KEY (student_id) REFERENCES users(id)
         )`,
+    `CREATE TABLE IF NOT EXISTS hackathon_activities (
+            id               TEXT PRIMARY KEY,
+            student_id       TEXT NOT NULL,
+            hackathon_title  TEXT NOT NULL,
+            action_type      TEXT NOT NULL DEFAULT 'visit',
+            created_at       TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (student_id) REFERENCES users(id)
+        )`
   ], 'write');
 };
 

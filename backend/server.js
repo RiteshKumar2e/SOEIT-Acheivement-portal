@@ -24,6 +24,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const noticeRoutes = require('./routes/noticeRoutes');
 const courseRoutes = require('./routes/courseRoutes');
+const hackathonRoutes = require('./routes/hackathonRoutes');
 
 // Connect to Turso Database
 connectDB();
@@ -98,6 +99,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/notices', noticeRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/hackathons', hackathonRoutes);
 
 // 404 handler
 app.use((req, res) => {

@@ -31,6 +31,7 @@ import UploadAchievementPage from './pages/student/UploadAchievementPage';
 import ProfilePage from './pages/student/ProfilePage';
 import MyCoursesPage from './pages/student/MyCoursesPage';
 import StudentCoursesPage from './pages/admin/StudentCoursesPage';
+import HackathonsPage from './pages/student/HackathonsPage';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -39,6 +40,7 @@ import AllAchievementsPage from './pages/admin/AllAchievementsPage';
 import StudentManagementPage from './pages/admin/StudentManagementPage';
 import ReportsPage from './pages/admin/ReportsPage';
 import FacultyManagementPage from './pages/admin/FacultyManagementPage';
+import HackathonMonitoringPage from './pages/admin/HackathonMonitoringPage';
 
 // Faculty Pages
 import FacultyDashboard from './pages/faculty/FacultyDashboard';
@@ -106,6 +108,7 @@ function App() {
             <Route path="/achievements/upload" element={<UploadAchievementPage />} />
             <Route path="/achievements/edit/:id" element={<UploadAchievementPage />} />
             <Route path="/courses" element={<MyCoursesPage />} />
+            <Route path="/hackathons" element={<HackathonsPage />} />
           </Route>
 
           {/* Admin / Faculty Shared Management Routes */}
@@ -117,6 +120,7 @@ function App() {
             <Route path="/admin/students" element={<StudentManagementPage />} />
             <Route path="/admin/reports" element={<ReportsPage />} />
             <Route path="/admin/courses" element={<StudentCoursesPage />} />
+            <Route path="/admin/hackathons" element={<HackathonMonitoringPage />} />
           </Route>
 
           {/* Admin Exclusive Routes */}

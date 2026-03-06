@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
     LayoutDashboard, Trophy, Upload, User, BarChart3,
     CheckCircle, Users, Settings, LogOut, GraduationCap,
-    FileText, X, Shield, Star, Calendar, ChevronLeft, ChevronRight, BookOpen
+    FileText, X, Shield, Star, Calendar, ChevronLeft, ChevronRight, BookOpen, Activity, Terminal
 } from 'lucide-react';
 
 const studentLinks = [
@@ -12,6 +12,7 @@ const studentLinks = [
     { to: '/achievements', icon: Trophy, label: 'My Achievements' },
     { to: '/achievements/upload', icon: Upload, label: 'Upload Achievement' },
     { to: '/courses', icon: BookOpen, label: 'Course Registry' },
+    { to: '/hackathons', icon: Terminal, label: 'Live Hackathons' },
     { to: '/profile', icon: User, label: 'My Profile' },
 ];
 
@@ -24,6 +25,7 @@ const adminLinks = [
     { to: '/admin/faculty', icon: Shield, label: 'Faculty' },
     { to: '/admin/reports', icon: BarChart3, label: 'Reports & Analytics' },
     { to: '/admin/courses', icon: BookOpen, label: 'Course Monitoring' },
+    { to: '/admin/hackathons', icon: Activity, label: 'Hackathon Activity' },
     { to: '/profile', icon: User, label: 'My Profile' },
 ];
 

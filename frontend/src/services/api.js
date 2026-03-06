@@ -91,4 +91,9 @@ export const courseAPI = {
     getAll: (params) => API.get('/courses', { params }),
 };
 
+export const hackathonAPI = {
+    logActivity: (data) => API.post('/hackathons/activity', data),
+    getAllActivities: (params) => API.get('/hackathons/activity', { params }),
+};
+
 export default API;
