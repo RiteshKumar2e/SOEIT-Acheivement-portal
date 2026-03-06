@@ -46,7 +46,7 @@ const Sidebar = ({ mobileOpen, onClose, collapsed, onToggleCollapse }) => {
 
     const handleLogout = async () => {
         await logout();
-        navigate('/');
+        // redirect is handled inside AuthContext.logout()
     };
 
     const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';

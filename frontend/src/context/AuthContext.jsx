@@ -59,6 +59,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('soeit_token');
         localStorage.removeItem('soeit_user');
         setUser(null);
+        window.location.href = '/';
     };
 
     const updateUser = (updatedUser) => {
