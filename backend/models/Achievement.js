@@ -340,11 +340,12 @@ const Achievement = {
                 _id: r._id,
                 totalPoints: Number(r.totalPoints || 0),
                 achievementCount: Number(r.achievementCount || 0),
-                student: [{
-                    name: r.student_name, department: r.student_department,
+                student: {
+                    name: r.student_name,
+                    department: r.student_department,
                     profileImage: r.student_profile_image || '',
                     studentId: r.student_student_id,
-                }],
+                },
             }));
         }
 

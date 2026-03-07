@@ -245,11 +245,11 @@ const ReportsPage = () => {
                     <table className="table">
                         <thead>
                             <tr>
-                                <th style={{ paddingLeft: '2rem', width: '100px' }}>Rank</th>
-                                <th>Scholar Profile</th>
-                                <th>Focus Department</th>
-                                <th style={{ textAlign: 'center' }}>Verified Units</th>
-                                <th style={{ textAlign: 'right', paddingRight: '2rem' }}>Institutional Points</th>
+                                <th style={{ paddingLeft: '2rem', width: '80px' }}>Rank</th>
+                                <th style={{ minWidth: '220px' }}>Scholar Profile</th>
+                                <th style={{ minWidth: '150px' }}>Focus Department</th>
+                                <th style={{ textAlign: 'center', minWidth: '120px' }}>Verified Units</th>
+                                <th style={{ textAlign: 'right', paddingRight: '2rem', minWidth: '180px' }}>Institutional Points</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -278,17 +278,17 @@ const ReportsPage = () => {
                                                 {p.student?.name?.charAt(0) || 'S'}
                                             </div>
                                             <div>
-                                                <div style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '0.95rem' }}>{p.student?.name}</div>
-                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>ID: {p.student?.studentId}</div>
+                                                <div style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '0.95rem' }}>{p.student?.name || 'Unknown Scholar'}</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>ID: {p.student?.studentId || 'N/A'}</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <span className="badge badge-brand" style={{ fontWeight: 800, padding: '0.4rem 0.75rem' }}>{p.student?.department}</span>
+                                        <span className="badge badge-brand" style={{ fontWeight: 800, padding: '0.4rem 0.75rem' }}>{p.student?.department || 'General'}</span>
                                     </td>
                                     <td style={{ textAlign: 'center' }}>
                                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, color: 'var(--text-secondary)' }}>
-                                            {p.achievementCount} <span style={{ fontSize: '0.7rem', opacity: 0.6 }}>Synchronized</span>
+                                            {p.achievementCount} <span style={{ fontSize: '0.7rem', opacity: 0.6 }}>Records</span>
                                         </div>
                                     </td>
                                     <td style={{ textAlign: 'right', paddingRight: '2rem' }}>
