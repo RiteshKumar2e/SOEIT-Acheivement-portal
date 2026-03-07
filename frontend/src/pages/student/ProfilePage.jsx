@@ -5,7 +5,11 @@ import { authAPI } from '../../services/api';
 import { User, Mail, Phone, BookOpen, Linkedin, Github, Globe, Camera, Save, Key, Eye, EyeOff, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const DEPARTMENTS = ['CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE', 'BCA', 'AIDL', 'Cybersecurity', 'DCSE', 'DME', 'DEEE'];
+const DEPARTMENTS = {
+    'B.Tech': ['CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE'],
+    'BCA': ['BCA (Regular)', 'AIDL', 'Cybersecurity'],
+    'Diploma': ['DCSE', 'DME', 'DEEE'],
+};
 
 const ProfilePage = () => {
     const { user, updateUser } = useAuth();

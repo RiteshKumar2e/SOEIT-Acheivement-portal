@@ -4,7 +4,12 @@ import { achievementAPI } from '../../services/api';
 import { Trophy, Star, Search, Users, BookOpen, ChevronRight, Award, ArrowLeft } from 'lucide-react';
 import '../../styles/PublicPortfoliosPage.css';
 
-const DEPARTMENTS = ['All', 'CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE', 'BCA', 'AIDL', 'Cybersecurity', 'DCSE', 'DME', 'DEEE'];
+const DEPT_PILLS = ['All', 'CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE', 'BCA (Regular)', 'AIDL', 'Cybersecurity', 'DCSE', 'DME', 'DEEE'];
+const DEPT_GROUPS = [
+    { group: 'B.Tech', depts: ['CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE'] },
+    { group: 'BCA', depts: ['BCA (Regular)', 'AIDL', 'Cybersecurity'] },
+    { group: 'Diploma', depts: ['DCSE', 'DME', 'DEEE'] },
+];
 
 const getInitials = (name) =>
     name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'S';
@@ -139,7 +144,7 @@ const PublicPortfoliosPage = () => {
 
                         {/* Department pills — desktop */}
                         <div className="pp-dept-pills desktop-only">
-                            {DEPARTMENTS.map(d => (
+                            {DEPT_PILLS.map(d => (
                                 <button
                                     key={d}
                                     className={`pp-dept-pill ${department === d ? 'active' : ''}`}
@@ -158,8 +163,11 @@ const PublicPortfoliosPage = () => {
                                 onChange={e => setDepartment(e.target.value)}
                                 style={{ borderRadius: '12px', fontWeight: 700 }}
                             >
-                                {DEPARTMENTS.map(d => (
-                                    <option key={d} value={d}>{d === 'All' ? 'All Departments' : d}</option>
+                                <option value="All">All Departments</option>
+                                {DEPT_GROUPS.map(({ group, depts }) => (
+                                    <optgroup key={group} label={group}>
+                                        {depts.map(d => <option key={d} value={d}>{d}</option>)}
+                                    </optgroup>
                                 ))}
                             </select>
                         </div>

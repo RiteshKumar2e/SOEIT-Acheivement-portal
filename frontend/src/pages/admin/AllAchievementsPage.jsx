@@ -9,7 +9,11 @@ import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 
 const STATUSES = ['', 'pending', 'approved', 'rejected'];
-const DEPARTMENTS = ['', 'CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE', 'BCA', 'AIDL', 'Cybersecurity', 'DCSE', 'DME', 'DEEE'];
+const DEPARTMENTS = {
+    'B.Tech': ['CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE'],
+    'BCA': ['BCA (Regular)', 'AIDL', 'Cybersecurity'],
+    'Diploma': ['DCSE', 'DME', 'DEEE'],
+};
 const CATEGORIES = ['', 'Academic', 'Sports', 'Cultural', 'Technical', 'Research', 'Internship', 'Certification', 'Competition', 'Other'];
 
 const StatusBadge = ({ status }) => {
@@ -154,7 +158,11 @@ const AllAchievementsPage = () => {
 
                         <select className="form-control filter-select" value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
                             <option value="">Dept: All</option>
-                            {DEPARTMENTS.slice(1).map(d => <option key={d} value={d}>{d}</option>)}
+                            {Object.entries(DEPARTMENTS).map(([group, depts]) => (
+                                <optgroup key={group} label={group}>
+                                    {depts.map(d => <option key={d} value={d}>{d}</option>)}
+                                </optgroup>
+                            ))}
                         </select>
 
                         <select className="form-control filter-select" value={filters.category} onChange={e => setFilters(p => ({ ...p, category: e.target.value, page: 1 }))}>
