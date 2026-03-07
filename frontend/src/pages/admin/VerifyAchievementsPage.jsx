@@ -5,7 +5,7 @@ import { CheckCircle, XCircle, Eye, Search, Filter, Clock, FileText, ChevronLeft
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
-const DEPARTMENTS = ['', 'CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE'];
+const DEPARTMENTS = ['', 'CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE', 'BCA', 'AIDL', 'Cybersecurity', 'DCSE', 'DME', 'DEEE'];
 const CATEGORIES = ['', 'Academic', 'Sports', 'Cultural', 'Technical', 'Research', 'Internship', 'Certification', 'Competition', 'Other'];
 
 const VerifyAchievementsPage = () => {

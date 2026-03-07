@@ -54,7 +54,7 @@ const StudentCoursesPage = () => {
                             onChange={e => setFilters({ ...filters, department: e.target.value })}
                         >
                             <option value="">All Institutional Departments</option>
-                            {['CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE'].map(d => <option key={d} value={d}>{d}</option>)}
+                            {['CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE', 'BCA', 'AIDL', 'Cybersecurity', 'DCSE', 'DME', 'DEEE'].map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
                         <select
                             className="form-control"

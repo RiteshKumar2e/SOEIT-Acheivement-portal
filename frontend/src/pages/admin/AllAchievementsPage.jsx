@@ -9,7 +9,7 @@ import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 
 const STATUSES = ['', 'pending', 'approved', 'rejected'];
-const DEPARTMENTS = ['', 'CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE'];
+const DEPARTMENTS = ['', 'CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE', 'BCA', 'AIDL', 'Cybersecurity', 'DCSE', 'DME', 'DEEE'];
 const CATEGORIES = ['', 'Academic', 'Sports', 'Cultural', 'Technical', 'Research', 'Internship', 'Certification', 'Competition', 'Other'];
 
 const StatusBadge = ({ status }) => {

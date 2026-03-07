@@ -8,7 +8,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 
-const DEPARTMENTS = ['', 'CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE'];
+const DEPARTMENTS = ['', 'CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE', 'BCA', 'AIDL', 'Cybersecurity', 'DCSE', 'DME', 'DEEE'];
 
 const StudentManagementPage = () => {
     const [students, setStudents] = useState([]);
@@ -149,7 +149,7 @@ const StudentManagementPage = () => {
                     </div>
                     <select className="form-control filter-select-responsive" style={{ height: '48px', fontWeight: 700 }} value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
                         <option value="">All Institutional Departments</option>
-                        {['CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE'].map(d => <option key={d} value={d}>{d}</option>)}
+                        {DEPARTMENTS.slice(1).map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
                     <select className="form-control filter-select-responsive" style={{ height: '48px', fontWeight: 700 }} value={filters.semester} onChange={e => setFilters(p => ({ ...p, semester: e.target.value, page: 1 }))}>
                         <option value="">All Academic Terms</option>

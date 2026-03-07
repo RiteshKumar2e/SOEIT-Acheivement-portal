@@ -5,7 +5,7 @@ import { authAPI } from '../../services/api';
 import { User, Mail, Phone, BookOpen, Linkedin, Github, Globe, Camera, Save, Key, Eye, EyeOff, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const DEPARTMENTS = ['CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE', 'Other'];
+const DEPARTMENTS = ['CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE', 'BCA', 'AIDL', 'Cybersecurity', 'DCSE', 'DME', 'DEEE'];
 
 const ProfilePage = () => {
     const { user, updateUser } = useAuth();

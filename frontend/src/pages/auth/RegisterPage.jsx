@@ -22,7 +22,11 @@ const UniversityHeader = () => (
     </div>
 );
 
-const DEPARTMENTS = ['CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE', 'Other'];
+const DEPARTMENTS = {
+    'B.Tech': ['CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE'],
+    'BCA': ['BCA (Regular)', 'AIDL', 'Cybersecurity'],
+    'Diploma': ['DCSE', 'DME', 'DEEE'],
+};
 
 // Define Field component OUTSIDE the main component to prevent focus loss during state updates
 const Field = ({ name, label, type = 'text', placeholder, required, form, setForm, errors, children }) => (
@@ -130,7 +134,11 @@ const RegisterPage = () => {
                                 onChange={e => setForm(p => ({ ...p, department: e.target.value }))}
                             >
                                 <option value="">Select Department</option>
-                                {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
+                                {Object.entries(DEPARTMENTS).map(([group, depts]) => (
+                                    <optgroup key={group} label={group}>
+                                        {depts.map(d => <option key={d} value={d}>{d}</option>)}
+                                    </optgroup>
+                                ))}
                             </select>
                             {errors.department && <div className="input-error" style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.department}</div>}
                         </div>

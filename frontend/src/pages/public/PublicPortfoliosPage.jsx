@@ -4,7 +4,7 @@ import { achievementAPI } from '../../services/api';
 import { Trophy, Star, Search, Users, BookOpen, ChevronRight, Award, ArrowLeft } from 'lucide-react';
 import '../../styles/PublicPortfoliosPage.css';
 
-const DEPARTMENTS = ['All', 'CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE', 'Other'];
+const DEPARTMENTS = ['All', 'CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE', 'BCA', 'AIDL', 'Cybersecurity', 'DCSE', 'DME', 'DEEE'];
 
 const getInitials = (name) =>
     name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'S';
