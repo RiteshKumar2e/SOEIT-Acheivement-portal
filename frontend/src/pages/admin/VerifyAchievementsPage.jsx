@@ -10,7 +10,7 @@ const DEPARTMENTS = {
     'BCA': ['BCA (Regular)', 'AIDL', 'Cybersecurity'],
     'Diploma': ['DCSE', 'DME', 'DEEE'],
 };
-const CATEGORIES = ['', 'Academic', 'Sports', 'Cultural', 'Technical', 'Research', 'Internship', 'Certification', 'Competition', 'Other'];
+const CATEGORIES = ['', 'Academic', 'Sports', 'Cultural', 'Technical', 'Research', 'Internship', 'Certification', 'Competition', 'Community Service', 'Other'];
 
 const VerifyAchievementsPage = () => {
     const [achievements, setAchievements] = useState([]);

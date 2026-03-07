@@ -6,12 +6,12 @@ import { Upload, X, File, Image, AlertCircle, CheckCircle, Award } from 'lucide-
 import toast from 'react-hot-toast';
 
 const CATEGORIES = ['Academic', 'Sports', 'Cultural', 'Technical', 'Research', 'Internship', 'Certification', 'Competition', 'Community Service', 'Other'];
-const LEVELS = ['International', 'National', 'State', 'University', 'College', 'Department'];
-const POINTS_MAP = { International: 100, National: 75, State: 50, University: 30, College: 20, Department: 10 };
+const LEVELS = ['International', 'National', 'State', 'University', 'College', 'Department', 'Other'];
+const POINTS_MAP = { International: 100, National: 75, State: 50, University: 30, College: 20, Department: 10, Other: 10 };
 
 const UploadAchievementPage = () => {
     const navigate = useNavigate();
-    const [form, setForm] = useState({ title: '', category: '', description: '', level: '', date: '', institution: '', tags: '', isPublic: true });
+    const [form, setForm] = useState({ title: '', category: '', description: '', level: '', date: '', institution: '', tags: '', isPublic: true, otherCategory: '', otherLevel: '' });
     const [files, setFiles] = useState([]);
     const [dragging, setDragging] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -22,8 +22,10 @@ const UploadAchievementPage = () => {
         const e = {};
         if (!form.title.trim()) e.title = 'Institutional title is mandatory';
         if (!form.category) e.category = 'Classification required';
+        if (form.category === 'Other' && !form.otherCategory.trim()) e.otherCategory = 'Specific domain required';
         if (!form.description.trim()) e.description = 'Description required';
         if (!form.level) e.level = 'Impact resolution required';
+        if (form.level === 'Other' && !form.otherLevel.trim()) e.otherLevel = 'Specific impact level required';
         if (!form.date) e.date = 'Registry date required';
         setErrors(e);
         return Object.keys(e).length === 0;
@@ -48,7 +50,13 @@ const UploadAchievementPage = () => {
         setProgress(0);
 
         const fd = new FormData();
-        Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+        const submissionData = { ...form };
+        if (submissionData.category === 'Other') submissionData.category = submissionData.otherCategory;
+        if (submissionData.level === 'Other') submissionData.level = submissionData.otherLevel;
+
+        Object.entries(submissionData).forEach(([k, v]) => {
+            if (k !== 'otherCategory' && k !== 'otherLevel') fd.append(k, v);
+        });
         files.forEach(f => fd.append('proofFiles', f));
 
         const interval = setInterval(() => setProgress(prev => Math.min(prev + 10, 95)), 400);
@@ -126,6 +134,37 @@ const UploadAchievementPage = () => {
                                 </div>
                             </div>
 
+                            {(form.category === 'Other' || form.level === 'Other') && (
+                                <div className="form-fields-grid-res animate-slide-down" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1.5rem' }}>
+                                    {form.category === 'Other' && (
+                                        <div className="form-group">
+                                            <label className="form-label" style={{ fontWeight: 800 }}>Specific Domain <span style={{ color: 'var(--error-500)' }}>*</span></label>
+                                            <input
+                                                className={`form-control ${errors.otherCategory ? 'error' : ''}`}
+                                                placeholder="e.g. Photography, Robotics"
+                                                value={form.otherCategory}
+                                                style={{ height: '52px' }}
+                                                onChange={e => setForm(p => ({ ...p, otherCategory: e.target.value }))}
+                                            />
+                                            {errors.otherCategory && <div className="input-error" style={{ fontWeight: 700, fontSize: '0.75rem' }}><AlertCircle size={14} />{errors.otherCategory}</div>}
+                                        </div>
+                                    )}
+                                    {form.level === 'Other' && (
+                                        <div className="form-group">
+                                            <label className="form-label" style={{ fontWeight: 800 }}>Specific Impact Level <span style={{ color: 'var(--error-500)' }}>*</span></label>
+                                            <input
+                                                className={`form-control ${errors.otherLevel ? 'error' : ''}`}
+                                                placeholder="e.g. Zonal, Intra-college"
+                                                value={form.otherLevel}
+                                                style={{ height: '52px' }}
+                                                onChange={e => setForm(p => ({ ...p, otherLevel: e.target.value }))}
+                                            />
+                                            {errors.otherLevel && <div className="input-error" style={{ fontWeight: 700, fontSize: '0.75rem' }}><AlertCircle size={14} />{errors.otherLevel}</div>}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
                             <div className="form-fields-grid-res" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                                 <div className="form-group">
                                     <label className="form-label" style={{ fontWeight: 800 }}>Registry Date <span style={{ color: 'var(--error-500)' }}>*</span></label>
@@ -179,7 +218,7 @@ const UploadAchievementPage = () => {
                                     </div>
                                     <div>
                                         <div style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Merit Evaluation</div>
-                                        <div style={{ fontSize: '1.1rem', fontWeight: 900 }}>{form.level} Resolution</div>
+                                        <div style={{ fontSize: '1.1rem', fontWeight: 900 }}>{form.level === 'Other' ? (form.otherLevel || 'Custom') : form.level} Resolution</div>
                                     </div>
                                     <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
                                         <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{POINTS_MAP[form.level]}</div>
