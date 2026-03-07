@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { hackathonAPI } from '../../services/api';
 import { toast } from 'react-hot-toast';
 import { format } from 'date-fns';
-import { Search, Loader2, Activity, Link as LinkIcon, Download, RefreshCw } from 'lucide-react';
+import { Search, Loader2, Activity, CheckCircle, Download, RefreshCw, Trash2 } from 'lucide-react';
 import '../../styles/HackathonMonitoringPage.css';
 
 const HackathonMonitoringPage = () => {
@@ -43,7 +43,7 @@ const HackathonMonitoringPage = () => {
                 log.enrollmentNo,
                 log.department,
                 log.hackathonTitle,
-                'Clicked & Redirected',
+                'Applied Successfully',
                 format(new Date(log.createdAt), 'dd MMM yyyy'),
                 format(new Date(log.createdAt), 'hh:mm:ss a'),
             ])
@@ -59,6 +59,24 @@ const HackathonMonitoringPage = () => {
         toast.success('Logs exported successfully!');
     };
 
+    const handleLogDelete = async (id) => {
+        if (!window.confirm('PROTOCOL: Are you sure you wish to permanently purge this activity log?')) return;
+        try {
+            await hackathonAPI.deleteActivity(id);
+            toast.success('Log entry purged from registry');
+            fetchActivities();
+        } catch (error) {
+            toast.error('Deletion protocol failed');
+        }
+    };
+
+    const getLocalTime = (utcStr) => {
+        if (!utcStr) return new Date();
+        // If it doesn't have a timezone, assume it's UTC from SQLite
+        const dateStr = utcStr.includes('Z') || utcStr.includes('+') ? utcStr : `${utcStr.replace(' ', 'T')}Z`;
+        return new Date(dateStr);
+    };
+
     return (
         <div className="hm-page">
 
@@ -67,9 +85,9 @@ const HackathonMonitoringPage = () => {
                 <div className="hm-header-text">
                     <h1>
                         <Activity size={22} />
-                        Live Hackathon Tracking
+                        Hackathon Application Registry
                     </h1>
-                    <p>Monitor real-time student interactions with live competitions.</p>
+                    <p>Official record of students who have applied for external competitions.</p>
                 </div>
 
                 <div className="hm-header-actions">
@@ -125,6 +143,7 @@ const HackathonMonitoringPage = () => {
                                     <th>Hackathon</th>
                                     <th>Action</th>
                                     <th>Timestamp</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -144,17 +163,27 @@ const HackathonMonitoringPage = () => {
                                             <div className="hm-hackathon-title">{log.hackathonTitle}</div>
                                         </td>
                                         <td>
-                                            <span className="hm-action-badge">
-                                                <LinkIcon size={12} /> Clicked &amp; Redirected
+                                            <span className="hm-action-badge" style={{ background: 'var(--success-50)', color: 'var(--success-700)', borderColor: 'var(--success-200)' }}>
+                                                <CheckCircle size={12} /> Applied Successfully
                                             </span>
                                         </td>
                                         <td>
                                             <div className="hm-date">
-                                                {format(new Date(log.createdAt), 'dd MMM yyyy')}
+                                                {format(getLocalTime(log.createdAt), 'dd MMM yyyy')}
                                             </div>
                                             <div className="hm-time">
-                                                {format(new Date(log.createdAt), 'hh:mm:ss a')}
+                                                {format(getLocalTime(log.createdAt), 'hh:mm:ss a')}
                                             </div>
+                                        </td>
+                                        <td>
+                                            <button
+                                                className="btn btn-ghost btn-sm"
+                                                onClick={() => handleLogDelete(log.id)}
+                                                style={{ color: 'var(--error-600)', padding: '0.4rem' }}
+                                                title="Purge Record"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}

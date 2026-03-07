@@ -25,7 +25,7 @@ const adminLinks = [
     { to: '/admin/faculty', icon: Shield, label: 'Faculty' },
     { to: '/admin/reports', icon: BarChart3, label: 'Reports & Analytics' },
     { to: '/admin/courses', icon: BookOpen, label: 'Course Monitoring' },
-    { to: '/admin/hackathons', icon: Activity, label: 'Hackathon Activity' },
+    { to: '/admin/hackathons', icon: Activity, label: 'Applied Hackathons' },
     { to: '/profile', icon: User, label: 'My Profile' },
 ];
 

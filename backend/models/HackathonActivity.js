@@ -56,6 +56,12 @@ const HackathonActivity = {
             args: [studentId],
         });
         return Number(result.rows[0]?.cnt) || 0;
+    },
+
+    /** Delete an activity log */
+    delete: async (id) => {
+        const db = getDb();
+        await db.execute({ sql: 'DELETE FROM hackathon_activities WHERE id = ?', args: [id] });
     }
 };
 

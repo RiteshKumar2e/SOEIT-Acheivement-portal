@@ -205,8 +205,9 @@ const AllAchievementsPage = () => {
                                         <th>Department</th>
                                         <th>Functional Category</th>
                                         <th>Impact Level</th>
-                                        <th>Verification Status</th>
+                                        <th style={{ textAlign: 'center' }}>Status</th>
                                         <th>Points</th>
+                                        <th style={{ textAlign: 'center' }}>Review</th>
                                         <th style={{ textAlign: 'right', paddingRight: '1.5rem' }}>Date Recorded</th>
                                     </tr>
                                 </thead>
@@ -231,11 +232,30 @@ const AllAchievementsPage = () => {
                                             <td><span className="badge badge-brand">{a.student?.department}</span></td>
                                             <td><span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{a.category}</span></td>
                                             <td><span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>{a.level}</span></td>
-                                            <td><StatusBadge status={a.status} /></td>
+                                            <td style={{ textAlign: 'center' }}><StatusBadge status={a.status} /></td>
                                             <td>
                                                 <span style={{ fontWeight: 700, color: a.status === 'approved' ? 'var(--brand-600)' : 'var(--text-muted)', fontSize: '0.9rem' }}>
                                                     {a.status === 'approved' ? `+${a.points}` : '0'}
                                                 </span>
+                                            </td>
+                                            <td style={{ textAlign: 'center' }}>
+                                                {a.status === 'pending' && (
+                                                    <button
+                                                        className="btn btn-ghost btn-sm"
+                                                        onClick={() => navigate('/admin/verify')}
+                                                        style={{
+                                                            color: 'var(--brand-600)',
+                                                            fontWeight: 800,
+                                                            fontSize: '0.7rem',
+                                                            textTransform: 'uppercase',
+                                                            border: '1px solid var(--brand-100)',
+                                                            padding: '0.3rem 0.6rem',
+                                                            background: 'var(--primary-50)'
+                                                        }}
+                                                    >
+                                                        Verify
+                                                    </button>
+                                                )}
                                             </td>
                                             <td style={{ textAlign: 'right', paddingRight: '1.5rem', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
                                                 {format(new Date(a.createdAt), 'MMM dd, yyyy')}

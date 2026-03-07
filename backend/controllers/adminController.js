@@ -2,6 +2,7 @@ const Achievement = require('../models/Achievement');
 const User = require('../models/User');
 const Verification = require('../models/Verification');
 const { getDb } = require('../config/db');
+const sendEmail = require('../utils/sendEmail');
 
 // @desc    Admin dashboard stats
 // @route   GET /api/admin/dashboard
@@ -133,6 +134,78 @@ exports.verifyAchievement = async (req, res, next) => {
         });
 
         const updated = await Achievement.findById(req.params.id);
+
+        // Sending verification email to student
+        if (updated && updated.student && updated.student.email) {
+            const isApproved = action === 'approved';
+
+            const html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        .email-container { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1a202c; }
+                        .header { background: linear-gradient(135deg, #002147 0%, #003366 100%); color: white; padding: 30px; text-align: center; }
+                        .content { padding: 30px; line-height: 1.6; }
+                        .status-box { padding: 15px 20px; border-radius: 8px; font-weight: bold; display: inline-block; margin: 20px 0; }
+                        .status-approved { background-color: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+                        .status-rejected { background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+                        .achievement-title { font-size: 1.25rem; font-weight: 800; color: #2d3748; margin-top: 10px; }
+                        .footer { background-color: #f7fafc; padding: 20px; text-align: center; font-size: 0.875rem; color: #718096; border-top: 1px solid #e2e8f0; }
+                        .points { font-size: 1.5rem; font-weight: 900; color: #002147; }
+                    </style>
+                </head>
+                <body>
+                    <div class="email-container">
+                        <div class="header">
+                            <h2 style="margin: 0; letter-spacing: 0.05em;">SOEIT ACHIEVEMENT PORTAL</h2>
+                        </div>
+                        <div class="content">
+                            <p>Dear <strong>${updated.student.name}</strong>,</p>
+                            <p>We are pleased to inform you that your achievement record has been reviewed by the faculty administration.</p>
+                            
+                            <div class="achievement-title">${updated.title}</div>
+                            
+                            <div class="status-box ${isApproved ? 'status-approved' : 'status-rejected'}">
+                                Status: ${action.toUpperCase()}
+                            </div>
+
+                            ${isApproved ? `
+                                <p>Congratulations! Your achievement has been verified. You have been awarded <span class="points">+${updated.points}</span> institutional points for this record.</p>
+                                ${remarks ? `<p style="padding: 10px; border-left: 4px solid #bbf7d0; background: #f0fdf4; font-style: italic;"><strong>Faculty Note:</strong> ${remarks}</p>` : ''}
+                            ` : `
+                                <p>We regret to inform you that your record could not be verified at this time.</p>
+                                ${remarks ? `<p style="padding: 10px; border-left: 4px solid #fecaca; background: #fef2f2; font-style: italic;"><strong>Feedback:</strong> ${remarks}</p>` : ''}
+                                <p>Please review the feedback and resubmit with the correct documentation if necessary.</p>
+                            `}
+
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="${process.env.CLIENT_URL || 'https://soeit-acheivement-portal.vercel.app/'}/login" style="display: inline-block; padding: 14px 28px; background: #002147; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 800; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Login to Your Dashboard</a>
+                            </div>
+
+                            <p>Thank you for contributing to the academic excellence of SOEIT.</p>
+                        </div>
+                        <div class="footer">
+                            <p>© ${new Date().getFullYear()} School of Engineering & IT (SOEIT). All rights reserved.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            try {
+                await sendEmail({
+                    to: updated.student.email,
+                    subject: `Achievement Registry Update: ${updated.title}`,
+                    message: `Hi ${updated.student.name}, your achievement "${updated.title}" has been ${action}.`,
+                    html
+                });
+            } catch (emailError) {
+                console.error('Email notification failed:', emailError);
+                // We don't fail the request if email sending fails
+            }
+        }
+
         res.status(200).json({ success: true, message: `Achievement ${action} successfully`, data: updated });
     } catch (error) {
         next(error);

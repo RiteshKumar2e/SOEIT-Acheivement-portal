@@ -160,7 +160,7 @@ const HackathonsPage = () => {
     const handleApply = async (hackathonTitle, link) => {
         try {
             await hackathonAPI.logActivity({ hackathonTitle, actionType: 'enroll' });
-            toast.success(`Activity recorded. Redirecting to ${hackathonTitle}...`);
+            toast.success(`Application protocol initiated. Redirecting to official portal...`);
             setTimeout(() => window.open(link, '_blank'), 1000);
         } catch {
             window.open(link, '_blank');

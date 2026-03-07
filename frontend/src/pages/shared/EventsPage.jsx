@@ -229,51 +229,53 @@ const EventsPage = () => {
             {showAddModal && (
                 <div className="modal-overlay animate-fade-in" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
                     <div className="card animate-slide-up" style={{ width: '100%', maxWidth: '600px', padding: 0, overflow: 'hidden' }}>
-                        <div className="card-header" style={{ padding: '1.5rem 2rem', background: 'var(--brand-700)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div className="card-header" style={{ padding: '1rem 1.5rem', background: 'var(--brand-700)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div>
-                                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{editingId ? 'Modify Institutional Event' : 'Publish New Activity'}</h3>
-                                <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.8 }}>Formal event documentation suite.</p>
+                                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{editingId ? 'Modify Event' : 'Publish Activity'}</h3>
+                                <p style={{ margin: 0, fontSize: '0.75rem', opacity: 0.8 }}>Event documentation suite.</p>
                             </div>
-                            <button onClick={() => { setShowAddModal(false); setEditingId(null); }} className="btn btn-ghost" style={{ padding: '0.25rem', color: 'white' }}><XCircle size={24} /></button>
+                            <button onClick={() => { setShowAddModal(false); setEditingId(null); }} className="btn btn-ghost" style={{ padding: '0.25rem', color: 'white' }}><XCircle size={20} /></button>
                         </div>
-                        <div className="card-body" style={{ padding: '2rem' }}>
-                            <form onSubmit={handleAddEvent} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                                <div className="form-group">
-                                    <label className="form-label" style={{ fontWeight: 800 }}>Event Nomenclature</label>
-                                    <input className="form-control" required value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} placeholder="Identify the core subject..." />
+                        <div className="card-body" style={{ padding: '1.25rem 1.5rem' }}>
+                            <form onSubmit={handleAddEvent} style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                    <label className="form-label" style={{ fontWeight: 800, fontSize: '0.75rem', marginBottom: '0.25rem' }}>Event Nomenclature</label>
+                                    <input className="form-control" style={{ padding: '0.5rem 0.75rem' }} required value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} placeholder="Identify the core subject..." />
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label" style={{ fontWeight: 800 }}>Category Resolution</label>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                    <label className="form-label" style={{ fontWeight: 800, fontSize: '0.75rem', marginBottom: '0.25rem' }}>Category Resolution</label>
+                                    <select
+                                        className="form-control"
+                                        required
+                                        value={formData.category}
+                                        onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                        style={{ fontWeight: 700, borderRadius: '8px', padding: '0.5rem 0.75rem' }}
+                                    >
                                         {CATEGORIES.slice(1).map(c => (
-                                            <button key={c} type="button" onClick={() => setFormData({ ...formData, category: c })}
-                                                className={`btn btn-sm ${formData.category === c ? 'btn-primary' : 'btn-ghost'}`}
-                                                style={{ border: formData.category !== c ? '1px solid var(--border-primary)' : 'none', fontSize: '0.7rem' }}>
-                                                {c}
-                                            </button>
+                                            <option key={c} value={c}>{c}</option>
                                         ))}
+                                    </select>
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                    <div className="form-group" style={{ marginBottom: 0 }}>
+                                        <label className="form-label" style={{ fontWeight: 800, fontSize: '0.75rem', marginBottom: '0.25rem' }}>Date Protocol</label>
+                                        <input type="date" className="form-control" style={{ padding: '0.5rem 0.75rem' }} required value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} />
+                                    </div>
+                                    <div className="form-group" style={{ marginBottom: 0 }}>
+                                        <label className="form-label" style={{ fontWeight: 800, fontSize: '0.75rem', marginBottom: '0.25rem' }}>Venue Location</label>
+                                        <input className="form-control" style={{ padding: '0.5rem 0.75rem' }} required value={formData.venue} onChange={e => setFormData({ ...formData, venue: e.target.value })} placeholder="e.g. Audit Hall 01" />
                                     </div>
                                 </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                                    <div className="form-group">
-                                        <label className="form-label" style={{ fontWeight: 800 }}>Date Protocol</label>
-                                        <input type="date" className="form-control" required value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="form-label" style={{ fontWeight: 800 }}>Venue Location</label>
-                                        <input className="form-control" required value={formData.venue} onChange={e => setFormData({ ...formData, venue: e.target.value })} placeholder="e.g. Audit Hall 01" />
-                                    </div>
+                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                    <label className="form-label" style={{ fontWeight: 800, fontSize: '0.75rem', marginBottom: '0.25rem' }}>External Registration (Optional)</label>
+                                    <input type="url" className="form-control" style={{ padding: '0.5rem 0.75rem' }} value={formData.registrationLink} onChange={e => setFormData({ ...formData, registrationLink: e.target.value })} placeholder="https://external-link.com" />
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label" style={{ fontWeight: 800 }}>External Registration Protocol (Optional)</label>
-                                    <input type="url" className="form-control" value={formData.registrationLink} onChange={e => setFormData({ ...formData, registrationLink: e.target.value })} placeholder="https://external-link.com" />
+                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                    <label className="form-label" style={{ fontWeight: 800, fontSize: '0.75rem', marginBottom: '0.25rem' }}>Description</label>
+                                    <textarea className="form-control" required rows="3" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder="Document objectives..." style={{ resize: 'none', padding: '0.5rem 0.75rem' }} />
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label" style={{ fontWeight: 800 }}>Description</label>
-                                    <textarea className="form-control" required rows="4" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder="Document the event objectives, agenda, and outcomes..." style={{ resize: 'none' }} />
-                                </div>
-                                <button type="submit" className="btn btn-primary" style={{ padding: '1.25rem', fontWeight: 900 }}>
-                                    {editingId ? 'Modify Event Registry' : 'Publish Activity & Email Notification'}
+                                <button type="submit" className="btn btn-primary" style={{ padding: '0.8rem', fontWeight: 900, marginTop: '0.5rem' }}>
+                                    {editingId ? 'Modify Event Registry' : 'Publish Activity & Notify'}
                                 </button>
                             </form>
                         </div>

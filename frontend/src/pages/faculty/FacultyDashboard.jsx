@@ -212,6 +212,10 @@ const FacultyDashboard = () => {
                         <Download size={18} />
                         <span>Export Analytics</span>
                     </button>
+                    <button className="btn btn-primary" onClick={() => navigate('/admin/verify')} style={{ fontWeight: 800, background: 'var(--success-600)', borderColor: 'var(--success-700)' }}>
+                        <CheckCircle size={18} />
+                        <span>Verification Queue</span>
+                    </button>
                     <button className="btn btn-primary" onClick={() => setShowNoticeModal(true)} style={{ fontWeight: 800 }}>
                         <GraduationCap size={18} />
                         <span>Dispatch Notice</span>
@@ -379,11 +383,11 @@ const FacultyDashboard = () => {
                         <tbody>
                             {loading ? (
                                 [...Array(5)].map((_, i) => (
-                                    <tr key={i}><td colSpan="5"><div className="skeleton" style={{ height: '60px' }} /></td></tr>
+                                    <tr key={i}><td colSpan="6"><div className="skeleton" style={{ height: '60px' }} /></td></tr>
                                 ))
                             ) : students.length === 0 ? (
                                 <tr className="empty-row">
-                                    <td colSpan="5">
+                                    <td colSpan="6">
                                         <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
                                             <UsersRound size={48} style={{ opacity: 0.1, margin: '0 auto 1.5rem auto' }} />
                                             <h5 style={{ fontWeight: 800, margin: '0 0 0.5rem 0' }}>No Records Extracted</h5>

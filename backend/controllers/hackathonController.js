@@ -48,3 +48,14 @@ exports.getAllActivities = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Delete a hackathon activity log (Admin/Faculty)
+// @route   DELETE /api/hackathons/activity/:id
+exports.deleteActivity = async (req, res, next) => {
+    try {
+        await HackathonActivity.delete(req.params.id);
+        res.status(200).json({ success: true, message: 'Activity log purged successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
