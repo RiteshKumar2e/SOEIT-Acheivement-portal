@@ -77,6 +77,7 @@ const RegisterPage = () => {
         if (!form.department) e.department = 'Department is required';
         if (!form.batch) e.batch = 'Batch is required';
         else if (!/^\d{4}-\d{2}$/.test(form.batch)) e.batch = 'Invalid format (e.g. 2022-26)';
+        if (!form.enrollmentNo) e.enrollmentNo = 'Enrollment No. is required';
         setErrors(e);
         return Object.keys(e).length === 0;
     };
@@ -116,7 +117,7 @@ const RegisterPage = () => {
                     <form onSubmit={handleSubmit}>
                         <div className="form-row">
                             <Field name="name" label="Full Name" placeholder="Full name" required form={form} setForm={setForm} errors={errors} />
-                            <Field name="enrollmentNo" label="Enrollment No." placeholder="AJU/221403" form={form} setForm={setForm} errors={errors} />
+                            <Field name="enrollmentNo" label="Enrollment No. *" placeholder="AJU/221403" required form={form} setForm={setForm} errors={errors} />
                         </div>
 
                         <Field name="email" label="Email Address" type="email" placeholder="example@arkajainuniversity.ac.in" required form={form} setForm={setForm} errors={errors} />
