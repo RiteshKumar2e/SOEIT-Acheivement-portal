@@ -117,7 +117,7 @@ const RegisterPage = () => {
                     <form onSubmit={handleSubmit}>
                         <div className="form-row">
                             <Field name="name" label="Full Name" placeholder="Full name" required form={form} setForm={setForm} errors={errors} />
-                            <Field name="enrollmentNo" label="Enrollment No. *" placeholder="AJU/221403" required form={form} setForm={setForm} errors={errors} />
+                            <Field name="enrollmentNo" label="Enrollment No." placeholder="AJU/221403" required form={form} setForm={setForm} errors={errors} />
                         </div>
 
                         <Field name="email" label="Email Address" type="email" placeholder="example@arkajainuniversity.ac.in" required form={form} setForm={setForm} errors={errors} />
@@ -138,7 +138,7 @@ const RegisterPage = () => {
                         <div className="form-row">
                             <Field
                                 name="batch"
-                                label="Batch Year *"
+                                label="Batch Year"
                                 placeholder="e.g. 2022-26"
                                 required
                                 form={form}
