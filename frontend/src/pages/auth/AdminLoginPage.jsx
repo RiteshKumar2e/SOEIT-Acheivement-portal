@@ -143,7 +143,7 @@ const AdminLoginPage = () => {
                             {errors.password && <div className="input-error">{errors.password}</div>}
                         </div>
 
-                        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                        <div className="captcha-group" style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
                             <div style={{ flex: 1 }}>
                                 <input
                                     type="text"
@@ -158,7 +158,7 @@ const AdminLoginPage = () => {
                             <div className="captcha-box" style={{ background: '#f1f5f9', border: '1px solid #e2e8f0' }}>
                                 {captcha}
                             </div>
-                            <button type="button" onClick={generateCaptcha} className="btn-icon btn-secondary" style={{ padding: '0.9rem', borderRadius: 'var(--radius-sm)' }}>
+                            <button type="button" onClick={generateCaptcha} className="btn-icon">
                                 <RefreshCw size={18} />
                             </button>
                         </div>

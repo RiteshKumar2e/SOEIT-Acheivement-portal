@@ -140,7 +140,7 @@ const LoginPage = () => {
 
                         <div className="form-group" style={{ marginBottom: 0 }}>
                             <label className="form-label">Security Check</label>
-                            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                            <div className="captcha-group" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                                 <div style={{ flex: 1 }}>
                                     <input
                                         type="text"
