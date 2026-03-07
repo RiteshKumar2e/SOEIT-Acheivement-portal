@@ -473,7 +473,7 @@ const FacultyDashboard = () => {
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label" style={{ fontWeight: 800, color: 'var(--text-primary)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>Broadcast Content</label>
-                                    <textarea className="form-control" rows="6" placeholder="Document the detailed narrative of the institutional notice..." required style={{ resize: 'none' }} value={noticeData.content} onChange={e => setNoticeData({ ...noticeData, content: e.target.value })} />
+                                    <textarea className="form-control" rows="6" placeholder="Document the description of the institutional notice..." required style={{ resize: 'none' }} value={noticeData.content} onChange={e => setNoticeData({ ...noticeData, content: e.target.value })} />
                                 </div>
                                 <div style={{ padding: '1rem', background: 'var(--error-50)', borderRadius: '12px', border: '1px solid var(--error-100)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                     <Clock size={20} className="text-danger" />

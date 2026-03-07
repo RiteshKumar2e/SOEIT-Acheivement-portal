@@ -118,8 +118,8 @@ const AdminSettingsPage = () => {
                         </div>
 
                         <div className="form-group" style={{ marginBottom: '2rem' }}>
-                            <label className="form-label" style={{ fontWeight: 800 }}>Professional Abstract</label>
-                            <textarea className="form-control" rows={4} value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} placeholder="Administrative narrative..." style={{ resize: 'none' }} />
+                            <label className="form-label" style={{ fontWeight: 800 }}>Professional Bio</label>
+                            <textarea className="form-control" rows={4} value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} placeholder="Professional summary..." style={{ resize: 'none' }} />
                         </div>
 
                         <button type="submit" className="btn btn-primary" style={{ width: '100%', height: '52px', fontWeight: 900 }} disabled={loading}>
@@ -142,9 +142,9 @@ const AdminSettingsPage = () => {
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                             {[
-                                { field: 'currentPassword', label: 'Operational Password' },
-                                { field: 'newPassword', label: 'New Cryptographic Secret' },
-                                { field: 'confirmPassword', label: 'Authenticate Secret' }
+                                { field: 'currentPassword', label: 'Current Password' },
+                                { field: 'newPassword', label: 'New Password' },
+                                { field: 'confirmPassword', label: 'Confirm New Password' }
                             ].map(({ field, label }) => (
                                 <div key={field} className="form-group">
                                     <label className="form-label" style={{ fontWeight: 800 }}>{label}</label>
@@ -190,7 +190,7 @@ const AdminSettingsPage = () => {
                         {[
                             ['Submission Alerts', 'Configure real-time notifications for achievement submissions.'],
                             ['Verification Reminders', 'Automated reminders for pending evaluation queues.'],
-                            ['Operational Integrity', 'Alerts regarding institutional platform maintenance.'],
+                            ['System Notifications', 'Alerts regarding institutional platform maintenance.'],
                             ['Analytical Intelligence', 'Weekly summaries of institutional growth metrics.'],
                         ].map(([title, desc], i) => (
                             <div key={title} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.5rem 0', borderBottom: i === 3 ? 'none' : '1px solid var(--border-primary)' }}>

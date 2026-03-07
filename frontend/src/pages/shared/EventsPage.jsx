@@ -269,7 +269,7 @@ const EventsPage = () => {
                                     <input type="url" className="form-control" value={formData.registrationLink} onChange={e => setFormData({ ...formData, registrationLink: e.target.value })} placeholder="https://external-link.com" />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label" style={{ fontWeight: 800 }}>Detailed Narrative</label>
+                                    <label className="form-label" style={{ fontWeight: 800 }}>Description</label>
                                     <textarea className="form-control" required rows="4" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder="Document the event objectives, agenda, and outcomes..." style={{ resize: 'none' }} />
                                 </div>
                                 <button type="submit" className="btn btn-primary" style={{ padding: '1.25rem', fontWeight: 900 }}>

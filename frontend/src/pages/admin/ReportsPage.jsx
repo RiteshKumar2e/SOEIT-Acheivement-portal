@@ -142,7 +142,7 @@ const ReportsPage = () => {
             <div className="page-header reports-header-suite" style={{ marginBottom: '2.5rem' }}>
                 <div className="reports-header-content">
                     <h2 className="heading-display">Analytical Intelligence</h2>
-                    <p className="page-subtitle">Unified narrative of institutional growth, departmental performance, and excellence metrics.</p>
+                    <p className="page-subtitle">Unified overview of institutional growth, departmental performance, and excellence metrics.</p>
                 </div>
                 <div className="reports-header-actions" style={{ display: 'flex', gap: '1rem' }}>
                     <button className="btn btn-ghost reports-header-btn" style={{ border: '1px solid var(--border-primary)', fontWeight: 800 }} onClick={exportReportsExcel}>

@@ -190,7 +190,7 @@ const VerifyAchievementsPage = () => {
 
                                 <div style={{ padding: '1.5rem', background: 'white', borderRadius: '16px', border: '1px solid var(--border-primary)', marginBottom: '2rem', boxShadow: 'var(--shadow-xs)' }}>
                                     <div style={{ fontSize: '0.75rem', fontWeight: 900, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <FileText size={14} /> Description Narrative
+                                        <FileText size={14} /> Description
                                     </div>
                                     <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0, fontWeight: 500 }}>{selected.description}</p>
                                 </div>

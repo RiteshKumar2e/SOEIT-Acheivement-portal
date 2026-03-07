@@ -22,7 +22,7 @@ const UploadAchievementPage = () => {
         const e = {};
         if (!form.title.trim()) e.title = 'Institutional title is mandatory';
         if (!form.category) e.category = 'Classification required';
-        if (!form.description.trim()) e.description = 'Operational narrative required';
+        if (!form.description.trim()) e.description = 'Description required';
         if (!form.level) e.level = 'Impact resolution required';
         if (!form.date) e.date = 'Registry date required';
         setErrors(e);
@@ -82,7 +82,7 @@ const UploadAchievementPage = () => {
                     <div className="documentation-section-res" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                         <div className="card upload-form-card" style={{ padding: '2.5rem' }}>
                             <div className="card-header" style={{ marginBottom: '2rem', padding: 0 }}>
-                                <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.25rem' }}>Core Narrative</h4>
+                                <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.25rem' }}>Achievement Description</h4>
                                 <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>Specify the primary details of the institutional achievement.</p>
                             </div>
 
@@ -152,7 +152,7 @@ const UploadAchievementPage = () => {
                             </div>
 
                             <div className="form-group">
-                                <label className="form-label" style={{ fontWeight: 800 }}>Operational Narrative <span style={{ color: 'var(--error-500)' }}>*</span></label>
+                                <label className="form-label" style={{ fontWeight: 800 }}>Description <span style={{ color: 'var(--error-500)' }}>*</span></label>
                                 <textarea
                                     className={`form-control ${errors.description ? 'error' : ''}`}
                                     rows={6}

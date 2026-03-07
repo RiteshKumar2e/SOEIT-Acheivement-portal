@@ -127,8 +127,8 @@ const ProfilePage = () => {
             {/* Protocol Navigation Control */}
             <div className="protocol-nav-header" style={{ marginBottom: '3rem', background: 'var(--slate-50)', padding: '0.625rem', borderRadius: '20px', border: '1px solid var(--border-primary)' }}>
                 {[
-                    { key: 'profile', label: 'Identity Configuration', icon: User },
-                    { key: 'password', label: 'Security Enforcement', icon: Shield }
+                    { key: 'profile', label: 'Edit Profile', icon: User },
+                    { key: 'password', label: 'Security Settings', icon: Shield }
                 ].map(({ key, label, icon: Icon }) => (
                     <button key={key} onClick={() => setTab(key)}
                         className={`btn protocol-nav-btn ${tab === key ? 'btn-primary active' : 'btn-ghost'}`}
@@ -145,17 +145,17 @@ const ProfilePage = () => {
                         {/* Institutional Attribute Architecture */}
                         <div className="card profile-form-card" style={{ padding: '2.5rem', borderRadius: '24px', border: '1px solid var(--border-primary)', boxShadow: 'var(--shadow-sm)' }}>
                             <div style={{ marginBottom: '2.5rem' }}>
-                                <h4 style={{ margin: 0, fontWeight: 950, fontSize: '1.5rem', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>Academic Personnel Mapping</h4>
-                                <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.95rem', color: 'var(--text-muted)', fontWeight: 600 }}>Formal document synchronization for the institutional archival registry.</p>
+                                <h4 style={{ margin: 0, fontWeight: 950, fontSize: '1.5rem', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>Profile Details</h4>
+                                <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.95rem', color: 'var(--text-muted)', fontWeight: 600 }}>Update your public and institutional profile information.</p>
                             </div>
 
                             <div className="form-fields-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.75rem', marginBottom: '2rem' }}>
                                 <div className="form-group">
-                                    <label className="form-label field-label-res">Personnel Nomenclature</label>
+                                    <label className="form-label field-label-res">Full Name</label>
                                     <input className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label field-label-res">Communication Endpoint</label>
+                                    <label className="form-label field-label-res">Phone Number</label>
                                     <input className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} placeholder="+91 00000 00000" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} />
                                 </div>
 
@@ -181,9 +181,9 @@ const ProfilePage = () => {
                             </div>
 
                             <div className="form-group">
-                                <label className="form-label field-label-res">Professional Abstract Summary</label>
-                                <textarea className="form-control" style={{ borderRadius: '14px', padding: '1.25rem', fontWeight: 600, lineHeight: 1.6, resize: 'none' }} rows={6} placeholder="Document your academic specialization, technical yields, and professional trajectories..." value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} maxLength={500} />
-                                <div className="char-counter" style={{ textAlign: 'right', fontSize: '0.75rem', fontWeight: 900, color: 'var(--text-muted)', marginTop: '0.75rem', letterSpacing: '0.02em' }}>{form.bio.length} / 500 UNITS DOCUMENTED</div>
+                                <label className="form-label field-label-res">Professional Bio</label>
+                                <textarea className="form-control" style={{ borderRadius: '14px', padding: '1.25rem', fontWeight: 600, lineHeight: 1.6, resize: 'none' }} rows={6} placeholder="Briefly describe your academic background and interests..." value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} maxLength={500} />
+                                <div className="char-counter" style={{ textAlign: 'right', fontSize: '0.75rem', fontWeight: 900, color: 'var(--text-muted)', marginTop: '0.75rem', letterSpacing: '0.02em' }}>{form.bio.length} / 500 characters</div>
                             </div>
                         </div>
 
@@ -247,9 +247,9 @@ const ProfilePage = () => {
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
                             {[
-                                { id: 'currentPassword', label: 'Operational Credential', type: 'current' },
-                                { id: 'newPassword', label: 'New Cryptographic Secret', type: 'new' },
-                                { id: 'confirmPassword', label: 'Secret Authentication', type: 'confirm' }
+                                { id: 'currentPassword', label: 'Current Password', type: 'current' },
+                                { id: 'newPassword', label: 'New Password', type: 'new' },
+                                { id: 'confirmPassword', label: 'Confirm New Password', type: 'confirm' }
                             ].map(({ id, label, type }) => (
                                 <div key={id} className="form-group">
                                     <label className="form-label" style={{ fontWeight: 900, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</label>
