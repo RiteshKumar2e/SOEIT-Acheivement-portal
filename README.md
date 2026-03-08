@@ -51,7 +51,7 @@ graph TD
     subgraph "Persistence Layer (Turso / LibSQL)"
         Models --> DB[(SQL Metadata)]
         Models --> BLOB[(File BLOB Repository)]
-        Note over BLOB: Certificates & Profile Images stored as Binary Literals
+        BLOB --- Desc("Certificates & Profile Images stored as Binary Literals")
     end
 ```
 
