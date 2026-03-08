@@ -495,44 +495,62 @@ const FacultyDashboard = () => {
             {/* Scholar Insight Suite */}
             {selectedStudent && (
                 <div className="modal-overlay animate-fade-in" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)', zIndex: 1001, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
-                    <div className="card animate-scale-in" style={{ width: '100%', maxWidth: '480px', padding: 0, overflow: 'hidden' }}>
-                        <div style={{ background: 'linear-gradient(135deg, var(--brand-700), var(--brand-900))', padding: '2.5rem 1.5rem', textAlign: 'center', color: 'white' }}>
-                            <div className="avatar avatar-xl" style={{ width: 96, height: 96, background: 'rgba(255,255,255,0.15)', border: '4px solid rgba(255,255,255,0.2)', margin: '0 auto 1.5rem auto', fontSize: '2.5rem', fontWeight: 900 }}>
+                    <div className="card animate-scale-in" style={{ width: '100%', maxWidth: '480px', padding: 0, overflow: 'hidden', position: 'relative' }}>
+                        <button
+                            onClick={() => setSelectedStudent(null)}
+                            className="btn btn-ghost"
+                            style={{
+                                position: 'absolute',
+                                top: '1.25rem',
+                                right: '1.25rem',
+                                zIndex: 10,
+                                padding: '0.5rem',
+                                borderRadius: '50%',
+                                background: 'rgba(255,255,255,0.1)',
+                                color: '#ff6b6b', // Vibrant Red for clear termination
+                                border: '1px solid rgba(255,107,107,0.2)'
+                            }}
+                        >
+                            <X size={24} strokeWidth={3} />
+                        </button>
+
+                        <div style={{ background: 'linear-gradient(135deg, var(--brand-700), var(--brand-900))', padding: '2.5rem 1.5rem', textAlign: 'center', color: '#ffffff' }}>
+                            <div className="avatar avatar-xl" style={{ width: 96, height: 96, background: 'rgba(255,255,255,0.15)', border: '4px solid rgba(255,255,255,0.2)', margin: '0 auto 1.5rem auto', fontSize: '2.5rem', fontWeight: 900, color: '#ffffff' }}>
                                 {selectedStudent.name.charAt(0)}
                             </div>
-                            <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{selectedStudent.name}</h3>
-                            <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.9rem', opacity: 0.9, fontWeight: 600 }}>{selectedStudent.enrollmentNo || 'Institutional Entry: ' + selectedStudent._id.slice(-6).toUpperCase()}</p>
+                            <h3 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.02em' }}>{selectedStudent.name}</h3>
+                            <p style={{ margin: '0.6rem 0 0 0', fontSize: '0.95rem', opacity: 0.95, fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>{selectedStudent.enrollmentNo || 'Institutional Entry: ' + selectedStudent._id.slice(-6).toUpperCase()}</p>
                         </div>
                         <div className="card-body" style={{ padding: '2rem' }}>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-                                <div style={{ padding: '1rem', background: 'var(--slate-50)', borderRadius: '16px', textAlign: 'center', border: '1px solid var(--border-primary)' }}>
-                                    <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>Academic Unit</div>
-                                    <div style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '0.9rem' }}>Sem {selectedStudent.semester} • {selectedStudent.section}</div>
+                                <div style={{ padding: '1.25rem 1rem', background: 'var(--slate-50)', borderRadius: '16px', textAlign: 'center', border: '1px solid var(--border-primary)' }}>
+                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.35rem', letterSpacing: '0.05em' }}>Academic Unit</div>
+                                    <div style={{ fontWeight: 900, color: 'var(--text-primary)', fontSize: '1rem' }}>Sem {selectedStudent.semester} • {selectedStudent.section}</div>
                                 </div>
-                                <div style={{ padding: '1rem', background: 'var(--slate-50)', borderRadius: '16px', textAlign: 'center', border: '1px solid var(--border-primary)' }}>
-                                    <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>Department</div>
-                                    <div style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '0.9rem' }}>{selectedStudent.department}</div>
+                                <div style={{ padding: '1.25rem 1rem', background: 'var(--slate-50)', borderRadius: '16px', textAlign: 'center', border: '1px solid var(--border-primary)' }}>
+                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.35rem', letterSpacing: '0.05em' }}>Department</div>
+                                    <div style={{ fontWeight: 900, color: 'var(--text-primary)', fontSize: '1rem' }}>{selectedStudent.department}</div>
                                 </div>
                             </div>
 
-                            <div style={{ borderTop: '1px solid var(--border-primary)', paddingTop: '1.5rem', marginBottom: '2rem' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                                    <h5 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Achievement Analytical Summary</h5>
+                            <div style={{ borderTop: '2px solid var(--border-primary)', paddingTop: '2rem', marginBottom: '2.5rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                    <h5 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 900, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.075em' }}>Performance Analytics</h5>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', textAlign: 'center' }}>
-                                    <div>
-                                        <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--success-600)' }}>{selectedStudent.achievementCounts?.approved || 0}</div>
-                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>VERIFIED</div>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontSize: '2rem', fontWeight: 950, color: 'var(--success-600)', lineHeight: 1 }}>{selectedStudent.achievementCounts?.approved || 0}</div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-primary)', fontWeight: 800, marginTop: '0.5rem', opacity: 0.8 }}>VERIFIED</div>
                                     </div>
-                                    <div style={{ width: '1px', background: 'var(--border-primary)' }}></div>
-                                    <div>
-                                        <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--warning-500)' }}>{selectedStudent.achievementCounts?.pending || 0}</div>
-                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>REVIEW</div>
+                                    <div style={{ width: '2px', background: 'var(--border-primary)', alignSelf: 'stretch' }}></div>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontSize: '2rem', fontWeight: 950, color: 'var(--warning-500)', lineHeight: 1 }}>{selectedStudent.achievementCounts?.pending || 0}</div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-primary)', fontWeight: 800, marginTop: '0.5rem', opacity: 0.8 }}>REVIEW</div>
                                     </div>
-                                    <div style={{ width: '1px', background: 'var(--border-primary)' }}></div>
-                                    <div>
-                                        <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--brand-600)' }}>{selectedStudent.achievementCounts?.points || 0}</div>
-                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>POINTS</div>
+                                    <div style={{ width: '2px', background: 'var(--border-primary)', alignSelf: 'stretch' }}></div>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontSize: '2rem', fontWeight: 950, color: 'var(--brand-600)', lineHeight: 1 }}>{selectedStudent.achievementCounts?.points || 0}</div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-primary)', fontWeight: 800, marginTop: '0.5rem', opacity: 0.8 }}>TOTAL PTS</div>
                                     </div>
                                 </div>
                             </div>
