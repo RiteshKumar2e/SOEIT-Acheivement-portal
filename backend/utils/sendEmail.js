@@ -33,7 +33,7 @@ const sendEmail = async (options) => {
 
         // If multi-recipient (events/notices), use BCC for privacy and deliverability
         if (isMulti) {
-            body.to = [{ email: process.env.FROM_EMAIL }]; // Send to self as primary
+            body.to = [{ email: process.env.FROM_EMAIL || 'ritesh221403@arkajainuniversity.ac.in' }]; // Send to self as primary
             body.bcc = recipientList;
         } else {
             body.to = recipientList;
