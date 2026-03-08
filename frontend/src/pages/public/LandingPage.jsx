@@ -142,9 +142,9 @@ const testimonials = [
     },
     {
         quote: "As a student, seeing my dashboard grow with verified badges motivates me to participate in more hackathons and technical certifications.",
-        author: "Final Year Student",
-        role: "Student Community",
-        initial: "S"
+        author: "Ritesh Kumar",
+        role: "Final Year Student , CCS Club President",
+        initial: "R"
     },
     {
         quote: "We now have real-time analytics on which skills are trending in our student body, allowing us to align our curriculum with industry demands.",
