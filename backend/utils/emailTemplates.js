@@ -40,10 +40,10 @@ const getEmailTemplate = ({ title, preheader, content, actionUrl, actionText, fo
         <table class="main">
             <tr>
                 <td class="header">
-                    <div style="display: inline-block; vertical-align: middle; margin-right: 15px;">
-                        <img src="${process.env.CLIENT_URL || 'https://soeit-acheivement-portal.vercel.app'}/aju-logo.png" alt="AJU Logo" style="width: 50px; height: auto; display: block;">
+                    <div style="margin-bottom: 20px;">
+                        <img src="${process.env.CLIENT_URL || 'https://soeit-acheivement-portal.vercel.app'}/aju-logo.png" alt="AJU Logo" style="width: 160px; height: auto; display: inline-block; background-color: white; padding: 10px; border-radius: 8px;">
                     </div>
-                    <div style="display: inline-block; vertical-align: middle; text-align: left;">
+                    <div>
                         <p class="logo-text">SOEIT</p>
                         <p class="department-text">Achievement & Registry Portal</p>
                     </div>
