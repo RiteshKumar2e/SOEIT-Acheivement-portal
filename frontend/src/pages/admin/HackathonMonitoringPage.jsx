@@ -249,18 +249,30 @@ const HackathonMonitoringPage = () => {
 
             {/* Add Modal */}
             {showAddModal && (
-                <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
-                    <div className="modal-content" style={{ background: 'white', padding: '2rem', borderRadius: '16px', width: '90%', maxWidth: '500px', boxShadow: 'var(--shadow-2xl)' }}>
-                        <h2 style={{ marginBottom: '1.5rem', fontWeight: 900 }}>Publish New Challenge</h2>
-                        <form onSubmit={handleAddHackathon} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem' }}>Challenge Title</label>
-                                <input className="input" required value={newHack.title} onChange={e => setNewHack({ ...newHack, title: e.target.value })} placeholder="e.g. Smart India Hackathon 2026" />
+                <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <h2>Publish New Challenge</h2>
+
+                        <form onSubmit={handleAddHackathon} className="modal-form">
+                            <div className="form-group">
+                                <label className="form-label">Challenge Title</label>
+                                <input
+                                    className="form-input"
+                                    required
+                                    value={newHack.title}
+                                    onChange={e => setNewHack({ ...newHack, title: e.target.value })}
+                                    placeholder="e.g. Smart India Hackathon 2026"
+                                />
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem' }}>Category</label>
-                                    <select className="input" value={newHack.type} onChange={e => setNewHack({ ...newHack, type: e.target.value })}>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label className="form-label">Category</label>
+                                    <select
+                                        className="form-input"
+                                        value={newHack.type}
+                                        onChange={e => setNewHack({ ...newHack, type: e.target.value })}
+                                    >
                                         <option>Web Development</option>
                                         <option>AI / ML</option>
                                         <option>Cybersecurity</option>
@@ -270,32 +282,67 @@ const HackathonMonitoringPage = () => {
                                         <option>Social Impact</option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem' }}>Badge / Tag</label>
-                                    <input className="input" value={newHack.badge} onChange={e => setNewHack({ ...newHack, badge: e.target.value })} placeholder="e.g. Innovation" />
+                                <div className="form-group">
+                                    <label className="form-label">Badge / Tag</label>
+                                    <input
+                                        className="form-input"
+                                        value={newHack.badge}
+                                        onChange={e => setNewHack({ ...newHack, badge: e.target.value })}
+                                        placeholder="e.g. Innovation"
+                                    />
                                 </div>
                             </div>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem' }}>Prize Pool Description</label>
-                                <input className="input" value={newHack.prize} onChange={e => setNewHack({ ...newHack, prize: e.target.value })} placeholder="e.g. ₹1,00,000" />
+
+                            <div className="form-group">
+                                <label className="form-label">Prize Pool Description</label>
+                                <input
+                                    className="form-input"
+                                    value={newHack.prize}
+                                    onChange={e => setNewHack({ ...newHack, prize: e.target.value })}
+                                    placeholder="e.g. ₹1,00,000"
+                                />
                             </div>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem' }}>Registration Link (URL)</label>
-                                <input className="input" type="url" required value={newHack.link} onChange={e => setNewHack({ ...newHack, link: e.target.value })} placeholder="https://..." />
+
+                            <div className="form-group">
+                                <label className="form-label">Registration Link (URL)</label>
+                                <input
+                                    className="form-input"
+                                    type="url"
+                                    required
+                                    value={newHack.link}
+                                    onChange={e => setNewHack({ ...newHack, link: e.target.value })}
+                                    placeholder="https://official-portal.com"
+                                />
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem' }}>Deadline / Month</label>
-                                    <input className="input" value={newHack.deadline_date} onChange={e => setNewHack({ ...newHack, deadline_date: e.target.value })} placeholder="e.g. Aug 2026" />
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label className="form-label">Deadline / Month</label>
+                                    <input
+                                        className="form-input"
+                                        value={newHack.deadline_date}
+                                        onChange={e => setNewHack({ ...newHack, deadline_date: e.target.value })}
+                                        placeholder="Aug 2026"
+                                    />
                                 </div>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem' }}>Est. Participants</label>
-                                    <input className="input" value={newHack.students_count} onChange={e => setNewHack({ ...newHack, students_count: e.target.value })} placeholder="e.g. 10k+" />
+                                <div className="form-group">
+                                    <label className="form-label">Est. Participants</label>
+                                    <input
+                                        className="form-input"
+                                        value={newHack.students_count}
+                                        onChange={e => setNewHack({ ...newHack, students_count: e.target.value })}
+                                        placeholder="10k+"
+                                    />
                                 </div>
                             </div>
-                            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                                <button type="button" className="btn btn-ghost" onClick={() => setShowAddModal(false)} style={{ flex: 1 }}>Cancel</button>
-                                <button type="submit" className="btn btn-primary" style={{ flex: 2 }}>Publish Challenge</button>
+
+                            <div className="modal-actions">
+                                <button type="button" className="btn btn-ghost" onClick={() => setShowAddModal(false)}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary" style={{ flex: 2 }}>
+                                    Publish Challenge
+                                </button>
                             </div>
                         </form>
                     </div>

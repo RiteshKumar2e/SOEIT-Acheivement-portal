@@ -154,9 +154,9 @@ const testimonials = [
     },
     {
         quote: "I submitted my national-level coding competition win and it was verified within 24 hours. The process is fast, transparent, and incredibly reliable.",
-        author: "Ankit Kumar",
-        role: "3rd Year Student, CSE",
-        initial: "A"
+        author: "Gourav Kumar Pandey",
+        role: "Final Year Student , Techinal Lead , GDG",
+        initial: "G"
     },
     {
         quote: "Having a centralized platform to monitor all departmental achievements has drastically improved our NIRF submission quality and turnaround time.",
