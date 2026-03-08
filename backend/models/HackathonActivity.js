@@ -1,8 +1,8 @@
 const { getDb } = require('../config/db');
 
 const genId = async () => {
-    const { nanoid } = await import('nanoid');
-    return nanoid();
+    const crypto = require('crypto');
+    return crypto.randomBytes(10).toString('hex');
 };
 
 const HackathonActivity = {

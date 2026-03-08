@@ -140,46 +140,56 @@ const seedDemoUsers = async (client) => {
   ];
 
   for (const u of demoUsers) {
-    const existing = await client.execute({ sql: 'SELECT id FROM users WHERE email = ?', args: [u.email] });
-    if (existing.rows.length === 0) {
-      const salt = await bcrypt.genSalt(12);
-      const hashed = await bcrypt.hash(u.password, salt);
-      const { nanoid } = await import('nanoid');
-      const id = nanoid();
-      await client.execute({
-        sql: `INSERT INTO users (id, name, email, password, role, department, enrollment_no, batch, semester, is_active)
-                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-        args: [id, u.name, u.email, hashed, u.role, u.department, u.enrollmentNo, u.batch || null, u.semester || null],
-      });
-      console.log(`👤 Demo ${u.role} created (${u.enrollmentNo})`);
-    } else {
-      console.log(`🔄 Demo ${u.role} already exists, skipping.`);
+    try {
+      const existing = await client.execute({ sql: 'SELECT id FROM users WHERE email = ?', args: [u.email] });
+      if (existing.rows.length === 0) {
+        const salt = await bcrypt.genSalt(12);
+        const hashed = await bcrypt.hash(u.password, salt);
+        const id = Math.random().toString(36).substring(2, 15);
+        await client.execute({
+          sql: `INSERT INTO users (id, name, email, password, role, department, enrollment_no, batch, semester, is_active)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+          args: [id, u.name, u.email, hashed, u.role, u.department, u.enrollmentNo, u.batch || null, u.semester || null],
+        });
+        console.log(`👤 Demo ${u.role} created (${u.enrollmentNo})`);
+      } else {
+        console.log(`🔄 Demo ${u.role} already exists, skipping.`);
+      }
+    } catch (err) {
+      console.error(`❌ Error seeding user ${u.email}:`, err.message);
     }
   }
 };
 
 const seedHackathons = async (client) => {
-  const existing = await client.execute('SELECT COUNT(*) as cnt FROM hackathons');
-  if (Number(existing.rows[0].cnt) === 0) {
-    const admin = await client.execute({ sql: "SELECT id FROM users WHERE role = 'admin' LIMIT 1" });
-    if (admin.rows.length > 0) {
-      const adminId = admin.rows[0].id;
-      const { nanoid } = await import('nanoid');
+  try {
+    const existing = await client.execute('SELECT COUNT(*) as cnt FROM hackathons');
+    const count = existing.rows && existing.rows[0] ? Number(existing.rows[0].cnt || 0) : 0;
 
-      const hacks = [
-        { title: 'Smart India Hackathon 2026', type: 'Govt of India', prize: '₹1,00,000', badge: 'Premier', link: 'https://www.sih.gov.in/', deadline: 'Aug 2026' },
-        { title: 'Google AI Challenge 2026', type: 'AI / ML', prize: '$50,000', badge: 'AI', link: 'https://ai.google/challenges/', deadline: 'Mar 2026' },
-        { title: 'MLH Global Hackathon 2026', type: 'Web Development', prize: '$20,000', badge: 'Web', link: 'https://mlh.io/', deadline: 'Rolling' }
-      ];
+    if (count === 0) {
+      const adminRes = await client.execute({ sql: "SELECT id FROM users WHERE role = 'admin' LIMIT 1" });
+      if (adminRes.rows && adminRes.rows.length > 0) {
+        const adminId = adminRes.rows[0].id;
 
-      for (const h of hacks) {
-        await client.execute({
-          sql: `INSERT INTO hackathons (id, title, type, prize, badge, link, deadline_date, created_by, students_count)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          args: [nanoid(), h.title, h.type, h.prize, h.badge, h.link, h.deadline, adminId, '10k+']
-        });
+        const hacks = [
+          { title: 'Smart India Hackathon 2026', type: 'Govt of India', prize: '₹1,00,000', badge: 'Premier', link: 'https://www.sih.gov.in/', deadline: 'Aug 2026' },
+          { title: 'Google AI Challenge 2026', type: 'AI / ML', prize: '$50,000', badge: 'AI', link: 'https://ai.google/challenges/', deadline: 'Mar 2026' },
+          { title: 'MLH Global Hackathon 2026', type: 'Web Development', prize: '$20,000', badge: 'Web', link: 'https://mlh.io/', deadline: 'Rolling' }
+        ];
+
+        for (const h of hacks) {
+          const id = 'hack_' + Math.random().toString(36).substring(2, 10);
+          await client.execute({
+            sql: `INSERT INTO hackathons (id, title, type, prize, badge, link, deadline_date, created_by, students_count)
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            args: [id, h.title, h.type, h.prize, h.badge, h.link, h.deadline, adminId, '10k+']
+          });
+        }
       }
     }
+  } catch (err) {
+    console.error('❌ Error seeding hackathons:', err.message);
+    // Don't rethrow, seeding isn't critical for server start
   }
 };
 
