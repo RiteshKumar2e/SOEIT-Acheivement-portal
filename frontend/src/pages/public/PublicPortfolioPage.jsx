@@ -50,59 +50,58 @@ const PublicPortfolioPage = () => {
 
         try {
             const zip = new JSZip();
-            // Robust base URL construction: detect if the API URL includes '/api' and strip it for static files
-            let apiBase = import.meta.env.VITE_API_URL || 'https://soeit-acheivement-portal.onrender.com';
-            const staticBase = apiBase.endsWith('/api') ? apiBase.replace(/\/api$/, '') : apiBase;
+            const prodBase = 'https://soeit-acheivement-portal.onrender.com';
 
-            // Gather all proof files across all achievements
+
             const filesToDownload = [];
             data.achievements.forEach(ach => {
                 if (ach.proofFiles && ach.proofFiles.length > 0) {
                     ach.proofFiles.forEach(file => {
+                        const relPath = file.url.startsWith('/uploads') ? file.url : `/uploads/certificates/${file.filename}`;
                         filesToDownload.push({
-                            url: file.url.startsWith('http') ? file.url : `${staticBase}${file.url}`,
+                            relPath,
                             name: `${ach.category}_${decodeURIComponent(file.originalname)}`
                         });
                     });
                 } else if (ach.certificateUrl) {
+                    const relPath = ach.certificateUrl;
                     filesToDownload.push({
-                        url: ach.certificateUrl.startsWith('http') ? ach.certificateUrl : `${staticBase}${ach.certificateUrl}`,
-                        name: `${ach.category}_Certificate.pdf` // Fallback name
+                        relPath,
+                        name: `${ach.category}_Certificate.pdf`
                     });
                 }
             });
 
             if (filesToDownload.length === 0) {
-                toast.error('No evidentiary documents found for direct extraction.');
+                toast.error('No evidentiary documents identified in cloud registry.');
                 setDownloading(false);
                 toast.dismiss(toastId);
                 return;
             }
 
-            // Fetch all files in parallel with validation
+            // Fetch all files in parallel from Production Cloud Hub
             const downloadPromises = filesToDownload.map(async (file, index) => {
                 try {
-                    const response = await fetch(file.url);
+                    const response = await fetch(`${prodBase}${file.relPath}`);
                     if (!response.ok) {
-                        console.error(`Fetch failure for ${file.name}: ${response.status} ${response.statusText}`);
-                        return; // Skip invalid records to prevent corrupted ZIP entries
+                        console.error(`Archival sync failure: Document not found on production node [${file.name}]`);
+                        return;
                     }
+
                     const blob = await response.blob();
-                    // Handle duplicate filenames by appending index
                     const extension = file.name.split('.').pop();
                     const baseName = file.name.substring(0, file.name.lastIndexOf('.'));
                     const finalName = `${baseName}_${index}.${extension}`;
                     zip.file(finalName, blob);
                 } catch (err) {
-                    console.error(`Protocol failure for record: ${file.name}`, err);
+                    console.error(`Protocol exception for record: ${file.name}`, err);
                 }
             });
 
             await Promise.all(downloadPromises);
 
-            // Generate ZIP only if it's not empty
             if (Object.keys(zip.files).length === 0) {
-                toast.error('Archival synchronization resulted in an empty set. Check records.', { id: toastId });
+                toast.error('Synchronization failed: Files not found in production storage.', { id: toastId });
                 setDownloading(false);
                 return;
             }
@@ -119,7 +118,7 @@ const PublicPortfolioPage = () => {
             toast.success('Archival sequence complete. Student records exported.', { id: toastId });
         } catch (error) {
             console.error('Archival protocol exception:', error);
-            toast.error('Critical failure during record synchronization.', { id: toastId });
+            toast.error('Critical failure during multi-node synchronization.', { id: toastId });
         } finally {
             setDownloading(false);
         }
