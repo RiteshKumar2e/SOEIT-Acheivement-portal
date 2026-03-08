@@ -50,7 +50,9 @@ const PublicPortfolioPage = () => {
 
         try {
             const zip = new JSZip();
-            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            // Robust base URL construction: detect if the API URL includes '/api' and strip it for static files
+            let apiBase = import.meta.env.VITE_API_URL || 'https://soeit-acheivement-portal.onrender.com';
+            const staticBase = apiBase.endsWith('/api') ? apiBase.replace(/\/api$/, '') : apiBase;
 
             // Gather all proof files across all achievements
             const filesToDownload = [];
@@ -58,13 +60,13 @@ const PublicPortfolioPage = () => {
                 if (ach.proofFiles && ach.proofFiles.length > 0) {
                     ach.proofFiles.forEach(file => {
                         filesToDownload.push({
-                            url: file.url.startsWith('http') ? file.url : `${baseUrl}${file.url}`,
-                            name: `${ach.category}_${file.originalname}`
+                            url: file.url.startsWith('http') ? file.url : `${staticBase}${file.url}`,
+                            name: `${ach.category}_${decodeURIComponent(file.originalname)}`
                         });
                     });
                 } else if (ach.certificateUrl) {
                     filesToDownload.push({
-                        url: ach.certificateUrl.startsWith('http') ? ach.certificateUrl : `${baseUrl}${ach.certificateUrl}`,
+                        url: ach.certificateUrl.startsWith('http') ? ach.certificateUrl : `${staticBase}${ach.certificateUrl}`,
                         name: `${ach.category}_Certificate.pdf` // Fallback name
                     });
                 }
@@ -77,10 +79,14 @@ const PublicPortfolioPage = () => {
                 return;
             }
 
-            // Fetch all files in parallel
+            // Fetch all files in parallel with validation
             const downloadPromises = filesToDownload.map(async (file, index) => {
                 try {
                     const response = await fetch(file.url);
+                    if (!response.ok) {
+                        console.error(`Fetch failure for ${file.name}: ${response.status} ${response.statusText}`);
+                        return; // Skip invalid records to prevent corrupted ZIP entries
+                    }
                     const blob = await response.blob();
                     // Handle duplicate filenames by appending index
                     const extension = file.name.split('.').pop();
@@ -93,6 +99,13 @@ const PublicPortfolioPage = () => {
             });
 
             await Promise.all(downloadPromises);
+
+            // Generate ZIP only if it's not empty
+            if (Object.keys(zip.files).length === 0) {
+                toast.error('Archival synchronization resulted in an empty set. Check records.', { id: toastId });
+                setDownloading(false);
+                return;
+            }
 
             const content = await zip.generateAsync({ type: 'blob' });
 
