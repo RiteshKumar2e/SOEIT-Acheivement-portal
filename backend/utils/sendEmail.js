@@ -1,39 +1,66 @@
-const nodemailer = require('nodemailer');
-
+/**
+ * High-Performance Email Service using Brevo (Sendinblue) Direct API
+ * Replaces SMTP for better reliability and performance.
+ */
 const sendEmail = async (options) => {
     try {
-        let transporter;
-
-        // Use SMTP if configured
-        if (process.env.SMTP_HOST && process.env.SMTP_USER) {
-            transporter = nodemailer.createTransport({
-                host: process.env.SMTP_HOST,
-                port: process.env.SMTP_PORT,
-                secure: process.env.SMTP_PORT == 465, // true for 465, false for other ports
-                auth: {
-                    user: process.env.SMTP_USER,
-                    pass: process.env.BREVO_API_KEY,
-                },
-            });
-        } else {
-            console.log('--- EMAIL SIMULATION ---');
+        const apiKey = process.env.BREVO_API_KEY;
+        if (!apiKey) {
+            console.warn('❌ [BREVO] API Key missing. Skipping email send.');
+            console.log('--- MAIL SIMULATION ---');
             console.log('To:', options.to);
             console.log('Subject:', options.subject);
             return;
         }
 
-        const message = {
-            from: `${process.env.FROM_NAME || 'SOEIT Portal'} <${process.env.FROM_EMAIL || 'no-reply@soeit.edu.in'}>`,
-            to: options.to,
+        const url = 'https://api.brevo.com/v3/smtp/email';
+
+        // Handle multiple recipients (comma-separated string)
+        const recipientList = options.to ? options.to.split(',').map(email => ({ email: email.trim() })) : [];
+        if (recipientList.length === 0) return;
+
+        const isMulti = recipientList.length > 1;
+
+        const body = {
+            sender: {
+                name: process.env.FROM_NAME || 'SOEIT Portal',
+                email: process.env.FROM_EMAIL || 'ritesh221403@arkajainuniversity.ac.in'
+            },
             subject: options.subject,
-            text: options.message,
-            html: options.html,
+            htmlContent: options.html,
+            textContent: options.message || 'Please view this email in an HTML-capable viewer.'
         };
 
-        const info = await transporter.sendMail(message);
-        console.log('📧 Email sent successfully:', info.messageId);
+        // If multi-recipient (events/notices), use BCC for privacy and deliverability
+        if (isMulti) {
+            body.to = [{ email: process.env.FROM_EMAIL }]; // Send to self as primary
+            body.bcc = recipientList;
+        } else {
+            body.to = recipientList;
+        }
+
+        console.log(`🚀 [BREVO] Dispatching: "${options.subject}" to ${recipientList.length} recipients...`);
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'api-key': apiKey,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log('✅ [BREVO] Successfully sent. Message ID:', data.messageId);
+        } else {
+            console.error('❌ [BREVO] Dispatch Failed:', data.code || 'Unknown Error');
+            console.error('🔍 [BREVO] API Response:', JSON.stringify(data, null, 2));
+        }
     } catch (error) {
-        console.error('❌ Email failed to send:', error.message);
+        console.error('❌ [BREVO] Fatal API Error:', error.message);
     }
 };
 
