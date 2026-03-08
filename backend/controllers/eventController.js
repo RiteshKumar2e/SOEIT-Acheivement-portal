@@ -1,6 +1,7 @@
 const Event = require('../models/Event');
 const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');
+const getEmailTemplate = require('../utils/emailTemplates');
 
 // @desc    Create new event
 // @route   POST /api/events
@@ -28,22 +29,28 @@ exports.createEvent = async (req, res, next) => {
                 to: studentEmails.join(','),
                 subject: `New Event: ${title}`,
                 message: `Hello Students,\n\nA new event has been added: ${title}.\n\nCategory: ${category}\nVenue: ${venue}\nDate: ${new Date(date).toLocaleDateString()}\n\nPlease login to the SOEIT portal to view more details.\n\nBest Regards,\nSOEIT Portal`,
-                html: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
-                        <h2 style="color: #3b82f6;">New Academic Event Published!</h2>
-                        <p>Hello Students,</p>
-                        <p>A new event has been added to the portal that might interest you:</p>
-                        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                            <h3 style="margin-top: 0; color: #1e293b;">${title}</h3>
-                            <p><strong>Category:</strong> ${category}</p>
-                            <p><strong>Venue:</strong> ${venue}</p>
-                            <p><strong>Date:</strong> ${new Date(date).toLocaleDateString()}</p>
+                html: getEmailTemplate({
+                    title: `New Event: ${title}`,
+                    content: `
+                        <h1 class="h1">New Academic Event Published!</h1>
+                        <p class="p">Hello Students, a new event has been added to the portal that might interest you:</p>
+                        
+                        <div style="background: #f8fafc; padding: 25px; border-radius: 8px; margin: 25px 0; border: 1px solid #e2e8f0;">
+                            <h3 style="margin-top: 0; color: #002147; font-size: 20px;">${title}</h3>
+                            <div style="margin-bottom: 15px;">
+                                <span class="badge badge-info">${category}</span>
+                            </div>
+                            <p style="margin: 5px 0; color: #475569;"><strong>Venue:</strong> ${venue}</p>
+                            <p style="margin: 5px 0; color: #475569;"><strong>Date:</strong> ${new Date(date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                            <div style="margin-top: 15px; font-size: 14px; color: #64748b; line-height: 1.5;">${description}</div>
                         </div>
-                        <p>For further details and registration links, please login to your portal dashboard.</p>
-                        <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/login" style="display: inline-block; padding: 10px 20px; background-color: #3b82f6; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;">Login to Portal</a>
-                        <p style="margin-top: 20px; font-size: 0.8rem; color: #64748b;">This is an automated notification from SOEIT Portal. Please do not reply.</p>
-                    </div>
-                `,
+
+                        <p class="p">For further details, session links, and registration, please access the portal via the button below.</p>
+                    `,
+                    actionUrl: `${process.env.CLIENT_URL || 'https://soeit-ritesh.onrender.com'}/login`,
+                    actionText: 'View Event Details',
+                    footerText: 'This is an institutional notification from SOEIT Portal. Your participation is highly encouraged.'
+                }),
             }).catch(err => console.error('Email failed:', err));
         }
 

@@ -1,6 +1,7 @@
 const Notice = require('../models/Notice');
 const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');
+const getEmailTemplate = require('../utils/emailTemplates');
 
 // @desc    Create new notice
 // @route   POST /api/notices
@@ -23,23 +24,28 @@ exports.createNotice = async (req, res, next) => {
                 to: studentEmails.join(','),
                 subject: `OFFICIAL NOTICE: ${title}`,
                 message: `Hello Students,\n\nA new official notice has been posted: ${title}.\n\nPriority: ${priority}\nContent: ${content}\n\nPlease login to the SOEIT portal to view more details.\n\nBest Regards,\nSOEIT Administration`,
-                html: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
-                        <div style="background-color: ${priority === 'Urgent' ? '#ef4444' : '#303657'}; color: white; padding: 10px 20px; border-radius: 5px 5px 0 0;">
-                            <h2 style="margin: 0;">Official Academic Notice</h2>
-                        </div>
-                        <div style="padding: 20px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 5px 5px;">
-                            <h3 style="color: #1e293b;">${title}</h3>
-                            <p style="color: #64748b; font-size: 0.9rem;">Listed under <strong>${priority}</strong> Priority</p>
-                            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
-                            <div style="color: #334155; line-height: 1.6;">${content.replace(/\n/g, '<br>')}</div>
-                            <div style="margin-top: 30px;">
-                                <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/login" style="display: inline-block; padding: 12px 24px; background-color: #8B1E1E; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold;">View Details on Portal</a>
+                html: getEmailTemplate({
+                    title: `Official Notice: ${title}`,
+                    content: `
+                        <h1 class="h1">Official Academic Notice</h1>
+                        <p class="p">The following departmental notification has been issued to all Students:</p>
+                        
+                        <div style="background: #ffffff; padding: 25px; border-radius: 8px; margin: 25px 0; border: 1px solid #e2e8f0; border-top: 5px solid ${priority === 'Urgent' ? '#ef4444' : '#002147'};">
+                            <h3 style="margin-top: 0; color: #1e293b; font-size: 18px;">${title}</h3>
+                            <div style="margin-bottom: 15px;">
+                                <span class="badge ${priority === 'Urgent' ? 'badge-error' : 'badge-info'}">${priority} Priority</span>
+                            </div>
+                            <div style="color: #334155; line-height: 1.7; font-size: 15px;">
+                                ${content.replace(/\n/g, '<br>')}
                             </div>
                         </div>
-                        <p style="margin-top: 20px; font-size: 0.8rem; color: #64748b; text-align: center;">This is an automated institutional notification from SOEIT Achievement Portal. Please do not reply.</p>
-                    </div>
-                `,
+
+                        <p class="p">Please take necessary action accordingly. Full documentation and related attachments are available on the portal.</p>
+                    `,
+                    actionUrl: `${process.env.CLIENT_URL || 'https://soeit-ritesh.onrender.com'}/login`,
+                    actionText: 'View Circular Details',
+                    footerText: 'This is an official institutional circular from SOEIT Administration. Mandatory attention is advised.'
+                }),
             }).catch(err => console.error('Notice Email failed:', err));
         }
 
