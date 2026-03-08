@@ -1,5 +1,5 @@
-import '../../styles/AllAchievementsPage.css';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { adminAPI } from '../../services/api';
 import { Search, Filter, Trophy, ChevronLeft, ChevronRight, Clock, CheckCircle, XCircle, Download } from 'lucide-react';
 import { format } from 'date-fns';
@@ -32,6 +32,7 @@ const StatusBadge = ({ status }) => {
 };
 
 const AllAchievementsPage = () => {
+    const navigate = useNavigate();
     const [achievements, setAchievements] = useState([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
@@ -239,23 +240,21 @@ const AllAchievementsPage = () => {
                                                 </span>
                                             </td>
                                             <td style={{ textAlign: 'center' }}>
-                                                {a.status === 'pending' && (
-                                                    <button
-                                                        className="btn btn-ghost btn-sm"
-                                                        onClick={() => navigate('/admin/verify')}
-                                                        style={{
-                                                            color: 'var(--brand-600)',
-                                                            fontWeight: 800,
-                                                            fontSize: '0.7rem',
-                                                            textTransform: 'uppercase',
-                                                            border: '1px solid var(--brand-100)',
-                                                            padding: '0.3rem 0.6rem',
-                                                            background: 'var(--primary-50)'
-                                                        }}
-                                                    >
-                                                        Verify
-                                                    </button>
-                                                )}
+                                                <button
+                                                    className="btn btn-ghost btn-sm"
+                                                    onClick={() => navigate(`/admin/verify?id=${a._id}&status=${a.status}`)}
+                                                    style={{
+                                                        color: a.status === 'pending' ? 'var(--brand-600)' : 'var(--text-muted)',
+                                                        fontWeight: 800,
+                                                        fontSize: '0.7rem',
+                                                        textTransform: 'uppercase',
+                                                        border: '1px solid var(--border-primary)',
+                                                        padding: '0.3rem 0.6rem',
+                                                        background: a.status === 'pending' ? 'var(--primary-50)' : 'white'
+                                                    }}
+                                                >
+                                                    {a.status === 'pending' ? 'Verify' : 'Review'}
+                                                </button>
                                             </td>
                                             <td style={{ textAlign: 'right', paddingRight: '1.5rem', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
                                                 {format(new Date(a.createdAt), 'MMM dd, yyyy')}

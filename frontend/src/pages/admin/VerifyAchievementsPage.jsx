@@ -1,7 +1,8 @@
 import '../../styles/VerifyAchievementsPage.css';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { adminAPI } from '../../services/api';
-import { CheckCircle, XCircle, Eye, Search, Filter, Clock, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, Search, Filter, Clock, FileText, ChevronLeft, ChevronRight, Trophy } from 'lucide-react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
@@ -13,11 +14,18 @@ const DEPARTMENTS = {
 const CATEGORIES = ['', 'Academic', 'Sports', 'Cultural', 'Technical', 'Research', 'Internship', 'Certification', 'Competition', 'Community Service', 'Other'];
 
 const VerifyAchievementsPage = () => {
+    const [searchParams] = useSearchParams();
     const [achievements, setAchievements] = useState([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
     const [pages, setPages] = useState(1);
-    const [filters, setFilters] = useState({ department: '', category: '', search: '', page: 1 });
+    const [filters, setFilters] = useState({
+        department: '',
+        category: '',
+        status: searchParams.get('status') || 'pending',
+        search: '',
+        page: 1
+    });
     const [selected, setSelected] = useState(null);
     const [action, setAction] = useState('');
     const [remarks, setRemarks] = useState('');
@@ -28,10 +36,20 @@ const VerifyAchievementsPage = () => {
         try {
             const params = { ...filters, limit: 10 };
             Object.keys(params).forEach(k => !params[k] && delete params[k]);
-            const { data } = await adminAPI.getPending(params);
+            const { data } = await adminAPI.getAll(params);
             setAchievements(data.data);
             setTotal(data.total);
             setPages(data.pages);
+
+            const targetId = searchParams.get('id');
+            if (targetId) {
+                const target = data.data.find(a => a._id === targetId);
+                if (target) {
+                    setSelected(target);
+                    setAction(target.status !== 'pending' ? target.status : '');
+                    setRemarks(target.remarks || '');
+                }
+            }
         } catch {
             toast.error('Failed to synchronize compliance registry');
         } finally {
@@ -39,7 +57,7 @@ const VerifyAchievementsPage = () => {
         }
     };
 
-    useEffect(() => { load(); }, [filters.department, filters.category, filters.page]);
+    useEffect(() => { load(); }, [filters.department, filters.category, filters.status, filters.page]);
 
     const handleVerify = async () => {
         if (!action) { toast.error('Selection required: Authorization or Invalidation'); return; }
@@ -72,7 +90,7 @@ const VerifyAchievementsPage = () => {
                         <Clock size={16} className="text-brand" strokeWidth={3} />
                         <span style={{ position: 'absolute', top: '-4px', right: '-4px', width: '8px', height: '8px', background: 'var(--error-500)', borderRadius: '50%', border: '2px solid white' }}></span>
                     </div>
-                    <span style={{ fontSize: '0.9rem', color: 'var(--brand-800)', fontWeight: 900, letterSpacing: '0.02em' }}>{total} OPERATIONS PENDING</span>
+                    <span style={{ fontSize: '0.9rem', color: 'var(--brand-800)', fontWeight: 900, letterSpacing: '0.02em' }}>{total} OPERATIONS FOUND</span>
                 </div>
             </div>
 
@@ -83,6 +101,12 @@ const VerifyAchievementsPage = () => {
                         <input className="form-control" placeholder="Search digital identifiers..." value={filters.search} onChange={e => setFilters(p => ({ ...p, search: e.target.value }))} onKeyDown={e => e.key === 'Enter' && load()} />
                         <Search size={20} className="search-icon" />
                     </div>
+                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700, minWidth: '160px' }} value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value, page: 1 }))}>
+                        <option value="">Status: All Records</option>
+                        <option value="pending">Pending Review</option>
+                        <option value="approved">Institutional Approved</option>
+                        <option value="rejected">Record Rejected</option>
+                    </select>
                     <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700 }} value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
                         <option value="">All Institutional Departments</option>
                         {Object.entries(DEPARTMENTS).map(([group, depts]) => (
@@ -130,13 +154,27 @@ const VerifyAchievementsPage = () => {
                                         transition: 'all 0.2s ease',
                                         borderRadius: '16px'
                                     }}
-                                    onClick={() => { setSelected(a); setAction(''); setRemarks(''); }}>
+                                    onClick={() => { setSelected(a); setAction(a.status !== 'pending' ? a.status : ''); setRemarks(a.remarks || ''); }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                                         <div style={{ width: 56, height: 56, background: selected?._id === a._id ? 'white' : 'var(--primary-50)', color: 'var(--brand-700)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '1.25rem', border: '1px solid var(--primary-100)', flexShrink: 0 }}>
                                             {a.student?.name?.charAt(0) || 'S'}
                                         </div>
                                         <div style={{ flex: 1, minWidth: 0 }}>
-                                            <div style={{ fontSize: '1.15rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '0.35rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                <div style={{ fontSize: '1.15rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '0.35rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</div>
+                                                <span style={{
+                                                    fontSize: '0.65rem',
+                                                    fontWeight: 900,
+                                                    textTransform: 'uppercase',
+                                                    padding: '0.25rem 0.5rem',
+                                                    borderRadius: '6px',
+                                                    background: a.status === 'approved' ? 'var(--success-50)' : a.status === 'rejected' ? 'var(--error-50)' : 'var(--warning-50)',
+                                                    color: a.status === 'approved' ? 'var(--success-700)' : a.status === 'rejected' ? 'var(--error-700)' : 'var(--warning-700)',
+                                                    border: `1px solid ${a.status === 'approved' ? 'var(--success-200)' : a.status === 'rejected' ? 'var(--error-200)' : 'var(--warning-200)'}`
+                                                }}>
+                                                    {a.status}
+                                                </span>
+                                            </div>
                                             <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', flexWrap: 'wrap' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--brand-400)' }}></div>
@@ -210,14 +248,39 @@ const VerifyAchievementsPage = () => {
                                 </div>
                             </div>
 
-                            {selected.proofFiles?.length > 0 && (
+                            {(selected.proofFiles?.length > 0 || selected.certificateUrl) && (
                                 <div style={{ marginBottom: '2.5rem' }}>
                                     <div style={{ fontSize: '0.8rem', fontWeight: 900, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                         <div style={{ width: 24, height: 2, background: 'var(--brand-500)' }}></div>
                                         Evidentiary Metadata
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                                        {selected.proofFiles.map((f, i) => (
+                                        {selected.certificateUrl && (
+                                            <a href={selected.certificateUrl} target="_blank" rel="noreferrer"
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '1.25rem',
+                                                    padding: '1.25rem',
+                                                    background: 'var(--primary-50)',
+                                                    borderRadius: '14px',
+                                                    border: '1px solid var(--primary-200)',
+                                                    color: 'var(--brand-800)',
+                                                    textDecoration: 'none',
+                                                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                                                }}
+                                                className="record-link-hover">
+                                                <div style={{ width: 44, height: 44, background: 'white', color: 'var(--brand-600)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--primary-100)' }}>
+                                                    <Trophy size={22} strokeWidth={2.5} />
+                                                </div>
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    <div style={{ fontSize: '0.9rem', fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Primary Certificate</div>
+                                                    <div style={{ fontSize: '0.7rem', color: 'var(--brand-500)', fontWeight: 800, textTransform: 'uppercase', marginTop: '0.2rem' }}>Institutional Yield</div>
+                                                </div>
+                                                <Eye size={18} />
+                                            </a>
+                                        )}
+                                        {selected.proofFiles?.map((f, i) => (
                                             <a key={i} href={f.url} target="_blank" rel="noreferrer"
                                                 style={{
                                                     display: 'flex',
@@ -272,7 +335,7 @@ const VerifyAchievementsPage = () => {
                                 </div>
 
                                 <button className="btn btn-primary w-full" style={{ height: '56px', borderRadius: '16px', fontWeight: 900, fontSize: '1.1rem', letterSpacing: '-0.02em', boxShadow: 'var(--shadow-lg)' }} onClick={handleVerify} disabled={!action || verifying}>
-                                    {verifying ? <div className="spinner-sm" /> : `Commit Evaluation Resolution`}
+                                    {verifying ? <div className="spinner-sm" /> : selected.status === 'pending' ? 'Commit Evaluation Resolution' : 'Update Verification Status'}
                                 </button>
                             </div>
                         </div>
