@@ -103,12 +103,12 @@ const ManagePostingsPage = () => {
 
     return (
         <div className="animate-fade-in">
-            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                <div>
+            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                <div style={{ minWidth: '200px' }}>
                     <h2 className="heading-display">Internship Postings</h2>
                     <p className="page-subtitle">Add and manage internship opportunities for students.</p>
                 </div>
-                <button className="btn btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
+                <button className="btn btn-primary" onClick={() => { resetForm(); setShowModal(true); }} style={{ width: 'auto' }}>
                     <Plus size={18} />
                     <span>Add New Internship</span>
                 </button>
@@ -129,7 +129,8 @@ const ManagePostingsPage = () => {
             </div>
 
             <div className="card" style={{ border: '1px solid var(--border-primary)', overflow: 'hidden' }}>
-                <div className="table-responsive">
+                {/* Desktop View */}
+                <div className="table-container display-desktop">
                     <table className="table">
                         <thead>
                             <tr>
@@ -193,6 +194,59 @@ const ManagePostingsPage = () => {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Mobile View */}
+                <div className="display-mobile" style={{ flexDirection: 'column', padding: '1rem', gap: '1rem' }}>
+                    {loading ? (
+                        [...Array(3)].map((_, i) => (
+                            <div key={i} className="skeleton" style={{ height: 160, borderRadius: '16px' }} />
+                        ))
+                    ) : postings.length === 0 ? (
+                        <div style={{ padding: '3rem 1rem', textAlign: 'center' }}>
+                            <Briefcase size={40} style={{ opacity: 0.1, marginBottom: '1rem' }} />
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No internship opportunities</p>
+                        </div>
+                    ) : (
+                        postings.map(post => (
+                            <div key={post.id} className="card" style={{ padding: '1.25rem', border: '1px solid var(--border-primary)', borderRadius: '16px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                                        <div style={{ width: 40, height: 40, background: 'var(--primary-100)', color: 'var(--brand-700)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Building2 size={20} />
+                                        </div>
+                                        <div>
+                                            <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{post.role}</div>
+                                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>{post.company_name}</div>
+                                        </div>
+                                    </div>
+                                    {(user.id === post.created_by || user.role === 'admin') && (
+                                        <div style={{ display: 'flex', gap: '0.25rem' }}>
+                                            <button className="btn btn-ghost btn-xs" onClick={() => handleEdit(post)} style={{ padding: '0.4rem' }}><Edit2 size={16} /></button>
+                                            <button className="btn btn-ghost btn-xs text-danger" onClick={() => handleDelete(post.id)} style={{ padding: '0.4rem' }}><Trash2 size={16} /></button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <MapPin size={12} /> {post.location || 'Remote'}
+                                    </div>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--success-600)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <Info size={12} /> {post.stipend || 'Unpaid'}
+                                    </div>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--error-500)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <Calendar size={12} /> {post.deadline || 'No Deadline'}
+                                    </div>
+                                </div>
+
+                                <div style={{ borderTop: '1px solid var(--slate-100)', paddingTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <div className="avatar avatar-xs" style={{ background: 'var(--slate-100)', color: 'var(--text-primary)', fontWeight: 800, width: 24, height: 24, fontSize: '0.6rem' }}>{post.creator?.name?.charAt(0)}</div>
+                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Posted by: <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{post.creator?.name}</span></div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
 
             {/* Post/Edit Modal */}
@@ -210,7 +264,7 @@ const ManagePostingsPage = () => {
                         </div>
 
                         <form onSubmit={handleSubmit} style={{ padding: '2.5rem' }}>
-                            <div className="grid-res grid-res-2" style={{ gap: '1.5rem', marginBottom: '1.5rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
                                 <div className="form-group">
                                     <label className="form-label" style={{ fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.05em' }}>COMPANY NAME</label>
                                     <input className="form-control" required placeholder="e.g. Google, TCS, etc." value={formData.companyName} onChange={e => setFormData({ ...formData, companyName: e.target.value })} />
@@ -221,7 +275,7 @@ const ManagePostingsPage = () => {
                                 </div>
                             </div>
 
-                            <div className="grid-res grid-res-3" style={{ gap: '1.5rem', marginBottom: '1.5rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
                                 <div className="form-group">
                                     <label className="form-label" style={{ fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.05em' }}>WORK MODE</label>
                                     <select
@@ -258,7 +312,7 @@ const ManagePostingsPage = () => {
                                 </div>
                             </div>
 
-                            <div className="grid-res grid-res-2" style={{ gap: '1.5rem', marginBottom: '1.5rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
                                 <div className="form-group">
                                     <label className="form-label" style={{ fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.05em' }}>LAST DATE TO APPLY</label>
                                     <input type="date" className="form-control" value={formData.deadline} onChange={e => setFormData({ ...formData, deadline: e.target.value })} />

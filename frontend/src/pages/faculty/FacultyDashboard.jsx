@@ -351,11 +351,11 @@ const FacultyDashboard = () => {
 
             {/* Scholar Management Suite */}
             <div className="card">
-                <div className="card-header" style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid var(--border-primary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="card-header responsive-header" style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid var(--border-primary)' }}>
                     <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.1rem' }}>
                         Student List — {semester === 'all' ? 'All Students' : `Semester ${semester}`} {section !== 'all' ? `(Section ${section})` : ''}
                     </h4>
-                    <div className="search-wrapper" style={{ width: '350px' }}>
+                    <div className="search-wrapper search-wrapper-responsive" style={{ width: '350px' }}>
                         <input
                             className="form-control"
                             placeholder="Search by name or ID..."
@@ -366,16 +366,16 @@ const FacultyDashboard = () => {
                     </div>
                 </div>
 
-                <div className="table-responsive">
-                    <table className="table">
+                <div className="table-container">
+                    <table className="table" style={{ minWidth: '900px' }}>
                         <thead>
                             <tr>
                                 <th style={{ paddingLeft: '1.75rem', width: '50px' }}>
                                     <input type="checkbox" checked={students.length > 0 && selectedIds.length === students.length} onChange={toggleSelectAll} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
                                 </th>
                                 <th>Student Profile</th>
-                                <th className="desktop-only text-center">Batch & Semester</th>
-                                <th className="desktop-only text-center">Achievements</th>
+                                <th className="text-center">Batch & Semester</th>
+                                <th className="text-center">Achievements</th>
                                 <th className="text-center">Total Points</th>
                                 <th className="text-right">Actions</th>
                             </tr>
@@ -412,7 +412,7 @@ const FacultyDashboard = () => {
                                         </div>
                                     </td>
                                     <td style={{ padding: '1rem 1.75rem' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', alignItems: 'center' }}>
                                             <span className="badge badge-brand" style={{ width: 'fit-content', fontSize: '0.65rem' }}>{student.department}</span>
                                             <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 700 }}>Sem {student.semester || 'N/A'} • {student.batch}</span>
                                         </div>

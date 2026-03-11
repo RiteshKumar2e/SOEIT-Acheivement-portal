@@ -186,7 +186,7 @@ const StudentManagementPage = () => {
                         </div>
                     ) : (
                         <>
-                            <table className="table">
+                            <table className="table" style={{ minWidth: '1000px' }}>
                                 <thead>
                                     <tr>
                                         <th style={{ paddingLeft: '2rem', width: '50px' }}>
@@ -224,7 +224,7 @@ const StudentManagementPage = () => {
                                             <td>
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                                                     <span className="badge badge-brand" style={{ fontWeight: 800, padding: '0.4rem 0.6rem' }}>{s.department}</span>
-                                                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Semester {s.semester} • Section {s.section || 'X'}</span>
+                                                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Semester {s.semester} • {s.section || 'X'}</span>
                                                 </div>
                                             </td>
                                             <td>

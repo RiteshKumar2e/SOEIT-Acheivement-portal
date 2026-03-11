@@ -97,12 +97,12 @@ const MyInternshipsPage = () => {
 
     return (
         <div className="animate-fade-in">
-            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
+            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                <div style={{ minWidth: '200px' }}>
                     <h2 className="heading-display">Internship Journey</h2>
                     <p className="page-subtitle">Document your professional experiences and industry exposure.</p>
                 </div>
-                <button className="btn btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
+                <button className="btn btn-primary" onClick={() => { resetForm(); setShowModal(true); }} style={{ width: 'auto' }}>
                     <Plus size={18} />
                     <span>Add Internship</span>
                 </button>
@@ -147,7 +147,7 @@ const MyInternshipsPage = () => {
                                     <p style={{ fontSize: '1rem', color: 'var(--brand-700)', fontWeight: 700, margin: 0 }}>{internship.role}</p>
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                                         <Calendar size={14} />
                                         <span>{internship.start_date} {internship.end_date ? `- ${internship.end_date}` : '(Present)'}</span>
@@ -190,7 +190,7 @@ const MyInternshipsPage = () => {
                     <div className="card animate-scale-in" style={{ width: '100%', maxWidth: '600px', padding: '2rem', maxHeight: '90vh', overflowY: 'auto' }}>
                         <h3 style={{ margin: '0 0 1.5rem 0', fontWeight: 900 }}>{editingId ? 'Update Internship' : 'New Internship Experience'}</h3>
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                                 <div className="form-group">
                                     <label className="form-label" style={{ fontWeight: 800, fontSize: '0.75rem' }}>COMPANY NAME</label>
                                     <input
@@ -213,7 +213,7 @@ const MyInternshipsPage = () => {
                                 </div>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                                 <div className="form-group">
                                     <label className="form-label" style={{ fontWeight: 800, fontSize: '0.75rem' }}>START DATE</label>
                                     <input

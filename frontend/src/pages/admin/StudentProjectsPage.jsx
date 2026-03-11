@@ -69,8 +69,9 @@ const StudentProjectsPage = () => {
             </div>
 
             <div className="card" style={{ border: '1px solid var(--border-primary)', overflow: 'hidden' }}>
-                <div className="table-responsive">
-                    <table className="table">
+                {/* Desktop View */}
+                <div className="table-container display-desktop">
+                    <table className="table" style={{ minWidth: '900px' }}>
                         <thead>
                             <tr>
                                 <th style={{ paddingLeft: '2rem' }}>Student Details</th>
@@ -148,6 +149,71 @@ const StudentProjectsPage = () => {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile View */}
+                <div className="display-mobile" style={{ flexDirection: 'column', padding: '1rem', gap: '1rem' }}>
+                    {loading ? (
+                        [...Array(3)].map((_, i) => (
+                            <div key={i} className="skeleton" style={{ height: 180, borderRadius: '16px' }} />
+                        ))
+                    ) : projects.length === 0 ? (
+                        <div style={{ padding: '3rem 1rem', textAlign: 'center' }}>
+                            <Code2 size={40} style={{ opacity: 0.1, marginBottom: '1rem' }} />
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No projects found</p>
+                        </div>
+                    ) : (
+                        projects.map(project => (
+                            <div key={project.id} className="card" style={{ padding: '1.25rem', border: '1px solid var(--border-primary)', borderRadius: '16px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                                        <div style={{ width: 40, height: 40, background: 'var(--primary-100)', color: 'var(--brand-700)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.9rem' }}>
+                                            {project.student?.name ? project.student.name.charAt(0) : 'S'}
+                                        </div>
+                                        <div>
+                                            <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{project.student?.name}</div>
+                                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>{project.student?.department}</div>
+                                        </div>
+                                    </div>
+                                    <Link to={`/portfolio/${project.studentId}`} className="btn btn-ghost btn-sm" style={{ padding: '0.4rem', color: 'var(--brand-600)' }}>
+                                        <Eye size={18} />
+                                    </Link>
+                                </div>
+
+                                <div style={{ marginBottom: '1rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>{project.title}</div>
+                                        <span className={`badge ${project.status === 'Completed' ? 'badge-success' : 'badge-primary'}`} style={{ fontSize: '0.6rem', padding: '0.1rem 0.4rem' }}>
+                                            {project.status.toUpperCase()}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div style={{ marginBottom: '1rem' }}>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                                        {project.techStack?.split(',').map((tech, i) => (
+                                            <span key={i} style={{ background: 'var(--slate-100)', padding: '0.1rem 0.5rem', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-secondary)' }}>
+                                                {tech.trim()}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                    {project.githubLink && (
+                                        <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm" style={{ flex: 1, gap: '0.4rem', background: 'var(--slate-50)', fontSize: '0.75rem' }}>
+                                            <Github size={14} /> GitHub
+                                        </a>
+                                    )}
+                                    {project.liveLink && (
+                                        <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm" style={{ flex: 1, gap: '0.4rem', background: 'var(--primary-50)', color: 'var(--brand-700)', fontSize: '0.75rem' }}>
+                                            <ExternalLink size={14} /> Demo
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </div>

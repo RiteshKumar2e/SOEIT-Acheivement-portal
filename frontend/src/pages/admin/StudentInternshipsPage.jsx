@@ -79,8 +79,9 @@ const StudentInternshipsPage = () => {
             </div>
 
             <div className="card" style={{ border: '1px solid var(--border-primary)', overflow: 'hidden' }}>
-                <div className="table-responsive">
-                    <table className="table">
+                {/* Desktop View */}
+                <div className="table-container display-desktop">
+                    <table className="table" style={{ minWidth: '1000px' }}>
                         <thead>
                             <tr>
                                 <th style={{ paddingLeft: '2rem' }}>Scholar Identity</th>
@@ -156,6 +157,64 @@ const StudentInternshipsPage = () => {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile View */}
+                <div className="display-mobile" style={{ flexDirection: 'column', padding: '1rem', gap: '1rem' }}>
+                    {loading ? (
+                        [...Array(3)].map((_, i) => (
+                            <div key={i} className="skeleton" style={{ height: 180, borderRadius: '16px' }} />
+                        ))
+                    ) : internships.length === 0 ? (
+                        <div style={{ padding: '3rem 1rem', textAlign: 'center' }}>
+                            <Briefcase size={40} style={{ opacity: 0.1, marginBottom: '1rem' }} />
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No internships found</p>
+                        </div>
+                    ) : (
+                        internships.map(internship => (
+                            <div key={internship.id} className="card" style={{ padding: '1.25rem', border: '1px solid var(--border-primary)', borderRadius: '16px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                                        <div style={{ width: 40, height: 40, background: 'var(--primary-100)', color: 'var(--brand-700)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.9rem' }}>
+                                            {internship.student_name ? internship.student_name.charAt(0) : 'S'}
+                                        </div>
+                                        <div>
+                                            <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{internship.student_name}</div>
+                                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>{internship.enrollment_no || internship.department}</div>
+                                        </div>
+                                    </div>
+                                    <Link to={`/portfolio/${internship.student_id}`} className="btn btn-ghost btn-sm" style={{ padding: '0.4rem', color: 'var(--brand-600)' }}>
+                                        <Eye size={18} />
+                                    </Link>
+                                </div>
+
+                                <div style={{ marginBottom: '1rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>{internship.company_name}</div>
+                                        <span className={`badge ${internship.status === 'Completed' ? 'badge-success' : 'badge-primary'}`} style={{ fontSize: '0.6rem', padding: '0.1rem 0.4rem' }}>
+                                            {internship.status.toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <div style={{ fontSize: '0.85rem', color: 'var(--brand-700)', fontWeight: 700, marginTop: '0.25rem' }}>{internship.role}</div>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600 }}>
+                                        <Calendar size={12} /> {internship.start_date}
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600 }}>
+                                        <MapPin size={12} /> {internship.location || 'Remote'}
+                                    </div>
+                                </div>
+
+                                {internship.certificate_url && (
+                                    <a href={internship.certificate_url} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm w-full" style={{ gap: '0.5rem', background: 'var(--success-50)', color: 'var(--success-700)', fontSize: '0.8rem', fontWeight: 800 }}>
+                                        <ExternalLink size={14} /> VIEW CERTIFICATE
+                                    </a>
+                                )}
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </div>

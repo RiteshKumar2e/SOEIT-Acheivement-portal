@@ -75,12 +75,12 @@ const MyProjectsPage = () => {
 
     return (
         <div className="animate-fade-in">
-            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
+            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                <div style={{ minWidth: '200px' }}>
                     <h2 className="heading-display">My Projects</h2>
                     <p className="page-subtitle">Showcase your technical work and personal projects.</p>
                 </div>
-                <button className="btn btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
+                <button className="btn btn-primary" onClick={() => { resetForm(); setShowModal(true); }} style={{ width: 'auto' }}>
                     <Plus size={18} />
                     <span>Add Project</span>
                 </button>
@@ -186,7 +186,7 @@ const MyProjectsPage = () => {
                                 />
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                                 <div className="form-group">
                                     <label className="form-label" style={{ fontWeight: 800, fontSize: '0.75rem' }}>GITHUB LINK</label>
                                     <input
