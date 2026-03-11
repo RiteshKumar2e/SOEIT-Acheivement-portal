@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('soeit_token');
         localStorage.removeItem('soeit_user');
         setUser(null);
-        navigate('/login', { replace: true });
+        navigate('/', { replace: true });
         
         // Fire & forget: Handle server-side session cleanup in background
         try { await authAPI.logout(); } catch (e) { console.debug('Bg Logout sync failed:', e.message); }

@@ -59,7 +59,6 @@ const FeaturesPage = () => (
                     <h2 style={{ marginBottom: '1.5rem' }}>Ready to get started?</h2>
                     <div className="features-action-btns">
                         <Link to="/register" className="btn btn-primary btn-lg">Create Student Account</Link>
-                        <Link to="/contact" className="btn btn-secondary btn-lg">Contact for Admin Access</Link>
                     </div>
                 </div>
             </div>
