@@ -188,7 +188,7 @@ const RegisterPage = () => {
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         className={`form-control ${errors.password ? 'error' : ''}`}
-                                        placeholder="Min 8 chars, A-z, 0-9, @#$"
+                                        placeholder="Min 8 chars"
                                         value={form.password}
                                         onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
                                     />

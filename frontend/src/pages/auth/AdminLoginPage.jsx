@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ShieldAlert, Lock, Eye, EyeOff, RefreshCw, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
+import CaptchaCanvas from '../../components/common/CaptchaCanvas';
 
 const UniversityHeader = () => (
     <div className="auth-header">
@@ -155,9 +156,7 @@ const AdminLoginPage = () => {
                                 />
                                 {errors.captchaInput && <div className="input-error">{errors.captchaInput}</div>}
                             </div>
-                            <div className="captcha-box" style={{ background: '#f1f5f9', border: '1px solid #e2e8f0' }}>
-                                {captcha}
-                            </div>
+                            <CaptchaCanvas captcha={captcha} />
                             <button type="button" onClick={generateCaptcha} className="btn-icon">
                                 <RefreshCw size={18} />
                             </button>
