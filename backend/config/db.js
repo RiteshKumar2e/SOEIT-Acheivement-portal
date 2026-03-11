@@ -180,6 +180,17 @@ const initSchema = async (client) => {
             updated_at       TEXT DEFAULT (datetime('now')),
             FOREIGN KEY (student_id) REFERENCES users(id)
         )`,
+    `CREATE TABLE IF NOT EXISTS notifications (
+            id          TEXT PRIMARY KEY,
+            user_id     TEXT NOT NULL,
+            type        TEXT NOT NULL,
+            title       TEXT NOT NULL,
+            message     TEXT NOT NULL,
+            link        TEXT,
+            is_read     INTEGER DEFAULT 0,
+            created_at  TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )`,
     // Indexing for high-speed performance (O(1) lookups)
     `CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)`,
     `CREATE INDEX IF NOT EXISTS idx_users_dept ON users(department)`,
@@ -192,7 +203,9 @@ const initSchema = async (client) => {
     `CREATE INDEX IF NOT EXISTS idx_courses_student ON courses(student_id)`,
     `CREATE INDEX IF NOT EXISTS idx_projects_student ON projects(student_id)`,
     `CREATE INDEX IF NOT EXISTS idx_internships_student ON internships(student_id)`,
-    `CREATE INDEX IF NOT EXISTS idx_events_author ON events(created_by)`
+    `CREATE INDEX IF NOT EXISTS idx_events_author ON events(created_by)`,
+    `CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(is_read)`
   ], 'write');
 };
 

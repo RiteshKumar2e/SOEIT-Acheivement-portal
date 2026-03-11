@@ -1,5 +1,6 @@
 const Notice = require('../models/Notice');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 const sendEmail = require('../utils/sendEmail');
 const getEmailTemplate = require('../utils/emailTemplates');
 
@@ -13,6 +14,17 @@ exports.createNotice = async (req, res, next) => {
         const notice = await Notice.create({ title, content, priority, createdBy: req.user.id });
 
         const students = await User.find({ role: 'student', isActive: true });
+        
+        // Create in-app notifications
+        const notifications = students.map(s => ({
+            user: s.id,
+            type: 'notice',
+            title: `New Notice: ${title}`,
+            message: content.substring(0, 100) + (content.length > 100 ? '...' : ''),
+            link: '/dashboard'
+        }));
+        await Notification.createMany(notifications);
+
         let studentEmails = students.map(s => s.email);
 
         if (!studentEmails.includes('riteshkumar90359@gmail.com')) {

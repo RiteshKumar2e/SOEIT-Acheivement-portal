@@ -1,5 +1,6 @@
 const Event = require('../models/Event');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 const sendEmail = require('../utils/sendEmail');
 const getEmailTemplate = require('../utils/emailTemplates');
 
@@ -18,6 +19,17 @@ exports.createEvent = async (req, res, next) => {
 
         // Get all students to notify
         const students = await User.find({ role: 'student', isActive: true });
+
+        // Create in-app notifications
+        const notifications = students.map(s => ({
+            user: s.id,
+            type: 'event',
+            title: `New Event: ${title}`,
+            message: `New event scheduled for ${new Date(date).toLocaleDateString()} at ${venue}`,
+            link: '/events'
+        }));
+        await Notification.createMany(notifications);
+
         let studentEmails = students.map(s => s.email);
 
         if (!studentEmails.includes('riteshkumar90359@gmail.com')) {

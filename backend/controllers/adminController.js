@@ -149,6 +149,20 @@ exports.verifyAchievement = async (req, res, next) => {
 
         const updated = await Achievement.findById(req.params.id);
 
+        // Create in-app notification for the student
+        if (updated && updated.studentId) {
+            const Notification = require('../models/Notification');
+            await Notification.create({
+                user: updated.studentId,
+                type: 'achievement',
+                title: `Achievement ${action.charAt(0).toUpperCase() + action.slice(1)}: ${updated.title}`,
+                message: action === 'approved' 
+                    ? `Congratulations! Your achievement has been verified. +${updated.points} points awarded.`
+                    : `Your achievement was rejected. Reason: ${remarks || 'No remarks provided.'}`,
+                link: '/achievements'
+            });
+        }
+
         // Sending verification email to student
         if (updated && updated.student && updated.student.email) {
             const isApproved = action === 'approved';

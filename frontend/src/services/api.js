@@ -125,4 +125,10 @@ export const projectAPI = {
     delete: (id) => API.delete(`/projects/${id}`),
 };
 
+export const notificationAPI = {
+    getAll: () => API.get('/notifications'),
+    markAsRead: (id) => API.put(`/notifications/${id}/read`),
+    markAllAsRead: () => API.put('/notifications/read-all'),
+};
+
 export default API;
