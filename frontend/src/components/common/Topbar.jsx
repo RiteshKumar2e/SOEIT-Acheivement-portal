@@ -1,8 +1,10 @@
 import { Bell, Menu, Search, GraduationCap } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Topbar = ({ onMenuClick, title }) => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
 
     return (
@@ -33,7 +35,22 @@ const Topbar = ({ onMenuClick, title }) => {
                 <div className="topbar-divider" style={{ height: '32px', width: '1px', background: 'var(--border-primary)', margin: '0 0.25rem' }}></div>
 
                 {/* Refined User Profile Pill */}
-                <div className="user-profile-pill" style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', padding: '0.5rem', paddingRight: '1rem', borderRadius: '16px', background: 'white', border: '1px solid var(--border-primary)', boxShadow: 'var(--shadow-sm)' }}>
+                <div 
+                    className="user-profile-pill" 
+                    onClick={() => navigate('/profile')}
+                    style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '0.875rem', 
+                        padding: '0.5rem', 
+                        paddingRight: '1rem', 
+                        borderRadius: '16px', 
+                        background: 'white', 
+                        border: '1px solid var(--border-primary)', 
+                        boxShadow: 'var(--shadow-sm)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                    }}>
                     {user?.profileImage ? (
                         <img className="user-avatar" src={`${import.meta.env.VITE_UPLOADS_URL || ''}${user.profileImage}`} alt={user.name} style={{ width: 36, height: 36, borderRadius: '10px', objectFit: 'cover', border: '2px solid var(--slate-100)' }} />
                     ) : (
