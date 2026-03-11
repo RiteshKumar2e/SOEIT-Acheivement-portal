@@ -61,6 +61,13 @@ const ProfilePage = () => {
     const handlePasswordChange = async (e) => {
         e.preventDefault();
         if (pwForm.newPassword !== pwForm.confirmPassword) { toast.error('Security mismatch: New passwords are not identical'); return; }
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(pwForm.newPassword)) {
+            toast.error('Security protocol: Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character');
+            return;
+        }
+
         setPwLoading(true);
         try {
             await authAPI.changePassword({ currentPassword: pwForm.currentPassword, newPassword: pwForm.newPassword });
@@ -271,6 +278,11 @@ const ProfilePage = () => {
                                             {showPw[type] ? <EyeOff size={22} /> : <Eye size={22} />}
                                         </button>
                                     </div>
+                                    {id === 'newPassword' && (
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.5rem', fontWeight: 600 }}>
+                                            Requirement: Min 8 chars, 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Char
+                                        </div>
+                                    )}
                                 </div>
                             ))}
 

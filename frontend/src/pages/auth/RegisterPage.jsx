@@ -76,7 +76,9 @@ const RegisterPage = () => {
         if (!form.email) e.email = 'Email is required';
         else if (!/\S+@arkajainuniversity\.ac\.in$/.test(form.email)) e.email = 'Please use official university email';
         if (!form.password) e.password = 'Password is required';
-        else if (form.password.length < 6) e.password = 'Password must be at least 6 characters';
+        else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(form.password)) {
+            e.password = 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)';
+        }
         if (form.password !== form.confirmPassword) e.confirmPassword = 'Passwords do not match';
         if (!form.department) e.department = 'Department is required';
         if (!form.batch) e.batch = 'Batch is required';
@@ -186,7 +188,7 @@ const RegisterPage = () => {
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         className={`form-control ${errors.password ? 'error' : ''}`}
-                                        placeholder="Min 6 chars"
+                                        placeholder="Min 8 chars, A-z, 0-9, @#$"
                                         value={form.password}
                                         onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
                                     />

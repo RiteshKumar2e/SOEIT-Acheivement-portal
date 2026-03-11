@@ -61,6 +61,13 @@ const StudentProfilePage = () => {
     const handlePasswordChange = async (e) => {
         e.preventDefault();
         if (pwForm.newPassword !== pwForm.confirmPassword) { toast.error('Passwords do not match'); return; }
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(pwForm.newPassword)) {
+            toast.error('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character');
+            return;
+        }
+
         setPwLoading(true);
         try {
             await authAPI.changePassword({ currentPassword: pwForm.currentPassword, newPassword: pwForm.newPassword });

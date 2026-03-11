@@ -14,11 +14,20 @@ const sendTokenResponse = (user, statusCode, res, message = 'Success') => {
     res.status(statusCode).json({ success: true, message, token, user: userObj });
 };
 
+const validatePassword = (password) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return regex.test(password);
+};
+
 // @desc    Register student
 // @route   POST /api/auth/register
 exports.register = async (req, res, next) => {
     try {
         const { name, email, password, department, studentId, enrollmentNo, batch, semester, section } = req.body;
+
+        if (!validatePassword(password)) {
+            return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character' });
+        }
 
         // Check duplicates
         const orConditions = [{ email: email?.toLowerCase() }];
@@ -109,6 +118,11 @@ exports.updateProfile = async (req, res, next) => {
 exports.changePassword = async (req, res, next) => {
     try {
         const { currentPassword, newPassword } = req.body;
+
+        if (!validatePassword(newPassword)) {
+            return res.status(400).json({ success: false, message: 'New password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character' });
+        }
+
         const user = await User.findById(req.user.id);
 
         const isMatch = await user.matchPassword(currentPassword);
@@ -159,6 +173,10 @@ exports.resetPassword = async (req, res, next) => {
         });
 
         if (!user) return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
+
+        if (!validatePassword(req.body.password)) {
+            return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character' });
+        }
 
         const bcrypt = require('bcryptjs');
         const salt = await bcrypt.genSalt(12);

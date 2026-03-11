@@ -33,7 +33,13 @@ const AdminSettingsPage = () => {
     const handlePasswordChange = async (e) => {
         e.preventDefault();
         if (pwForm.newPassword !== pwForm.confirmPassword) { toast.error('Security mismatch: Credentials not identical'); return; }
-        if (pwForm.newPassword.length < 6) { toast.error('Security protocol: Password must exceed 6 characters'); return; }
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(pwForm.newPassword)) {
+            toast.error('Security protocol: Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character');
+            return;
+        }
+
         setPwLoading(true);
         try {
             await authAPI.changePassword({ currentPassword: pwForm.currentPassword, newPassword: pwForm.newPassword });
