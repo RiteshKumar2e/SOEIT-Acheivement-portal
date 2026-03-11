@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
     LayoutDashboard, Trophy, Upload, User, BarChart3,
     CheckCircle, Users, Settings, LogOut, GraduationCap,
-    FileText, X, Shield, Star, Calendar, ChevronLeft, ChevronRight, BookOpen, Activity, Terminal, Briefcase
+    FileText, X, Shield, Star, Calendar, ChevronLeft, ChevronRight, BookOpen, Activity, Terminal, Briefcase, Layers
 } from 'lucide-react';
 
 const studentLinks = [
@@ -15,6 +15,7 @@ const studentLinks = [
     { to: '/internships', icon: Briefcase, label: 'My Internships' },
     { to: '/internship-opportunities', icon: Star, label: 'Internship Opportunities' },
     { to: '/hackathons', icon: Terminal, label: 'Live Hackathons' },
+    { to: '/projects', icon: Layers, label: 'My Projects' },
     { to: '/profile', icon: User, label: 'My Profile' },
 ];
 
@@ -28,6 +29,7 @@ const adminLinks = [
     { to: '/admin/reports', icon: BarChart3, label: 'Reports & Analytics' },
     { to: '/admin/courses', icon: BookOpen, label: 'Course Monitoring' },
     { to: '/admin/internships', icon: Briefcase, label: 'Internship Monitoring' },
+    { to: '/admin/projects', icon: Layers, label: 'Project Monitoring' },
     { to: '/admin/manage-internships', icon: Upload, label: 'Internship Postings' },
     { to: '/admin/hackathons', icon: Activity, label: 'Hackathon Control' },
     { to: '/profile', icon: User, label: 'My Profile' },
@@ -46,6 +48,7 @@ const Sidebar = ({ mobileOpen, onClose, collapsed, onToggleCollapse }) => {
         .map(link => {
             if (user?.role === 'faculty' && link.to === '/admin/dashboard') return { ...link, to: '/faculty/dashboard' };
             if (user?.role === 'faculty' && link.to === '/admin/manage-internships') return { ...link, to: '/faculty/manage-internships' };
+            if (user?.role === 'faculty' && link.to === '/admin/projects') return { ...link, to: '/faculty/projects' };
             return link;
         });
 

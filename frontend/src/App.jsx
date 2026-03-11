@@ -34,6 +34,7 @@ import StudentCoursesPage from './pages/admin/StudentCoursesPage';
 import MyInternshipsPage from './pages/student/MyInternshipsPage';
 import InternshipOpportunitiesPage from './pages/student/InternshipOpportunitiesPage';
 import HackathonsPage from './pages/student/HackathonsPage';
+import MyProjectsPage from './pages/student/MyProjectsPage';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -44,6 +45,7 @@ import ReportsPage from './pages/admin/ReportsPage';
 import FacultyManagementPage from './pages/admin/FacultyManagementPage';
 import HackathonMonitoringPage from './pages/admin/HackathonMonitoringPage';
 import StudentInternshipsPage from './pages/admin/StudentInternshipsPage';
+import StudentProjectsPage from './pages/admin/StudentProjectsPage';
 
 // Faculty Pages
 import FacultyDashboard from './pages/faculty/FacultyDashboard';
@@ -115,6 +117,7 @@ function App() {
             <Route path="/internships" element={<MyInternshipsPage />} />
             <Route path="/internship-opportunities" element={<InternshipOpportunitiesPage />} />
             <Route path="/hackathons" element={<HackathonsPage />} />
+            <Route path="/projects" element={<MyProjectsPage />} />
           </Route>
 
           {/* Admin / Faculty Shared Management Routes */}
@@ -127,6 +130,8 @@ function App() {
             <Route path="/admin/reports" element={<ReportsPage />} />
             <Route path="/admin/courses" element={<StudentCoursesPage />} />
             <Route path="/admin/internships" element={<StudentInternshipsPage />} />
+            <Route path="/admin/projects" element={<StudentProjectsPage />} />
+            <Route path="/faculty/projects" element={<StudentProjectsPage />} />
             <Route path="/admin/manage-internships" element={<ManagePostingsPage />} />
             <Route path="/faculty/manage-internships" element={<ManagePostingsPage />} />
             <Route path="/admin/hackathons" element={<HackathonMonitoringPage />} />

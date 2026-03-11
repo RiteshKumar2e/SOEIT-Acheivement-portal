@@ -166,6 +166,19 @@ const initSchema = async (client) => {
             created_at       TEXT DEFAULT (datetime('now')),
             updated_at       TEXT DEFAULT (datetime('now')),
             FOREIGN KEY (created_by) REFERENCES users(id)
+        )`,
+    `CREATE TABLE IF NOT EXISTS projects (
+            id               TEXT PRIMARY KEY,
+            student_id       TEXT NOT NULL,
+            title            TEXT NOT NULL,
+            description      TEXT NOT NULL,
+            github_link      TEXT,
+            live_link        TEXT,
+            tech_stack       TEXT,
+            status           TEXT DEFAULT 'Completed',
+            created_at       TEXT DEFAULT (datetime('now')),
+            updated_at       TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (student_id) REFERENCES users(id)
         )`
   ], 'write');
 };

@@ -118,4 +118,11 @@ export const internshipPostingAPI = {
     delete: (id) => API.delete(`/internship-postings/${id}`),
 };
 
+export const projectAPI = {
+    add: (data) => API.post('/projects', data),
+    getMy: () => API.get('/projects/my'),
+    getAll: (params) => API.get('/projects', { params }),
+    delete: (id) => API.delete(`/projects/${id}`),
+};
+
 export default API;
