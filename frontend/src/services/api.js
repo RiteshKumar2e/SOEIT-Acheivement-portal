@@ -103,4 +103,19 @@ export const hackathonAPI = {
     getApplied: (params) => API.get('/hackathons/applied', { params }),
 };
 
+export const internshipAPI = {
+    add: (data) => API.post('/internships', data),
+    getMy: () => API.get('/internships/my'),
+    update: (id, data) => API.put(`/internships/${id}`, data),
+    delete: (id) => API.delete(`/internships/${id}`),
+    getAll: (params) => API.get('/internships', { params }),
+};
+
+export const internshipPostingAPI = {
+    create: (data) => API.post('/internship-postings', data),
+    getAll: (params) => API.get('/internship-postings', { params }),
+    update: (id, data) => API.put(`/internship-postings/${id}`, data),
+    delete: (id) => API.delete(`/internship-postings/${id}`),
+};
+
 export default API;

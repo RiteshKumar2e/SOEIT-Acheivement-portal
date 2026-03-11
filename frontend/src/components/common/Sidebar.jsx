@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
     LayoutDashboard, Trophy, Upload, User, BarChart3,
     CheckCircle, Users, Settings, LogOut, GraduationCap,
-    FileText, X, Shield, Star, Calendar, ChevronLeft, ChevronRight, BookOpen, Activity, Terminal
+    FileText, X, Shield, Star, Calendar, ChevronLeft, ChevronRight, BookOpen, Activity, Terminal, Briefcase
 } from 'lucide-react';
 
 const studentLinks = [
@@ -12,6 +12,8 @@ const studentLinks = [
     { to: '/achievements', icon: Trophy, label: 'My Achievements' },
     { to: '/achievements/upload', icon: Upload, label: 'Upload Achievement' },
     { to: '/courses', icon: BookOpen, label: 'Course Registry' },
+    { to: '/internships', icon: Briefcase, label: 'My Internships' },
+    { to: '/internship-opportunities', icon: Star, label: 'Internship Opportunities' },
     { to: '/hackathons', icon: Terminal, label: 'Live Hackathons' },
     { to: '/profile', icon: User, label: 'My Profile' },
 ];
@@ -25,6 +27,8 @@ const adminLinks = [
     { to: '/admin/faculty', icon: Shield, label: 'Faculty' },
     { to: '/admin/reports', icon: BarChart3, label: 'Reports & Analytics' },
     { to: '/admin/courses', icon: BookOpen, label: 'Course Monitoring' },
+    { to: '/admin/internships', icon: Briefcase, label: 'Internship Monitoring' },
+    { to: '/admin/manage-internships', icon: Upload, label: 'Internship Postings' },
     { to: '/admin/hackathons', icon: Activity, label: 'Hackathon Control' },
     { to: '/profile', icon: User, label: 'My Profile' },
 ];
@@ -41,6 +45,7 @@ const Sidebar = ({ mobileOpen, onClose, collapsed, onToggleCollapse }) => {
         })
         .map(link => {
             if (user?.role === 'faculty' && link.to === '/admin/dashboard') return { ...link, to: '/faculty/dashboard' };
+            if (user?.role === 'faculty' && link.to === '/admin/manage-internships') return { ...link, to: '/faculty/manage-internships' };
             return link;
         });
 

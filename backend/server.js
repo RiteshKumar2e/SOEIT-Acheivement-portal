@@ -25,6 +25,8 @@ const eventRoutes = require('./routes/eventRoutes');
 const noticeRoutes = require('./routes/noticeRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const hackathonRoutes = require('./routes/hackathonRoutes');
+const internshipRoutes = require('./routes/internshipRoutes');
+const internshipPostingRoutes = require('./routes/internshipPostingRoutes');
 
 // Connect to Turso Database
 connectDB();
@@ -100,6 +102,8 @@ app.use('/api/events', eventRoutes);
 app.use('/api/notices', noticeRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/hackathons', hackathonRoutes);
+app.use('/api/internships', internshipRoutes);
+app.use('/api/internship-postings', internshipPostingRoutes);
 
 // 404 handler
 app.use((req, res) => {

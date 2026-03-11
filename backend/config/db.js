@@ -135,6 +135,37 @@ const initSchema = async (client) => {
             mimetype         TEXT NOT NULL,
             data             BLOB NOT NULL,
             created_at       TEXT DEFAULT (datetime('now'))
+        )`,
+    `CREATE TABLE IF NOT EXISTS internships (
+            id               TEXT PRIMARY KEY,
+            student_id       TEXT NOT NULL,
+            company_name     TEXT NOT NULL,
+            role             TEXT NOT NULL,
+            start_date       TEXT,
+            end_date         TEXT,
+            status           TEXT DEFAULT 'Ongoing',
+            description      TEXT,
+            certificate_url  TEXT,
+            location         TEXT,
+            internship_type  TEXT, -- Part-time, Full-time, Remote, etc.
+            created_at       TEXT DEFAULT (datetime('now')),
+            updated_at       TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (student_id) REFERENCES users(id)
+        )`,
+    `CREATE TABLE IF NOT EXISTS internship_postings (
+            id               TEXT PRIMARY KEY,
+            company_name     TEXT NOT NULL,
+            role             TEXT NOT NULL,
+            location         TEXT,
+            stipend          TEXT,
+            deadline         TEXT,
+            description      TEXT,
+            requirements     TEXT,
+            apply_link       TEXT,
+            created_by       TEXT NOT NULL,
+            created_at       TEXT DEFAULT (datetime('now')),
+            updated_at       TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (created_by) REFERENCES users(id)
         )`
   ], 'write');
 };

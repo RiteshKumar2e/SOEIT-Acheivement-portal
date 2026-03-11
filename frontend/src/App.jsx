@@ -31,6 +31,8 @@ import UploadAchievementPage from './pages/student/UploadAchievementPage';
 import ProfilePage from './pages/student/ProfilePage';
 import MyCoursesPage from './pages/student/MyCoursesPage';
 import StudentCoursesPage from './pages/admin/StudentCoursesPage';
+import MyInternshipsPage from './pages/student/MyInternshipsPage';
+import InternshipOpportunitiesPage from './pages/student/InternshipOpportunitiesPage';
 import HackathonsPage from './pages/student/HackathonsPage';
 
 // Admin Pages
@@ -41,9 +43,11 @@ import StudentManagementPage from './pages/admin/StudentManagementPage';
 import ReportsPage from './pages/admin/ReportsPage';
 import FacultyManagementPage from './pages/admin/FacultyManagementPage';
 import HackathonMonitoringPage from './pages/admin/HackathonMonitoringPage';
+import StudentInternshipsPage from './pages/admin/StudentInternshipsPage';
 
 // Faculty Pages
 import FacultyDashboard from './pages/faculty/FacultyDashboard';
+import ManagePostingsPage from './pages/faculty/ManagePostingsPage';
 
 // Shared Pages
 import EventsPage from './pages/shared/EventsPage';
@@ -108,6 +112,8 @@ function App() {
             <Route path="/achievements/upload" element={<UploadAchievementPage />} />
             <Route path="/achievements/edit/:id" element={<UploadAchievementPage />} />
             <Route path="/courses" element={<MyCoursesPage />} />
+            <Route path="/internships" element={<MyInternshipsPage />} />
+            <Route path="/internship-opportunities" element={<InternshipOpportunitiesPage />} />
             <Route path="/hackathons" element={<HackathonsPage />} />
           </Route>
 
@@ -120,6 +126,9 @@ function App() {
             <Route path="/admin/students" element={<StudentManagementPage />} />
             <Route path="/admin/reports" element={<ReportsPage />} />
             <Route path="/admin/courses" element={<StudentCoursesPage />} />
+            <Route path="/admin/internships" element={<StudentInternshipsPage />} />
+            <Route path="/admin/manage-internships" element={<ManagePostingsPage />} />
+            <Route path="/faculty/manage-internships" element={<ManagePostingsPage />} />
             <Route path="/admin/hackathons" element={<HackathonMonitoringPage />} />
           </Route>
 
