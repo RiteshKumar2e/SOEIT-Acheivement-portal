@@ -74,3 +74,19 @@ exports.getAppliedHackathons = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Delete a hackathon activity log
+// @route   DELETE /api/hackathons/activity/:id
+exports.deleteActivity = async (req, res, next) => {
+    try {
+        // Faculty and Admin can delete activity logs
+        if (req.user.role !== 'admin' && req.user.role !== 'faculty') {
+            return res.status(403).json({ success: false, message: 'Institutional permission denied' });
+        }
+
+        await HackathonActivity.delete(req.params.id);
+        res.status(200).json({ success: true, data: {} });
+    } catch (error) {
+        next(error);
+    }
+};

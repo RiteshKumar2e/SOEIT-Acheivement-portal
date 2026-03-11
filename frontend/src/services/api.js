@@ -101,6 +101,7 @@ export const hackathonAPI = {
     delete: (id) => API.delete(`/hackathons/${id}`),
     logActivity: (data) => API.post('/hackathons/activity', data),
     getApplied: (params) => API.get('/hackathons/applied', { params }),
+    deleteActivity: (id) => API.delete(`/hackathons/activity/${id}`),
 };
 
 export const internshipAPI = {

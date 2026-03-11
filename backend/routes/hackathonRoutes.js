@@ -17,5 +17,6 @@ router.post('/activity', protect, logActivity);
 router.post('/', protect, authorize('admin', 'faculty'), createHackathon);
 router.delete('/:id', protect, authorize('admin', 'faculty'), deleteHackathon);
 router.get('/applied', protect, authorize('admin', 'faculty'), getAppliedHackathons);
+router.delete('/activity/:id', protect, authorize('admin', 'faculty'), require('../controllers/hackathonController').deleteActivity);
 
 module.exports = router;

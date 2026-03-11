@@ -108,8 +108,14 @@ const HackathonMonitoringPage = () => {
     };
 
     const handleLogDelete = async (id) => {
-        // Assume log delete is handled by activity delete which isn't there yet but let's keep it
-        toast.info('Log deletion pending backend implementation');
+        if (!window.confirm('SECURITY ALERT: Delete this scholarship application log?')) return;
+        try {
+            await hackathonAPI.deleteActivity(id);
+            toast.success('Activity log purged');
+            fetchActivities();
+        } catch (error) {
+            toast.error('Purge protocol failed');
+        }
     };
 
     const getLocalTime = (utcStr) => {
@@ -185,6 +191,7 @@ const HackathonMonitoringPage = () => {
                                         <th>Hackathon</th>
                                         <th>Resolution</th>
                                         <th>Timestamp</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -203,6 +210,11 @@ const HackathonMonitoringPage = () => {
                                             <td>
                                                 <div className="hm-date">{format(getLocalTime(log.created_at), 'dd MMM yyyy')}</div>
                                                 <div className="hm-time">{format(getLocalTime(log.created_at), 'hh:mm a')}</div>
+                                            </td>
+                                            <td>
+                                                <button className="btn btn-ghost btn-xs" onClick={() => handleLogDelete(log.id)} style={{ color: 'var(--error-600)' }}>
+                                                    <Trash2 size={16} />
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
