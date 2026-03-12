@@ -35,9 +35,9 @@ const UploadAchievementPage = () => {
         e.preventDefault();
         setDragging(false);
         const dropped = Array.from(e.dataTransfer?.files || e.target.files || []);
-        const valid = dropped.filter(f => f.size <= 10 * 1024 * 1024);
-        const invalid = dropped.filter(f => f.size > 10 * 1024 * 1024);
-        if (invalid.length) toast.error(`Security protocol: ${invalid.length} file(s) exceed 10MB limit`);
+        const valid = dropped.filter(f => f.size <= 100 * 1024 * 1024);
+        const invalid = dropped.filter(f => f.size > 100 * 1024 * 1024);
+        if (invalid.length) toast.error(`Security protocol: ${invalid.length} file(s) exceed 100MB limit`);
         setFiles(prev => [...prev, ...valid].slice(0, 5));
     }, []);
 
@@ -248,7 +248,7 @@ const UploadAchievementPage = () => {
                                     </div>
                                     <div>
                                         <p style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--text-primary)', margin: 0 }}>Dossier Sync Engine</p>
-                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem', fontWeight: 600 }}>PDF, PNG, JPG (Max 10MB)</p>
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem', fontWeight: 600 }}>PDF, PNG, JPG (Max 100MB)</p>
                                     </div>
                                 </div>
                                 <input id="fileInput" type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" style={{ display: 'none' }} onChange={handleFileDrop} />
