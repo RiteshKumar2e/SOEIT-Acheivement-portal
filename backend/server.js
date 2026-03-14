@@ -14,22 +14,22 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const { connectDB } = require('./config/db');
+const { connectDB } = require('./src/config/db');
 const compression = require('compression');
-const errorHandler = require('./middleware/errorHandler');
+const errorHandler = require('./src/middleware/errorHandler');
 
 // Route imports
-const authRoutes = require('./routes/authRoutes');
-const achievementRoutes = require('./routes/achievementRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const eventRoutes = require('./routes/eventRoutes');
-const noticeRoutes = require('./routes/noticeRoutes');
-const courseRoutes = require('./routes/courseRoutes');
-const hackathonRoutes = require('./routes/hackathonRoutes');
-const internshipRoutes = require('./routes/internshipRoutes');
-const internshipPostingRoutes = require('./routes/internshipPostingRoutes');
-const projectRoutes = require('./routes/projectRoutes');
-const notificationRoutes = require('./routes/notificationRoutes');
+const authRoutes = require('./src/modules/auth/auth.routes');
+const achievementRoutes = require('./src/modules/achievement/achievement.routes');
+const adminRoutes = require('./src/modules/admin/admin.routes');
+const eventRoutes = require('./src/modules/event/event.routes');
+const noticeRoutes = require('./src/modules/notice/notice.routes');
+const courseRoutes = require('./src/modules/course/course.routes');
+const hackathonRoutes = require('./src/modules/hackathon/hackathon.routes');
+const internshipRoutes = require('./src/modules/internship/internship.routes');
+const internshipPostingRoutes = require('./src/modules/internship/internship-posting.routes');
+const projectRoutes = require('./src/modules/project/project.routes');
+const notificationRoutes = require('./src/modules/notification/notification.routes');
 
 // Connect to Turso Database
 connectDB();
@@ -90,7 +90,7 @@ if (process.env.NODE_ENV === 'development') {
 // Serve static uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const { getStats } = require('./utils/cache');
+const { getStats } = require('./src/utils/cache');
 
 // Health check
 app.get('/api/health', (req, res) => {
