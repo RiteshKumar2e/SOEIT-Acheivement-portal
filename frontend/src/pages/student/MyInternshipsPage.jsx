@@ -208,7 +208,7 @@ const MyInternshipsPage = () => {
                                 <h3 style={{ margin: 0 }}>{editingId ? 'Edit Internship' : 'Add Internship'}</h3>
                                 <p style={{ margin: 0 }}>Enter details about your internship.</p>
                             </div>
-                            <button className="btn btn-ghost" onClick={() => setShowModal(false)} style={{ color: 'white', opacity: 0.8 }}>
+                            <button className="btn btn-ghost btn-close-red" onClick={() => setShowModal(false)}>
                                 <X size={24} />
                             </button>
                         </div>

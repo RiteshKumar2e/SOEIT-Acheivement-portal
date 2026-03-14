@@ -158,7 +158,7 @@ const MyProjectsPage = () => {
                                 <h3 style={{ margin: 0 }}>Add New Project</h3>
                                 <p style={{ margin: 0 }}>Showcase your technical work and achievements.</p>
                             </div>
-                            <button className="btn btn-ghost" onClick={() => setShowModal(false)} style={{ color: 'white', opacity: 0.8 }}>
+                            <button className="btn btn-ghost btn-close-red" onClick={() => setShowModal(false)}>
                                 <X size={24} />
                             </button>
                         </div>

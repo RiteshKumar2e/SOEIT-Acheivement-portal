@@ -274,7 +274,7 @@ const UploadAchievementPage = () => {
                                                 <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.name}</div>
                                                 <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>{(f.size / 1024).toFixed(1)} KB</div>
                                             </div>
-                                            <button type="button" onClick={() => removeFile(i)} style={{ color: 'var(--error-500)', padding: '0.5rem', borderRadius: '50%', background: 'none', border: 'none', cursor: 'pointer' }}>
+                                            <button type="button" onClick={() => removeFile(i)} className="btn-close-red" style={{ padding: '0.5rem', borderRadius: '50%', background: 'none', border: 'none' }}>
                                                 <X size={18} />
                                             </button>
                                         </div>

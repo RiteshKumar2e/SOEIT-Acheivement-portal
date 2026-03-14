@@ -1795,3 +1795,31 @@ textarea.form-control {
   font-weight: 600;
   color: var(--primary-600);
 }
+
+/* ===================== ANIMATED RED CROSS BUTTONS ===================== */
+.btn-close-red {
+  color: #ff4d4d !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.btn-close-red:hover {
+  color: #ff0000 !important;
+  transform: rotate(90deg) scale(1.2);
+  filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.2));
+  opacity: 1;
+}
+
+.modal-header .btn-close-red {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem;
+  border-radius: 12px;
+}
+
+.modal-header .btn-close-red:hover {
+  background: rgba(255, 77, 77, 0.15);
+}
