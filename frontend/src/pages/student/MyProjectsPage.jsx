@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { projectAPI } from '../../services/api';
-import { Plus, Trash2, Github, ExternalLink, Code2, Layers, XCircle } from 'lucide-react';
+import { Plus, Trash2, Github, ExternalLink, Code2, Layers, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const MyProjectsPage = () => {
@@ -74,90 +74,92 @@ const MyProjectsPage = () => {
     };
 
     return (
-        <div className="animate-fade-in">
-            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                <div style={{ minWidth: '200px' }}>
-                    <h2 className="heading-display">My Projects</h2>
-                    <p className="page-subtitle">Showcase your technical work and personal projects.</p>
+        <>
+            <div className="animate-fade-in">
+                <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div style={{ minWidth: '200px' }}>
+                        <h2 className="heading-display">My Projects</h2>
+                        <p className="page-subtitle">Showcase your technical work and personal projects.</p>
+                    </div>
+                    <button className="btn btn-primary" onClick={() => { resetForm(); setShowModal(true); }} style={{ width: 'auto' }}>
+                        <Plus size={18} />
+                        <span>Add Project</span>
+                    </button>
                 </div>
-                <button className="btn btn-primary" onClick={() => { resetForm(); setShowModal(true); }} style={{ width: 'auto' }}>
-                    <Plus size={18} />
-                    <span>Add Project</span>
-                </button>
+
+                {loading ? (
+                    <div className="grid-res grid-res-2">
+                        {[...Array(2)].map((_, i) => <div key={i} className="skeleton" style={{ height: 250, borderRadius: '20px' }} />)}
+                    </div>
+                ) : projects.length === 0 ? (
+                    <div className="card" style={{ padding: '6rem 2rem', textAlign: 'center' }}>
+                        <Code2 size={64} style={{ opacity: 0.1, margin: '0 auto 1.5rem auto' }} />
+                        <h3 style={{ fontWeight: 800 }}>No projects added yet</h3>
+                        <p style={{ color: 'var(--text-muted)' }}>Start by highlighting your best technical work.</p>
+                    </div>
+                ) : (
+                    <div className="grid-res grid-res-2" style={{ gap: '1.5rem' }}>
+                        {projects.map(project => (
+                            <div key={project.id} className="card animate-scale-in" style={{ padding: '1.5rem', border: '1px solid var(--border-primary)', display: 'flex', flexDirection: 'column' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                                    <div style={{ width: 48, height: 48, background: 'var(--primary-50)', color: 'var(--brand-700)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Layers size={24} />
+                                    </div>
+                                    <button className="btn btn-ghost btn-sm text-danger" onClick={() => handleDelete(project.id)} style={{ padding: '0.5rem' }}>
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+
+                                <div style={{ marginBottom: '1rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                                        <h4 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>{project.title}</h4>
+                                        <span className={`badge ${project.status === 'Completed' ? 'badge-success' : 'badge-primary'}`} style={{ fontSize: '0.65rem' }}>
+                                            {project.status.toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '0.5rem', lineBreak: 'anywhere' }}>
+                                        {project.description}
+                                    </p>
+                                </div>
+
+                                <div style={{ marginBottom: '1.25rem' }}>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                        {project.techStack?.split(',').map((tech, i) => (
+                                            <span key={i} style={{ background: 'var(--slate-100)', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                                                {tech.trim()}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto' }}>
+                                    {project.githubLink && (
+                                        <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm" style={{ flex: 1, gap: '0.5rem' }}>
+                                            <Github size={16} /> GitHub
+                                        </a>
+                                    )}
+                                    {project.liveLink && (
+                                        <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm" style={{ flex: 1, gap: '0.5rem' }}>
+                                            <ExternalLink size={16} /> Live Demo
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
-            {loading ? (
-                <div className="grid-res grid-res-2">
-                    {[...Array(2)].map((_, i) => <div key={i} className="skeleton" style={{ height: 250, borderRadius: '20px' }} />)}
-                </div>
-            ) : projects.length === 0 ? (
-                <div className="card" style={{ padding: '6rem 2rem', textAlign: 'center' }}>
-                    <Code2 size={64} style={{ opacity: 0.1, margin: '0 auto 1.5rem auto' }} />
-                    <h3 style={{ fontWeight: 800 }}>No projects added yet</h3>
-                    <p style={{ color: 'var(--text-muted)' }}>Start by highlighting your best technical work.</p>
-                </div>
-            ) : (
-                <div className="grid-res grid-res-2" style={{ gap: '1.5rem' }}>
-                    {projects.map(project => (
-                        <div key={project.id} className="card animate-scale-in" style={{ padding: '1.5rem', border: '1px solid var(--border-primary)', display: 'flex', flexDirection: 'column' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                                <div style={{ width: 48, height: 48, background: 'var(--primary-50)', color: 'var(--brand-700)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Layers size={24} />
-                                </div>
-                                <button className="btn btn-ghost btn-sm text-danger" onClick={() => handleDelete(project.id)} style={{ padding: '0.5rem' }}>
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
-
-                            <div style={{ marginBottom: '1rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                    <h4 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>{project.title}</h4>
-                                    <span className={`badge ${project.status === 'Completed' ? 'badge-success' : 'badge-primary'}`} style={{ fontSize: '0.65rem' }}>
-                                        {project.status.toUpperCase()}
-                                    </span>
-                                </div>
-                                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '0.5rem', lineBreak: 'anywhere' }}>
-                                    {project.description}
-                                </p>
-                            </div>
-
-                            <div style={{ marginBottom: '1.25rem' }}>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                    {project.techStack?.split(',').map((tech, i) => (
-                                        <span key={i} style={{ background: 'var(--slate-100)', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
-                                            {tech.trim()}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto' }}>
-                                {project.githubLink && (
-                                    <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm" style={{ flex: 1, gap: '0.5rem' }}>
-                                        <Github size={16} /> GitHub
-                                    </a>
-                                )}
-                                {project.liveLink && (
-                                    <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm" style={{ flex: 1, gap: '0.5rem' }}>
-                                        <ExternalLink size={16} /> Live Demo
-                                    </a>
-                                )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
             {showModal && (
-                <div className="modal-overlay animate-fade-in">
-                    <div className="modal animate-scale-in" style={{ maxWidth: '600px' }}>
+                <div className="modal-overlay">
+                    <div className="modal animate-scale-in">
                         <div className="modal-header">
                             <div>
                                 <h3 style={{ margin: 0 }}>Add New Project</h3>
                                 <p style={{ margin: 0 }}>Showcase your technical work and achievements.</p>
                             </div>
-                            <button className="btn btn-ghost" onClick={() => setShowModal(false)} style={{ color: 'white', padding: '0.25rem' }}>
-                                <XCircle size={22} />
+                            <button className="btn btn-ghost" onClick={() => setShowModal(false)} style={{ color: 'white', opacity: 0.8 }}>
+                                <X size={24} />
                             </button>
                         </div>
                         <div className="modal-body" style={{ padding: '2rem' }}>
@@ -230,16 +232,16 @@ const MyProjectsPage = () => {
                                     </select>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                                    <button type="button" className="btn btn-ghost w-full" onClick={() => setShowModal(false)}>Cancel</button>
-                                    <button type="submit" className="btn btn-primary w-full">Add Project</button>
+                                <div className="modal-actions-responsive">
+                                    <button type="button" className="btn btn-secondary cancel-btn" onClick={() => setShowModal(false)}>Cancel</button>
+                                    <button type="submit" className="btn btn-primary submit-btn">Add Project</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 

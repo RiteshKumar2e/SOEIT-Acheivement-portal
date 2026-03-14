@@ -8,7 +8,7 @@ const syncEngine = require('../../utils/syncEngine');
 // @route   POST /api/courses
 exports.addCourse = async (req, res, next) => {
     try {
-        const { courseName, platform, status, progress, startDate } = req.body;
+        const { courseName, platform, status, progress, startDate, category, expectedCompletionDate, skillsToBeLearnt, courseLink } = req.body;
         const studentId = req.user.id;
 
         if (!courseName || !platform) {
@@ -22,6 +22,10 @@ exports.addCourse = async (req, res, next) => {
             status: status || 'Ongoing',
             progress: progress || 0,
             startDate: startDate || new Date().toISOString(),
+            category: category || 'Technical',
+            expectedCompletionDate: expectedCompletionDate || '',
+            skillsToBeLearnt: skillsToBeLearnt || '',
+            courseLink: courseLink || ''
         };
 
         const course = await Course.create(data);
@@ -134,7 +138,11 @@ exports.getAllCourses = async (req, res, next) => {
             department: c.department,
             enrollmentNo: c.enrollment_no,
             updatedAt: c.updated_at,
-            lastSyncedAt: c.last_synced_at
+            lastSyncedAt: c.last_synced_at,
+            category: c.category,
+            expectedCompletionDate: c.expected_completion_date,
+            skillsToBeLearnt: c.skills_to_be_learnt,
+            courseLink: c.course_link
         }));
 
         res.status(200).json({ success: true, count: transformed.length, data: transformed });

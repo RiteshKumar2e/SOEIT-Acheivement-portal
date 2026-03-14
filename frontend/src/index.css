@@ -1449,9 +1449,9 @@ textarea.form-control {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.35); /* Institutional Navy Overlay */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.45); /* Deeper Institutional Navy Overlay, softer */
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
   display: flex;
   align-items: center;
   justify-content: center;

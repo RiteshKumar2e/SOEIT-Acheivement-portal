@@ -14,12 +14,13 @@ const Course = {
 
         await db.execute({
             sql: `INSERT INTO courses 
-                (id, student_id, course_name, platform, status, progress, start_date, course_link, sync_credentials)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                (id, student_id, course_name, platform, status, progress, start_date, course_link, sync_credentials, category, expected_completion_date, skills_to_be_learnt)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             args: [
                 id, data.studentId, data.courseName, data.platform,
                 data.status || 'Ongoing', data.progress || 0, data.startDate || new Date().toISOString(),
-                data.courseLink || '', data.syncCredentials || '{}'
+                data.courseLink || '', data.syncCredentials || '{}',
+                data.category || 'Technical', data.expectedCompletionDate || '', data.skillsToBeLearnt || ''
             ],
         });
 

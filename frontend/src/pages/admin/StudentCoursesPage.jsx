@@ -174,8 +174,9 @@ const StudentCoursesPage = () => {
                                 <thead>
                                     <tr>
                                         <th style={{ paddingLeft: '2rem' }}>Student Name</th>
-                                        <th>Course</th>
+                                        <th>Course & Category</th>
                                         <th>Platform</th>
+                                        <th>Target Date</th>
                                         <th style={{ textAlign: 'center' }}>Progress</th>
                                         <th>Status</th>
                                         <th style={{ textAlign: 'right', paddingRight: '2rem' }}>Action</th>
@@ -209,9 +210,22 @@ const StudentCoursesPage = () => {
                                                 </td>
                                                 <td>
                                                     <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{course.courseName}</div>
-                                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 800 }}>{course.department}</div>
+                                                    <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.2rem' }}>
+                                                        <span style={{ fontSize: '0.65rem', background: 'var(--brand-50)', color: 'var(--brand-700)', padding: '2px 6px', borderRadius: '4px', fontWeight: 900 }}>{course.category}</span>
+                                                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 800 }}>{course.department}</span>
+                                                    </div>
+                                                    {course.skillsToBeLearnt && (
+                                                        <div style={{ fontSize: '0.7rem', color: 'var(--brand-600)', fontWeight: 700, marginTop: '2px', fontStyle: 'italic' }}>
+                                                            Targeting: {course.skillsToBeLearnt}
+                                                        </div>
+                                                    )}
                                                 </td>
                                                 <td><span style={{ fontSize: '0.85rem', fontWeight: 800 }}>{course.platform}</span></td>
+                                                <td>
+                                                    <div style={{ fontSize: '0.85rem', fontWeight: 800 }}>
+                                                        {course.expectedCompletionDate ? new Date(course.expectedCompletionDate).toLocaleDateString() : 'N/A'}
+                                                    </div>
+                                                </td>
                                                 <td style={{ textAlign: 'center' }}>
                                                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '1rem', width: '200px' }}>
                                                         <div style={{ flex: 1, height: '6px', background: 'var(--slate-100)', borderRadius: '3px', overflow: 'hidden' }}>

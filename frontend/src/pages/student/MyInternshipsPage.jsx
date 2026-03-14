@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { internshipAPI } from '../../services/api';
-import { Plus, Trash2, Building2, ExternalLink, Calendar, MapPin, Briefcase, CheckCircle2, MoreVertical, Edit2, XCircle } from 'lucide-react';
+import { Plus, Trash2, Building2, ExternalLink, Calendar, MapPin, Briefcase, CheckCircle2, MoreVertical, Edit2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const MyInternshipsPage = () => {
@@ -96,118 +96,120 @@ const MyInternshipsPage = () => {
     };
 
     return (
-        <div className="animate-fade-in">
-            <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                <div>
-                    <h2 className="heading-display">Internship Journey</h2>
-                    <p className="page-subtitle">Document your professional experiences and industry exposure.</p>
+        <>
+            <div className="animate-fade-in">
+                <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div>
+                        <h2 className="heading-display">Internship Journey</h2>
+                        <p className="page-subtitle">Document your professional experiences and industry exposure.</p>
+                    </div>
+                    <button className="btn btn-primary" onClick={() => { resetForm(); setShowModal(true); }} style={{ borderRadius: '12px', padding: '0.75rem 1.5rem', gap: '0.75rem' }}>
+                        <Plus size={20} />
+                        <span>Add Experience</span>
+                    </button>
                 </div>
-                <button className="btn btn-primary" onClick={() => { resetForm(); setShowModal(true); }} style={{ borderRadius: '12px', padding: '0.75rem 1.5rem', gap: '0.75rem' }}>
-                    <Plus size={20} />
-                    <span>Add Experience</span>
-                </button>
-            </div>
 
-            {loading ? (
-                <div className="grid-res grid-res-2" style={{ gap: '1.5rem' }}>
-                    {[...Array(2)].map((_, i) => <div key={i} className="skeleton" style={{ height: 250, borderRadius: 'var(--radius-lg)' }} />)}
-                </div>
-            ) : internships.length === 0 ? (
-                <div className="card" style={{ padding: '6rem 2rem', textAlign: 'center' }}>
-                    <Briefcase size={64} style={{ opacity: 0.1, margin: '0 auto 1.5rem auto' }} />
-                    <h3 style={{ fontWeight: 800 }}>Start your professional registry</h3>
-                    <p style={{ color: 'var(--text-muted)' }}>You haven't added any internships yet. Share your experience to build your profile.</p>
-                </div>
-            ) : (
-                <div className="grid-res grid-res-2" style={{ gap: '1.5rem' }}>
-                    {internships.map(internship => (
-                        <div key={internship.id} className="card animate-scale-in" style={{ padding: '0', display: 'flex', flexDirection: 'column', borderRadius: '24px' }}>
-                            <div style={{ padding: '2rem', flex: 1 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                                    <div style={{ width: 52, height: 52, background: 'var(--primary-50)', color: 'var(--brand-700)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Building2 size={26} />
+                {loading ? (
+                    <div className="grid-res grid-res-2" style={{ gap: '1.5rem' }}>
+                        {[...Array(2)].map((_, i) => <div key={i} className="skeleton" style={{ height: 250, borderRadius: 'var(--radius-lg)' }} />)}
+                    </div>
+                ) : internships.length === 0 ? (
+                    <div className="card" style={{ padding: '6rem 2rem', textAlign: 'center' }}>
+                        <Briefcase size={64} style={{ opacity: 0.1, margin: '0 auto 1.5rem auto' }} />
+                        <h3 style={{ fontWeight: 800 }}>Start your professional registry</h3>
+                        <p style={{ color: 'var(--text-muted)' }}>You haven't added any internships yet. Share your experience to build your profile.</p>
+                    </div>
+                ) : (
+                    <div className="grid-res grid-res-2" style={{ gap: '1.5rem' }}>
+                        {internships.map(internship => (
+                            <div key={internship.id} className="card animate-scale-in" style={{ padding: '0', display: 'flex', flexDirection: 'column', borderRadius: '24px' }}>
+                                <div style={{ padding: '2rem', flex: 1 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                                        <div style={{ width: 52, height: 52, background: 'var(--primary-50)', color: 'var(--brand-700)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Building2 size={26} />
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(internship)} style={{ padding: '0.5rem', background: 'var(--primary-50)', borderRadius: '10px' }}>
+                                                <Edit2 size={16} />
+                                            </button>
+                                            <button className="btn btn-ghost btn-sm text-danger" onClick={() => handleDelete(internship.id)} style={{ padding: '0.5rem', background: 'var(--error-50)', borderRadius: '10px' }}>
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                        <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(internship)} style={{ padding: '0.5rem', background: 'var(--primary-50)', borderRadius: '10px' }}>
-                                            <Edit2 size={16} />
-                                        </button>
-                                        <button className="btn btn-ghost btn-sm text-danger" onClick={() => handleDelete(internship.id)} style={{ padding: '0.5rem', background: 'var(--error-50)', borderRadius: '10px' }}>
-                                            <Trash2 size={16} />
-                                        </button>
+
+                                    <div style={{ marginBottom: '1.5rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
+                                            <h4 style={{ fontSize: '1.35rem', fontWeight: 900, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>{internship.company_name}</h4>
+                                            <span className={`badge ${internship.status === 'Completed' ? 'badge-success' : 'badge-primary'}`} style={{ borderRadius: '6px', fontSize: '0.7rem' }}>
+                                                {internship.status.toUpperCase()}
+                                            </span>
+                                        </div>
+                                        <p style={{ fontSize: '1rem', color: 'var(--brand-700)', fontWeight: 850, margin: 0 }}>{internship.role}</p>
                                     </div>
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 700 }}>
+                                            <Calendar size={16} style={{ color: 'var(--brand-500)' }} />
+                                            <span>{internship.start_date} {internship.end_date ? `— ${internship.end_date}` : '(Present)'}</span>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 700 }}>
+                                            <MapPin size={16} style={{ color: 'var(--brand-500)' }} />
+                                            <span>{internship.location || 'Not specified'}</span>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 700 }}>
+                                            <Briefcase size={16} style={{ color: 'var(--brand-500)' }} />
+                                            <span>{internship.internship_type || 'Full-time'}</span>
+                                        </div>
+                                    </div>
+
+                                    {internship.description && (
+                                        <div style={{ padding: '1rem', background: 'var(--primary-50)', borderRadius: '14px', fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6, border: '1px solid var(--primary-100)' }}>
+                                            {internship.description}
+                                        </div>
+                                    )}
                                 </div>
 
-                                <div style={{ marginBottom: '1.5rem' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
-                                        <h4 style={{ fontSize: '1.35rem', fontWeight: 900, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>{internship.company_name}</h4>
-                                        <span className={`badge ${internship.status === 'Completed' ? 'badge-success' : 'badge-primary'}`} style={{ borderRadius: '6px', fontSize: '0.7rem' }}>
-                                            {internship.status.toUpperCase()}
-                                        </span>
-                                    </div>
-                                    <p style={{ fontSize: '1rem', color: 'var(--brand-700)', fontWeight: 850, margin: 0 }}>{internship.role}</p>
-                                </div>
-
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 700 }}>
-                                        <Calendar size={16} style={{ color: 'var(--brand-500)' }} />
-                                        <span>{internship.start_date} {internship.end_date ? `— ${internship.end_date}` : '(Present)'}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 700 }}>
-                                        <MapPin size={16} style={{ color: 'var(--brand-500)' }} />
-                                        <span>{internship.location || 'Not specified'}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 700 }}>
-                                        <Briefcase size={16} style={{ color: 'var(--brand-500)' }} />
-                                        <span>{internship.internship_type || 'Full-time'}</span>
-                                    </div>
-                                </div>
-
-                                {internship.description && (
-                                    <div style={{ padding: '1rem', background: 'var(--primary-50)', borderRadius: '14px', fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6, border: '1px solid var(--primary-100)' }}>
-                                        {internship.description}
-                                    </div>
+                                {internship.certificate_url && (
+                                    <a
+                                        href={internship.certificate_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn btn-ghost"
+                                        style={{ 
+                                            padding: '1.25rem', 
+                                            background: 'transparent', 
+                                            borderTop: '1px solid var(--border-primary)', 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            justifyContent: 'center', 
+                                            gap: '0.75rem', 
+                                            color: 'var(--brand-700)', 
+                                            fontWeight: 900, 
+                                            fontSize: '0.85rem',
+                                            borderRadius: '0 0 24px 24px'
+                                        }}
+                                    >
+                                        <ExternalLink size={18} />
+                                        VIEW COMPLETION CERTIFICATE
+                                    </a>
                                 )}
                             </div>
-
-                            {internship.certificate_url && (
-                                <a
-                                    href={internship.certificate_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-ghost"
-                                    style={{ 
-                                        padding: '1.25rem', 
-                                        background: 'transparent', 
-                                        borderTop: '1px solid var(--border-primary)', 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center', 
-                                        gap: '0.75rem', 
-                                        color: 'var(--brand-700)', 
-                                        fontWeight: 900, 
-                                        fontSize: '0.85rem',
-                                        borderRadius: '0 0 24px 24px'
-                                    }}
-                                >
-                                    <ExternalLink size={18} />
-                                    VIEW COMPLETION CERTIFICATE
-                                </a>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )}
+                        ))}
+                    </div>
+                )}
+            </div>
 
             {showModal && (
-                <div className="modal-overlay animate-fade-in">
+                <div className="modal-overlay">
                     <div className="modal animate-scale-in">
                         <div className="modal-header">
                             <div>
                                 <h3 style={{ margin: 0 }}>{editingId ? 'Update Experience' : 'New Internship'}</h3>
                                 <p style={{ margin: 0 }}>Fill in your professional experience details.</p>
                             </div>
-                            <button className="btn btn-ghost" onClick={() => setShowModal(false)} style={{ color: 'white', padding: '0.25rem' }}>
-                                <XCircle size={22} />
+                            <button className="btn btn-ghost" onClick={() => setShowModal(false)} style={{ color: 'white', opacity: 0.8 }}>
+                                <X size={24} />
                             </button>
                         </div>
                         <div className="modal-body" style={{ padding: '2.5rem' }}>
@@ -326,16 +328,16 @@ const MyInternshipsPage = () => {
                                     />
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '1.25rem', marginTop: '1rem' }}>
-                                    <button type="button" className="btn btn-secondary" style={{ flex: 1, height: '54px', borderRadius: '14px', fontWeight: 800 }} onClick={() => setShowModal(false)}>Cancel</button>
-                                    <button type="submit" className="btn btn-primary" style={{ flex: 2, height: '54px', borderRadius: '14px', fontWeight: 800, fontSize: '1rem' }}>{editingId ? 'Save Changes' : 'Record Experience'}</button>
+                                <div className="modal-actions-responsive">
+                                    <button type="button" className="btn btn-secondary cancel-btn" onClick={() => setShowModal(false)}>Cancel</button>
+                                    <button type="submit" className="btn btn-primary submit-btn">{editingId ? 'Save Changes' : 'Record Experience'}</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 

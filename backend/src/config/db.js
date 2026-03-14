@@ -105,6 +105,9 @@ const initSchema = async (client) => {
             sync_credentials TEXT DEFAULT '{}',
             start_date      TEXT,
             completion_date TEXT,
+            category        TEXT,
+            expected_completion_date TEXT,
+            skills_to_be_learnt TEXT,
             certificate_url TEXT,
             created_at      TEXT DEFAULT (datetime('now')),
             updated_at      TEXT DEFAULT (datetime('now')),
@@ -232,7 +235,10 @@ const initSchema = async (client) => {
     await client.execute(`ALTER TABLE courses ADD COLUMN course_link TEXT DEFAULT ''`);
     await client.execute(`ALTER TABLE courses ADD COLUMN last_synced_at TEXT`);
     await client.execute(`ALTER TABLE courses ADD COLUMN sync_credentials TEXT DEFAULT '{}'`);
-    console.log('✅ Migration: added sync columns to courses table');
+    await client.execute(`ALTER TABLE courses ADD COLUMN category TEXT`);
+    await client.execute(`ALTER TABLE courses ADD COLUMN expected_completion_date TEXT`);
+    await client.execute(`ALTER TABLE courses ADD COLUMN skills_to_be_learnt TEXT`);
+    console.log('✅ Migration: added course tracking columns');
   } catch (err) {
     // columns likely exist
   }
