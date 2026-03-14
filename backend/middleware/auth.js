@@ -34,6 +34,7 @@ exports.protect = async (req, res, next) => {
             role: user.role,
             department: user.department,
             batch: user.batch,
+            semester: user.semester,
             isActive: user.isActive,
         };
 
@@ -66,6 +67,7 @@ exports.optionalProtect = async (req, res, next) => {
                 role: user.role,
                 department: user.department,
                 batch: user.batch,
+                semester: user.semester,
                 isActive: user.isActive,
             };
         }

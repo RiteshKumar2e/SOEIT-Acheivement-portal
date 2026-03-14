@@ -157,7 +157,7 @@ exports.getMyAssignedCourses = async (req, res, next) => {
             return res.status(403).json({ success: false, message: 'Forbidden' });
         }
 
-        const assignments = await CourseAssignment.findByStudentTarget(user.department, user.semester);
+        const assignments = await CourseAssignment.findByStudentTarget(user.department || 'CSE', user.semester || 1);
         res.status(200).json({ success: true, count: assignments.length, data: assignments });
     } catch (error) {
         next(error);

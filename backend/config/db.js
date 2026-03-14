@@ -222,6 +222,14 @@ const initSchema = async (client) => {
     `CREATE INDEX IF NOT EXISTS idx_course_assignments_faculty ON course_assignments(assigned_by)`,
     `CREATE INDEX IF NOT EXISTS idx_files_created ON files(created_at)`
   ], 'write');
+
+  // migration for existing systems
+  try {
+    await client.execute(`ALTER TABLE course_assignments ADD COLUMN course_link TEXT DEFAULT ''`);
+    console.log('✅ Migration: added course_link to course_assignments');
+  } catch (err) {
+    // column likely exists or other non-critical error
+  }
 };
 
 const seedDemoUsers = async (client) => {
