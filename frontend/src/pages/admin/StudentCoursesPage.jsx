@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { courseAPI } from '../../services/api';
-import { Search, Filter, BookOpen, GraduationCap, ChevronLeft, ChevronRight, Activity, Eye, Plus, Trash2, User, Book, Hash, RefreshCw } from 'lucide-react';
+import { Search, Filter, BookOpen, GraduationCap, ChevronLeft, ChevronRight, Activity, Eye, Plus, Trash2, User, Book, Hash, RefreshCw, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -299,11 +299,11 @@ const StudentCoursesPage = () => {
                     <div className="modal animate-scale-in">
                         <div className="modal-header">
                             <div>
-                                <h2 style={{ fontWeight: 900, letterSpacing: '-0.02em', margin: 0 }}>Assign New Course</h2>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: '0.25rem 0 0 0' }}>Select a department and semester to assign a course.</p>
+                                <h2 style={{ color: '#fff', fontWeight: 900, letterSpacing: '-0.02em', margin: 0 }}>Assign New Course</h2>
+                                <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem', margin: '0.25rem 0 0 0' }}>Select a department and semester to assign a course.</p>
                             </div>
-                            <button className="btn btn-ghost" onClick={() => setShowAssignModal(false)} style={{ borderRadius: '50%', width: 44, height: 44, padding: 0 }}>
-                                <Plus size={24} style={{ transform: 'rotate(45deg)' }} />
+                            <button type="button" className="btn btn-ghost" onClick={() => setShowAssignModal(false)} style={{ color: '#ef4444', borderRadius: '50%', width: 44, height: 44, padding: 0 }}>
+                                <X size={24} />
                             </button>
                         </div>
                         <div className="modal-body">

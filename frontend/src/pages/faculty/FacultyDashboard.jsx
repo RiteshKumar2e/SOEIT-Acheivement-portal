@@ -17,8 +17,6 @@ const FacultyDashboard = () => {
     const [semester, setSemester] = useState('all');
     const [section, setSection] = useState('all');
     const [search, setSearch] = useState('');
-    const [selectedIds, setSelectedIds] = useState([]);
-    const [deleting, setDeleting] = useState(false);
     const [showNoticeModal, setShowNoticeModal] = useState(false);
     const [noticeData, setNoticeData] = useState({ title: '', content: '', priority: 'Medium' });
     const [selectedStudent, setSelectedStudent] = useState(null);
@@ -151,31 +149,6 @@ const FacultyDashboard = () => {
         }
     };
 
-    const handleDeleteSelected = async () => {
-        if (selectedIds.length === 0) return;
-        if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} students? This action is irreversible.`)) return;
-        setDeleting(true);
-        try {
-            await adminAPI.deleteUsers(selectedIds);
-            toast.success('Students deleted successfully');
-            setSelectedIds([]);
-            loadStudents();
-        } catch {
-            toast.error('Failed to delete students');
-        } finally {
-            setDeleting(false);
-        }
-    };
-
-    const toggleSelect = (id) => {
-        setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
-    };
-
-    const toggleSelectAll = () => {
-        if (selectedIds.length === students.length) setSelectedIds([]);
-        else setSelectedIds(students.map(s => s._id));
-    };
-
     const statCards = [
         { label: 'Total Students', value: stats?.stats?.totalStudents ?? 0, icon: Users, color: 'var(--brand-600)', bg: 'var(--primary-50)' },
         { label: 'Pending Requests', value: stats?.stats?.pendingCount ?? 0, icon: Clock, color: 'var(--warning-500)', bg: 'rgba(245,158,11,0.08)' },
@@ -294,12 +267,6 @@ const FacultyDashboard = () => {
                                 ))}
                             </select>
                         </div>
-                        {selectedIds.length > 0 && (
-                            <button className="btn btn-danger animate-fade-in" onClick={handleDeleteSelected} disabled={deleting} style={{ padding: '0.6rem 1.25rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <XCircle size={16} />
-                                Delete Selected ({selectedIds.length})
-                            </button>
-                        )}
                     </div>
 
                     {semester !== 'all' && (
@@ -370,10 +337,7 @@ const FacultyDashboard = () => {
                     <table className="table" style={{ minWidth: '900px' }}>
                         <thead>
                             <tr>
-                                <th style={{ paddingLeft: '1.75rem', width: '50px' }}>
-                                    <input type="checkbox" checked={students.length > 0 && selectedIds.length === students.length} onChange={toggleSelectAll} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
-                                </th>
-                                <th>Student Profile</th>
+                                <th style={{ paddingLeft: '1.75rem' }}>Student Profile</th>
                                 <th className="text-center">Batch & Semester</th>
                                 <th className="text-center">Achievements</th>
                                 <th className="text-center">Total Points</th>
@@ -383,11 +347,11 @@ const FacultyDashboard = () => {
                         <tbody>
                             {loading ? (
                                 [...Array(5)].map((_, i) => (
-                                    <tr key={i}><td colSpan="6"><div className="skeleton" style={{ height: '60px' }} /></td></tr>
+                                    <tr key={i}><td colSpan="5"><div className="skeleton" style={{ height: '60px' }} /></td></tr>
                                 ))
                             ) : students.length === 0 ? (
                                 <tr className="empty-row">
-                                    <td colSpan="6">
+                                    <td colSpan="5">
                                         <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
                                             <UsersRound size={48} style={{ opacity: 0.1, margin: '0 auto 1.5rem auto' }} />
                                             <h5 style={{ fontWeight: 800, margin: '0 0 0.5rem 0' }}>No Students Found</h5>
@@ -396,10 +360,7 @@ const FacultyDashboard = () => {
                                     </td>
                                 </tr>
                             ) : students.map(student => (
-                                <tr key={student._id} className={`hover-row ${selectedIds.includes(student._id) ? 'active-selection' : ''}`}>
-                                    <td style={{ paddingLeft: '1.75rem' }}>
-                                        <input type="checkbox" checked={selectedIds.includes(student._id)} onChange={() => toggleSelect(student._id)} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
-                                    </td>
+                                <tr key={student._id} className="hover-row">
                                     <td style={{ padding: '1rem 1.75rem' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                                             <div className="avatar avatar-md" style={{ background: 'var(--primary-100)', color: 'var(--brand-700)', fontWeight: 800 }}>

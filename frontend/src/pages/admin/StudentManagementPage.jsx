@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import { useAuth } from '../../context/AuthContext';
 
 const DEPARTMENTS = {
     'B.Tech': ['CSE', 'AIDS (IBM)', 'AIML', 'ME', 'EEE'],
@@ -22,6 +23,7 @@ const StudentManagementPage = () => {
     const [filters, setFilters] = useState({ department: '', search: '', semester: '', page: 1 });
     const [selectedIds, setSelectedIds] = useState([]);
     const [deleting, setDeleting] = useState(false);
+    const { user } = useAuth();
 
     const load = async () => {
         setLoading(true);
@@ -125,7 +127,7 @@ const StudentManagementPage = () => {
                     <p className="page-subtitle">Manage all students and view their total achievements and points.</p>
                 </div>
                 <div className="header-actions">
-                    {selectedIds.length > 0 && (
+                    {user?.role === 'admin' && selectedIds.length > 0 && (
                         <button className="btn btn-danger animate-fade-in" onClick={handleDeleteSelected} disabled={deleting} style={{ fontWeight: 800, padding: '0 1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <XCircle size={18} />
                             <span>Delete Selected ({selectedIds.length})</span>
@@ -189,9 +191,11 @@ const StudentManagementPage = () => {
                             <table className="table" style={{ minWidth: '1000px' }}>
                                 <thead>
                                     <tr>
-                                        <th style={{ paddingLeft: '2rem', width: '50px' }}>
-                                            <input type="checkbox" checked={students.length > 0 && selectedIds.length === students.length} onChange={toggleSelectAll} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
-                                        </th>
+                                        {user?.role === 'admin' && (
+                                            <th style={{ paddingLeft: '2rem', width: '50px' }}>
+                                                <input type="checkbox" checked={students.length > 0 && selectedIds.length === students.length} onChange={toggleSelectAll} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                                            </th>
+                                        )}
                                         <th>Student</th>
                                         <th>Department</th>
                                         <th>Email</th>
@@ -203,9 +207,11 @@ const StudentManagementPage = () => {
                                 <tbody>
                                     {students.map((s) => (
                                         <tr key={s._id} className={`hover-row ${selectedIds.includes(s._id) ? 'active-selection' : ''}`}>
-                                            <td style={{ paddingLeft: '2rem' }}>
-                                                <input type="checkbox" checked={selectedIds.includes(s._id)} onChange={() => toggleSelect(s._id)} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
-                                            </td>
+                                            {user?.role === 'admin' && (
+                                                <td style={{ paddingLeft: '2rem' }}>
+                                                    <input type="checkbox" checked={selectedIds.includes(s._id)} onChange={() => toggleSelect(s._id)} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                                                </td>
+                                            )}
                                             <td style={{ paddingLeft: '1rem' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', padding: '0.75rem 0' }}>
                                                     {s.profileImage ? (
