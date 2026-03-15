@@ -9,9 +9,9 @@ const generateToken = (id) => {
 };
 
 const sendTokenResponse = (user, statusCode, res, message = 'Success') => {
-    const token = generateToken(user.id || user._id);
-    const userObj = user.toObject ? user.toObject() : { ...user };
-    delete userObj.password;
+    const token = generateToken(user.id);
+    const userObj = user.toObject ? user.toObject() : user;
+    if (userObj.password) delete userObj.password;
     res.status(statusCode).json({ success: true, message, token, user: userObj });
 };
 
@@ -73,8 +73,8 @@ exports.login = async (req, res, next) => {
         const isMatch = await user.matchPassword(password);
         if (!isMatch) return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
-        user.lastLogin = new Date();
-        await user.save();
+        // Fast login update (background)
+        user.updateLastLogin().catch(err => console.error('Login update failed:', err.message));
 
         sendTokenResponse(user, 200, res, 'Login successful');
     } catch (error) {
@@ -137,7 +137,7 @@ exports.changePassword = async (req, res, next) => {
         user.password = newPassword;
         // Re-hash and save
         const bcrypt = require('bcrypt');
-        const salt = await bcrypt.genSalt(10);
+        const salt = await bcrypt.genSalt(8);
         user.password = await bcrypt.hash(newPassword, salt);
         await user.save();
 
@@ -185,7 +185,7 @@ exports.resetPassword = async (req, res, next) => {
         }
 
         const bcrypt = require('bcrypt');
-        const salt = await bcrypt.genSalt(10);
+        const salt = await bcrypt.genSalt(8);
         user.password = await bcrypt.hash(req.body.password, salt);
         user.resetPasswordToken = null;
         user.resetPasswordExpire = null;

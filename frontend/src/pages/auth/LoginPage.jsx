@@ -65,16 +65,16 @@ const LoginPage = () => {
         setLoading(true);
         try {
             const data = await login({ email: form.email, password: form.password });
-            toast.success(data.message || 'Welcome back!');
-
-            let redirect = from;
-            if (!redirect) {
-                if (data.user.role === 'admin') redirect = '/admin/dashboard';
-                else if (data.user.role === 'faculty') redirect = '/faculty/dashboard';
-                else redirect = '/dashboard';
-            }
-
+            
+            // O(1) Perceived rediction logic
+            const redirect = from || (
+                data.user.role === 'admin' ? '/admin/dashboard' : 
+                data.user.role === 'faculty' ? '/faculty/dashboard' : '/dashboard'
+            );
+            
             navigate(redirect, { replace: true });
+            // Show toast after navigation begins
+            setTimeout(() => toast.success('Welcome back!'), 50);
         } catch (err) {
             toast.error(err.response?.data?.message || 'Login failed');
             generateCaptcha();

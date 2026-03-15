@@ -61,6 +61,7 @@ const rowToUser = (row) => {
             delete obj.matchPassword;
             delete obj.getResetPasswordToken;
             delete obj.save;
+            delete obj.updateLastLogin;
             delete obj.toObject;
             return obj;
         },
@@ -89,6 +90,15 @@ const rowToUser = (row) => {
                 ],
             });
         },
+        updateLastLogin: async function () {
+            const db = getDb();
+            this.lastLogin = new Date();
+            // Fire and forget single column update (no await used in controller call anyway)
+            await db.execute({
+                sql: `UPDATE users SET last_login=?, updated_at=datetime('now') WHERE id=?`,
+                args: [this.lastLogin.toISOString(), this.id],
+            });
+        },
     };
 };
 
@@ -99,7 +109,7 @@ const User = {
         const id = await genId();
 
         // Hash password
-        const salt = await bcrypt.genSalt(10);
+        const salt = await bcrypt.genSalt(8);
         const hashedPassword = await bcrypt.hash(data.password, salt);
 
         await db.execute({

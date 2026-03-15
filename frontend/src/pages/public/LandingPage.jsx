@@ -234,6 +234,17 @@ const LandingPage = () => {
     const [activeTestimonial, setActiveTestimonial] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
 
+    // Warm up backend on mount to avoid Render cold-start lag during login
+    useEffect(() => {
+        const warmup = async () => {
+            try {
+                const { authAPI } = await import('../../services/api');
+                authAPI.getProfile().catch(() => { });
+            } catch (e) { /* ignore */ }
+        };
+        warmup();
+    }, []);
+
     const toggleFaq = (idx) => {
         setActiveFaq(activeFaq === idx ? null : idx);
     };
