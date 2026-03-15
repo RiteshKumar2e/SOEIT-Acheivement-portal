@@ -442,7 +442,7 @@ const LandingPage = () => {
                         <div className="gazette-rule" />
                         <div className="gazette-masthead-inner">
                             <div className="gazette-edition">
-                                Vol. {new Date().getFullYear()} · Issue {dayNum}
+                                Vol. {new Date().getFullYear()}
                             </div>
                             <h2 className="gazette-title">THE SOEIT GAZETTE</h2>
                             <div className="gazette-tagline">Voices · Achievements · Excellence</div>
