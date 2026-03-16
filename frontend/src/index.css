@@ -244,20 +244,21 @@ h6 {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 100;
+  z-index: 1000;
   display: flex;
   flex-direction: column;
-  transition: transform var(--transition-base), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform var(--transition-base);
+  transform: translateX(-100%); /* Initial hidden state */
 }
 
 .main-content {
-  margin-left: var(--sidebar-width);
+  margin-left: 0; /* No margin on desktop by default now */
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 
 @media (min-width: 1025px) {
   .sidebar.collapsed {
@@ -309,8 +310,56 @@ h6 {
   border-bottom: 1px solid var(--border-primary);
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 100;
 }
+
+/* --- Responsive Utilities --- */
+.display-desktop {
+  display: none !important;
+}
+
+.display-mobile {
+  display: flex !important;
+}
+
+@media (min-width: 1025px) {
+  .display-desktop {
+    display: flex !important;
+  }
+  
+  .display-mobile {
+    display: none !important;
+  }
+}
+
+/* Navigation Dropdown Styles */
+.desktop-nav-link:hover, .desktop-nav-dropdown-trigger:hover {
+  background-color: var(--primary-100) !important;
+  color: var(--brand-700) !important;
+}
+
+.dropdown-item:hover {
+  background-color: var(--primary-100) !important;
+  color: var(--brand-700) !important;
+  transform: translateX(4px);
+}
+
+.dropdown-item.active {
+  background-color: var(--brand-50) !important;
+  color: var(--brand-700) !important;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 .page-content {
   padding: 2rem;
@@ -1582,10 +1631,6 @@ textarea.form-control {
 
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 1024px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-
   .sidebar.mobile-open {
     transform: translateX(0);
   }
@@ -1621,24 +1666,6 @@ textarea.form-control {
   }
 }
 
-/* Responsive display utility classes */
-.display-mobile {
-  display: none !important;
-}
-
-.display-desktop {
-  display: flex !important;
-}
-
-@media (max-width: 1024px) {
-  .display-mobile {
-    display: flex !important;
-  }
-
-  .display-desktop {
-    display: none !important;
-  }
-}
 
 .responsive-header {
   display: flex;

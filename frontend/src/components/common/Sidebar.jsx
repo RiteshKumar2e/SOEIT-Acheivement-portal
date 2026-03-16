@@ -1,93 +1,14 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { studentLinks, adminLinks } from '../../constants/navigation';
 import {
     LayoutDashboard, Trophy, Upload, User, BarChart3,
     CheckCircle, Users, Settings, LogOut, GraduationCap,
     FileText, X, Shield, Star, Calendar, ChevronLeft, ChevronRight, BookOpen, Activity, Terminal, Briefcase, Layers
 } from 'lucide-react';
 
-const studentLinks = [
-    {
-        title: 'Main Menu',
-        links: [
-            { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-            { to: '/events', icon: Calendar, label: 'Campus Events' },
-        ]
-    },
-    {
-        title: 'Achievements',
-        links: [
-            { to: '/achievements', icon: Trophy, label: 'My Achievements' },
-            { to: '/achievements/upload', icon: Upload, label: 'Upload Achievement' },
-        ]
-    },
-    {
-        title: 'Academic',
-        links: [
-            { to: '/courses', icon: BookOpen, label: 'Course Registry' },
-            { to: '/projects', icon: Layers, label: 'My Projects' },
-        ]
-    },
-    {
-        title: 'Career & Talent',
-        links: [
-            { to: '/internships', icon: Briefcase, label: 'My Internships' },
-            { to: '/internship-opportunities', icon: Star, label: 'Internship Opportunities' },
-            { to: '/hackathons', icon: Terminal, label: 'Live Hackathons' },
-        ]
-    },
-    {
-        title: 'Account',
-        links: [
-            { to: '/profile', icon: User, label: 'My Profile' },
-        ]
-    }
-];
-
-const adminLinks = [
-    {
-        title: 'Main Menu',
-        links: [
-            { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-            { to: '/events', icon: Calendar, label: 'Campus Events' },
-        ]
-    },
-    {
-        title: 'Achievements',
-        links: [
-            { to: '/admin/verify', icon: CheckCircle, label: 'Verify Achievements' },
-            { to: '/admin/achievements', icon: Trophy, label: 'All Achievements' },
-        ]
-    },
-    {
-        title: 'Academic Monitoring',
-        links: [
-            { to: '/admin/students', icon: Users, label: 'Students' },
-            { to: '/admin/faculty', icon: Shield, label: 'Faculty' },
-            { to: '/admin/courses', icon: BookOpen, label: 'Course Monitoring' },
-            { to: '/admin/projects', icon: Layers, label: 'Project Monitoring' },
-        ]
-    },
-    {
-        title: 'Resource Management',
-        links: [
-            { to: '/admin/manage-internships', icon: Upload, label: 'Internship Postings' },
-            { to: '/admin/internships', icon: Briefcase, label: 'Internship Monitoring' },
-            { to: '/admin/hackathons', icon: Activity, label: 'Hackathon Control' },
-        ]
-    },
-    {
-        title: 'Analytics & Settings',
-        links: [
-            { to: '/admin/reports', icon: BarChart3, label: 'Reports & Analytics' },
-            { to: '/profile', icon: User, label: 'My Profile' },
-        ]
-    }
-];
-
-
-const Sidebar = ({ mobileOpen, onClose, collapsed, onToggleCollapse }) => {
-    const { user, logout, isStudent } = useAuth();
+const Sidebar = ({ mobileOpen, onClose }) => {
+    const { user, logout, isStudent, _id } = useAuth();
     const navigate = useNavigate();
     const categories = isStudent ? studentLinks : adminLinks;
 
@@ -96,6 +17,7 @@ const Sidebar = ({ mobileOpen, onClose, collapsed, onToggleCollapse }) => {
         links: category.links
             .filter(link => {
                 if (user?.role === 'faculty' && link.to === '/admin/faculty') return false;
+                if (user?.role === 'faculty' && link.to === '/profile') return false;
                 return true;
             })
             .map(link => {
@@ -109,8 +31,8 @@ const Sidebar = ({ mobileOpen, onClose, collapsed, onToggleCollapse }) => {
 
     const handleLogout = async () => {
         await logout();
-        // redirect is handled inside AuthContext.logout()
     };
+
 
     const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
 
@@ -119,7 +41,7 @@ const Sidebar = ({ mobileOpen, onClose, collapsed, onToggleCollapse }) => {
             {mobileOpen && (
                 <div className="mobile-overlay" onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.4)', zIndex: 99, backdropFilter: 'blur(4px)' }} />
             )}
-            <aside className={`sidebar ${mobileOpen ? 'mobile-open' : ''} ${collapsed ? 'collapsed' : ''}`}
+            <aside className={`sidebar ${mobileOpen ? 'mobile-open' : ''}`}
                 style={{
                     background: 'white',
                     borderRight: '1px solid var(--border-primary)',
@@ -147,37 +69,13 @@ const Sidebar = ({ mobileOpen, onClose, collapsed, onToggleCollapse }) => {
                         </div>
                     </div>
 
-                    <button
-                        onClick={onToggleCollapse}
-                        className="sidebar-toggle display-desktop"
-                        style={{
-                            position: 'absolute',
-                            right: '-14px',
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            width: '28px',
-                            height: '28px',
-                            borderRadius: '50%',
-                            background: '#fff',
-                            border: '1px solid var(--border-primary)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                            cursor: 'pointer',
-                            zIndex: 10,
-                            color: 'var(--brand-700)'
-                        }}
-                    >
-                        {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-                    </button>
-
                     {mobileOpen && (
                         <button onClick={onClose} className="display-mobile" style={{ padding: '0.5rem', borderRadius: '8px', color: 'var(--text-muted)' }}>
                             <X size={20} />
                         </button>
                     )}
                 </div>
+
 
                 <div style={{ padding: '1.25rem 1rem', borderBottom: '1px solid var(--border-primary)', background: 'var(--slate-50)', transition: 'all 0.3s' }}>
                     <div className="identity-card" style={{

@@ -19,19 +19,17 @@ const pageTitles = {
 
 const DashboardLayout = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [collapsed, setCollapsed] = useState(false);
     const { pathname } = useLocation();
     const title = pageTitles[pathname] || 'SOEIT Portal';
 
     return (
-        <div className={`dashboard-layout ${collapsed ? 'sidebar-collapsed' : ''}`}>
+        <div className="dashboard-layout">
+            {/* Sidebar now essentially acts as a mobile-only drawer */}
             <Sidebar
                 mobileOpen={mobileOpen}
                 onClose={() => setMobileOpen(false)}
-                collapsed={collapsed}
-                onToggleCollapse={() => setCollapsed(!collapsed)}
             />
-            <div className={`main-content ${collapsed ? 'collapsed' : ''}`}>
+            <div className="main-content">
                 <Topbar onMenuClick={() => setMobileOpen(true)} title={title} />
                 <main className="page-content">
                     <Outlet />
@@ -40,5 +38,6 @@ const DashboardLayout = () => {
         </div>
     );
 };
+
 
 export default DashboardLayout;
