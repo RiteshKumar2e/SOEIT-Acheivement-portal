@@ -83,8 +83,9 @@ const RegisterPage = () => {
         if (form.password !== form.confirmPassword) e.confirmPassword = 'Passwords do not match';
 
         // Role-specific validation
+        if (!form.department) e.department = 'Department is required';
+
         if (form.role === 'student') {
-            if (!form.department) e.department = 'Department is required';
             if (!form.batch) e.batch = 'Batch is required';
             else if (!/^\d{4}-\d{2}$/.test(form.batch)) e.batch = 'Invalid format (e.g. 2022-26)';
         }
@@ -218,6 +219,17 @@ const RegisterPage = () => {
                                     </div>
                                 </div>
                             </>
+                        )}
+                        {form.role === 'faculty' && (
+                            <Field 
+                                name="department" 
+                                label="Department" 
+                                placeholder="Enter your department" 
+                                required 
+                                form={form} 
+                                setForm={setForm} 
+                                errors={errors} 
+                            />
                         )}
 
                         <div className="form-row">
