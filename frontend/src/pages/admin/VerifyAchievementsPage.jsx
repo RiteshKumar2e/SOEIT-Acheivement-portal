@@ -1,7 +1,7 @@
 import '../../styles/VerifyAchievementsPage.css';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { adminAPI } from '../../services/api';
+import { adminAPI, STATIC_BASE_URL } from '../../services/api';
 import { CheckCircle, XCircle, Eye, Search, Filter, Clock, FileText, ChevronLeft, ChevronRight, Trophy } from 'lucide-react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
@@ -256,7 +256,7 @@ const VerifyAchievementsPage = () => {
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                         {selected.certificateUrl && (
-                                            <a href={selected.certificateUrl} target="_blank" rel="noreferrer"
+                                            <a href={selected.certificateUrl.startsWith('http') ? selected.certificateUrl : `${STATIC_BASE_URL}${selected.certificateUrl}`} target="_blank" rel="noreferrer"
                                                 style={{
                                                     display: 'flex',
                                                     alignItems: 'center',
@@ -281,7 +281,7 @@ const VerifyAchievementsPage = () => {
                                             </a>
                                         )}
                                         {selected.proofFiles?.map((f, i) => (
-                                            <a key={i} href={f.url} target="_blank" rel="noreferrer"
+                                            <a key={i} href={f.url?.startsWith('http') ? f.url : `${STATIC_BASE_URL}${f.url}`} target="_blank" rel="noreferrer"
                                                 style={{
                                                     display: 'flex',
                                                     alignItems: 'center',
