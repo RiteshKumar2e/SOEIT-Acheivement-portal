@@ -102,12 +102,12 @@ const FacultyManagementPage = () => {
 
             {/* Advanced Filtering Intelligence */}
             <div className="card faculty-filter-box">
-                <div className="faculty-filter-controls">
-                    <div className="search-wrapper faculty-search-wrapper">
+                <div className="faculty-filter-controls" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div className="search-wrapper faculty-search-wrapper flex-order-last-desktop" style={{ flex: 1, minWidth: '300px' }}>
                         <input className="form-control" placeholder="Search by name, email, or ID..." value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && loadFaculty()} />
                         <Search size={20} className="search-icon" />
                     </div>
-                    <button className="btn btn-primary faculty-execute-btn" onClick={loadFaculty}>
+                    <button className="btn btn-primary faculty-execute-btn" onClick={loadFaculty} style={{ flex: 'none' }}>
                         Search
                     </button>
                 </div>

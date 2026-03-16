@@ -165,8 +165,8 @@ const HackathonMonitoringPage = () => {
             </header>
 
             <div className="hm-card">
-                <div className="hm-toolbar">
-                    <div className="hm-search-wrap">
+                <div className="hm-toolbar" style={{ display: 'flex', justifyContent: 'flex-end', padding: '1.25rem' }}>
+                    <div className="hm-search-wrap flex-order-last-desktop" style={{ minWidth: '300px', marginLeft: 'auto' }}>
                         <Search className="hm-search-icon" size={16} />
                         <input
                             type="text"

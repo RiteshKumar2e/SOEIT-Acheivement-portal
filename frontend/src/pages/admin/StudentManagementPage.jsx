@@ -148,12 +148,12 @@ const StudentManagementPage = () => {
 
             {/* Advanced Filtering Intelligence */}
             <div className="card filter-card" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid var(--border-primary)' }}>
-                <div className="filter-intelligence-grid">
-                    <div className="search-wrapper search-wrapper-responsive">
+                <div className="filter-grid-container" style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div className="search-wrapper filter-search flex-order-last-desktop" style={{ flex: 1.5, minWidth: '300px' }}>
                         <input className="form-control" placeholder="Search by name, enrollment, or ID..." value={filters.search} onChange={e => setFilters(p => ({ ...p, search: e.target.value }))} onKeyDown={e => e.key === 'Enter' && load()} />
                         <Search size={20} className="search-icon" />
                     </div>
-                    <select className="form-control filter-select-responsive" style={{ height: '48px', fontWeight: 700 }} value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
+                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700, flex: 1, minWidth: '200px' }} value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
                         <option value="">All Departments</option>
                         {Object.entries(DEPARTMENTS).map(([group, depts]) => (
                             <optgroup key={group} label={group}>
@@ -161,12 +161,15 @@ const StudentManagementPage = () => {
                             </optgroup>
                         ))}
                     </select>
-                    <select className="form-control filter-select-responsive" style={{ height: '48px', fontWeight: 700 }} value={filters.semester} onChange={e => setFilters(p => ({ ...p, semester: e.target.value, page: 1 }))}>
+                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700, flex: 1, minWidth: '180px' }} value={filters.semester} onChange={e => setFilters(p => ({ ...p, semester: e.target.value, page: 1 }))}>
                         <option value="">All Semesters</option>
                         {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>Semester {s}</option>)}
                     </select>
-                    <button className="btn btn-primary filter-btn-responsive" style={{ height: '48px', width: '48px', padding: 0 }} onClick={load}>
+                    <button className="btn btn-primary filter-btn" style={{ height: '48px', width: '48px', padding: 0, flexShrink: 0 }} onClick={load}>
                         <Search size={20} strokeWidth={3} />
+                    </button>
+                    <button className="btn btn-ghost filter-reset-btn" style={{ height: '48px', fontWeight: 700, minWidth: '120px' }} onClick={() => setFilters({ department: '', search: '', semester: '', page: 1 })}>
+                        Clear All
                     </button>
                 </div>
             </div>

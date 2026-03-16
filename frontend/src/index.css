@@ -520,6 +520,14 @@ textarea.form-control {
   position: relative;
   display: flex;
   align-items: center;
+  width: 350px;
+  transition: all var(--transition-base);
+}
+
+@media (max-width: 768px) {
+  .search-wrapper {
+    width: 100%;
+  }
 }
 
 .search-wrapper .search-icon {
@@ -534,6 +542,7 @@ textarea.form-control {
   padding-left: 3.5rem !important;
   height: 48px;
   font-weight: 600;
+  width: 100%;
 }
 
 /* ===================== RESPONSIVE UTILITIES ===================== */
@@ -1849,4 +1858,11 @@ textarea.form-control {
 
 .modal-header .btn-close-red:hover {
   background: rgba(255, 77, 77, 0.15);
+}
+
+/* Responsive Order Utilities */
+@media (min-width: 1025px) {
+    .flex-order-last-desktop {
+        order: 99 !important;
+    }
 }

@@ -102,9 +102,6 @@
     align-items: center;
 }
 
-.search-wrapper-responsive {
-    min-width: 350px;
-}
 
 .pagination-footer-responsive {
     display: flex;

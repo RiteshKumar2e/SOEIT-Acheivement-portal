@@ -97,17 +97,17 @@ const VerifyAchievementsPage = () => {
             {/* Advanced Filtering Ecosystem */}
             <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid var(--border-primary)' }}>
                 <div className="filter-grid-container" style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <div className="search-wrapper filter-search">
+                    <div className="search-wrapper filter-search flex-order-last-desktop" style={{ flex: 1, minWidth: '280px' }}>
                         <input className="form-control" placeholder="Search by name or ID..." value={filters.search} onChange={e => setFilters(p => ({ ...p, search: e.target.value }))} onKeyDown={e => e.key === 'Enter' && load()} />
                         <Search size={20} className="search-icon" />
                     </div>
-                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700, minWidth: '160px' }} value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value, page: 1 }))}>
+                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700, flex: 1, minWidth: '180px' }} value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value, page: 1 }))}>
                         <option value="">Status: All Records</option>
                         <option value="pending">Pending Review</option>
                         <option value="approved">Approved</option>
                         <option value="rejected">Rejected</option>
                     </select>
-                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700 }} value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
+                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700, flex: 1, minWidth: '180px' }} value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
                         <option value="">All Departments</option>
                         {Object.entries(DEPARTMENTS).map(([group, depts]) => (
                             <optgroup key={group} label={group}>
@@ -115,11 +115,11 @@ const VerifyAchievementsPage = () => {
                             </optgroup>
                         ))}
                     </select>
-                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700 }} value={filters.category} onChange={e => setFilters(p => ({ ...p, category: e.target.value, page: 1 }))}>
+                    <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700, flex: 1, minWidth: '180px' }} value={filters.category} onChange={e => setFilters(p => ({ ...p, category: e.target.value, page: 1 }))}>
                         <option value="">All Categories</option>
                         {CATEGORIES.slice(1).map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
-                    <button className="btn btn-primary filter-btn" onClick={load} style={{ height: '48px', padding: '0 1.5rem' }}>
+                    <button className="btn btn-primary filter-btn" onClick={load} style={{ height: '48px', padding: '0 1.5rem', flexShrink: 0 }}>
                         <Filter size={18} strokeWidth={2.5} />
                     </button>
                 </div>

@@ -322,10 +322,10 @@ const FacultyDashboard = () => {
                     <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.1rem' }}>
                         Student List — {semester === 'all' ? 'All Students' : `Semester ${semester}`} {section !== 'all' ? `(Section ${section})` : ''}
                     </h4>
-                    <div className="search-wrapper search-wrapper-responsive" style={{ width: '350px' }}>
+                    <div className="search-wrapper search-wrapper-responsive" style={{ flex: 1, maxWidth: '400px', marginLeft: 'auto' }}>
                         <input
                             className="form-control"
-                            placeholder="Search by name or ID..."
+                            placeholder="Search by student name or ID..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />

@@ -115,8 +115,8 @@ const ManagePostingsPage = () => {
             </div>
 
             <div className="card" style={{ marginBottom: '2.5rem', border: '1px solid var(--border-primary)' }}>
-                <div className="card-body" style={{ padding: '1.25rem', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                    <div className="search-wrapper" style={{ flex: 1 }}>
+                <div className="card-body" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'flex-end' }}>
+                    <div className="search-wrapper flex-order-last-desktop" style={{ flex: 1, minWidth: '300px', marginLeft: 'auto' }}>
                         <input
                             className="form-control"
                             placeholder="Search by company or role..."

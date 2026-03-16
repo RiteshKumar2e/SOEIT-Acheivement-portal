@@ -37,8 +37,8 @@ const StudentProjectsPage = () => {
 
             <div className="card" style={{ marginBottom: '2.5rem', border: '1px solid var(--border-primary)' }}>
                 <div className="card-body" style={{ padding: '1.25rem' }}>
-                    <div className="grid-res grid-res-2" style={{ gap: '1rem', alignItems: 'center' }}>
-                        <div className="search-wrapper">
+                    <div className="filter-grid-container" style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div className="search-wrapper flex-order-last-desktop" style={{ flex: 1, minWidth: '280px' }}>
                             <input
                                 className="form-control"
                                 placeholder="Search by Student, Project, or Tech Stack..."
@@ -49,7 +49,7 @@ const StudentProjectsPage = () => {
                         </div>
                         <select
                             className="form-control"
-                            style={{ fontWeight: 700 }}
+                            style={{ fontWeight: 700, flex: 1, minWidth: '200px' }}
                             value={filters.department}
                             onChange={e => setFilters({ ...filters, department: e.target.value })}
                         >

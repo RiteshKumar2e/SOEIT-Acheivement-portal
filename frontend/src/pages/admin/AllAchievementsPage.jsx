@@ -140,24 +140,13 @@ const AllAchievementsPage = () => {
             {/* Admin Filter Center */}
             <div className="card" style={{ marginBottom: '2.5rem' }}>
                 <div className="card-body" style={{ padding: '1.5rem' }}>
-                    <div className="filter-grid-container" style={{ display: 'flex', gap: '0.875rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <div className="search-wrapper filter-search">
-                            <input
-                                className="form-control"
-                                placeholder="Search by achievement or student name..."
-                                value={filters.search}
-                                onChange={e => setFilters(p => ({ ...p, search: e.target.value }))}
-                                onKeyDown={e => e.key === 'Enter' && load()}
-                            />
-                            <Search size={18} className="search-icon" />
-                        </div>
-
-                        <select className="form-control filter-select" value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value, page: 1 }))}>
+                    <div className="filter-grid-container" style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700, flex: 1, minWidth: '150px' }} value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value, page: 1 }))}>
                             <option value="">Status: All</option>
                             {STATUSES.slice(1).map(s => <option key={s} value={s} style={{ textTransform: 'capitalize' }}>{s}</option>)}
                         </select>
 
-                        <select className="form-control filter-select" value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
+                        <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700, flex: 1, minWidth: '150px' }} value={filters.department} onChange={e => setFilters(p => ({ ...p, department: e.target.value, page: 1 }))}>
                             <option value="">Dept: All</option>
                             {Object.entries(DEPARTMENTS).map(([group, depts]) => (
                                 <optgroup key={group} label={group}>
@@ -166,17 +155,27 @@ const AllAchievementsPage = () => {
                             ))}
                         </select>
 
-                        <select className="form-control filter-select" value={filters.category} onChange={e => setFilters(p => ({ ...p, category: e.target.value, page: 1 }))}>
+                        <select className="form-control filter-select" style={{ height: '48px', fontWeight: 700, flex: 1, minWidth: '150px' }} value={filters.category} onChange={e => setFilters(p => ({ ...p, category: e.target.value, page: 1 }))}>
                             <option value="">Category: All</option>
                             {CATEGORIES.slice(1).map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
 
-                        <button className="btn btn-primary filter-btn" style={{ padding: '0 1.5rem', height: '42px' }} onClick={load}>
-                            <Filter size={16} />
-                            <span>Filter</span>
+                        <div className="search-wrapper filter-search" style={{ flex: 2, minWidth: '300px' }}>
+                            <input
+                                className="form-control"
+                                placeholder="Search by name, enrollment, or ID..."
+                                value={filters.search}
+                                onChange={e => setFilters(p => ({ ...p, search: e.target.value }))}
+                                onKeyDown={e => e.key === 'Enter' && load()}
+                            />
+                            <Search size={18} className="search-icon" />
+                        </div>
+
+                        <button className="btn btn-primary" style={{ width: '48px', height: '48px', padding: 0, flexShrink: 0, background: 'var(--primary-900)' }} onClick={load}>
+                            <Search size={22} strokeWidth={2.5} />
                         </button>
 
-                        <button className="btn btn-ghost filter-reset-btn" style={{ height: '42px' }} onClick={() => setFilters({ status: '', category: '', department: '', search: '', page: 1 })}>
+                        <button className="btn btn-ghost" style={{ height: '48px', fontWeight: 800, color: 'var(--text-secondary)' }} onClick={() => setFilters({ status: '', category: '', department: '', search: '', page: 1 })}>
                             Clear All
                         </button>
                     </div>
