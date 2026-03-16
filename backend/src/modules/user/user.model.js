@@ -278,6 +278,12 @@ const User = {
             { sql: `DELETE FROM events WHERE created_by = ?`, args: [id] },
             { sql: `DELETE FROM notices WHERE created_by = ?`, args: [id] },
             { sql: `DELETE FROM courses WHERE student_id = ?`, args: [id] },
+            { sql: `DELETE FROM projects WHERE student_id = ?`, args: [id] },
+            { sql: `DELETE FROM internships WHERE student_id = ?`, args: [id] },
+            { sql: `DELETE FROM notifications WHERE user_id = ?`, args: [id] },
+            { sql: `DELETE FROM hackathons WHERE created_by = ?`, args: [id] },
+            { sql: `DELETE FROM internship_postings WHERE created_by = ?`, args: [id] },
+            { sql: `DELETE FROM course_assignments WHERE assigned_by = ?`, args: [id] },
             { sql: `DELETE FROM hackathon_activities WHERE student_id = ?`, args: [id] },
             { sql: `DELETE FROM users WHERE id = ?`, args: [id] }
         ];
@@ -297,6 +303,12 @@ const User = {
             { sql: `DELETE FROM events WHERE created_by IN (${placeholders})`, args: ids },
             { sql: `DELETE FROM notices WHERE created_by IN (${placeholders})`, args: ids },
             { sql: `DELETE FROM courses WHERE student_id IN (${placeholders})`, args: ids },
+            { sql: `DELETE FROM projects WHERE student_id IN (${placeholders})`, args: ids },
+            { sql: `DELETE FROM internships WHERE student_id IN (${placeholders})`, args: ids },
+            { sql: `DELETE FROM notifications WHERE user_id IN (${placeholders})`, args: ids },
+            { sql: `DELETE FROM hackathons WHERE created_by IN (${placeholders})`, args: ids },
+            { sql: `DELETE FROM internship_postings WHERE created_by IN (${placeholders})`, args: ids },
+            { sql: `DELETE FROM course_assignments WHERE assigned_by IN (${placeholders})`, args: ids },
             { sql: `DELETE FROM hackathon_activities WHERE student_id IN (${placeholders})`, args: ids },
             { sql: `DELETE FROM users WHERE id IN (${placeholders})`, args: ids }
         ];
