@@ -1,178 +1,73 @@
-# 🎓 SOEIT Strategic Achievement & Analytics Portal
-### *Unified Institutional Excellence Ecosystem for Arka Jain University*
+# 🎓 SOEIT Student Achievement & Management Portal
+### *Unified Digital Registry for Arka Jain University*
 
 [![Node.js](https://img.shields.io/badge/Node.js-v18.x-002147?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Vite](https://img.shields.io/badge/Vite-v5.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![React](https://img.shields.io/badge/React-18.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
-[![SQLite](https://img.shields.io/badge/Database-LibSQL%2FTurso-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://turso.tech/)
+[![Turso](https://img.shields.io/badge/Database-LibSQL%2FTurso-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://turso.tech/)
 
 ---
 
-## 🏛️ Institutional Vision
+## 🏛️ Project Overview
 
-The **SOEIT Achievement Portal** is a high-performance, enterprise-grade digital infrastructure developed for the **School of Engineering & IT (SOEIT)** at Arka Jain University. It serves as the single source of truth for student milestones, faculty oversight, and institutional auditing. Designed with a **Premium Academic Aesthetic**, the platform eliminates administrative friction and replaces legacy tracking with a seamless, data-driven ecosystem.
+The **SOEIT Achievement Portal** is a specialized management system designed for the **School of Engineering & IT (SOEIT)** at Arka Jain University. It streamlines the tracking of student milestones, professional achievements, and academic progress while providing faculty and administrators with tools for verification and analytics.
 
-> [!IMPORTANT]
-> **Audit-Ready Infrastructure**: Every transaction and verification cycle is logged for NAAC, NIRF, and internal institutional compliance reporting. **Zero-Loss Persistence**: All student certificates are stored directly in the database to survive server restarts.
-
----
-
-## 🏗️ System Architecture
-
-### High-Level Architecture
-The portal utilizes a decoupled **REVN** stack (React, Express, Vite, Node) with **LibSQL/Turso (BLOB Storage)** as the persistence layer for both metadata and binary files.
-
-```mermaid
-graph TD
-    User((User Persona)) -->|HTTPS/TLS| LB[Public Navbar & RBAC Router]
-
-    subgraph "Frontend Layer (React 18 + Vite)"
-        LB --> Auth[Auth Context]
-        LB --> UI[Institutional UI Components]
-        UI --> Pages[Role-Specific Dashboards]
-        Pages --> Service[Axios API Orchestration]
-    end
-
-    subgraph "Middleware Ecosystem"
-        Service --> JWT[JWT Validator]
-        Service --> Rate[Rate Limiter]
-    end
-
-    subgraph "Backend Engine (Node.js/Express)"
-        JWT --> AuthS[Auth Controller]
-        JWT --> AdminS[Admin/Faculty Logic]
-        JWT --> StudentS[Student Achievement Engine]
-        
-        AuthS --> Models[Data Models]
-        AdminS --> Models
-        StudentS --> Models
-    end
-
-    subgraph "Persistence Layer (Turso / LibSQL)"
-        Models --> DB[(SQL Metadata)]
-        Models --> BLOB[(File BLOB Repository)]
-        BLOB --- Desc("Certificates & Profile Images stored as Binary Literals")
-    end
-```
+The system uses a **Bespoke Academic Design System** and is built to be resilient, storing all critical media (certificates/avatars) directly in the database to ensure zero data loss in cloud-hosted (ephemeral) environments.
 
 ---
 
-## 🔄 Achievement Lifecycle
+## 🏗️ Technical Architecture
 
-```mermaid
-sequenceDiagram
-    participant S as Student
-    participant B as Backend (SQL BLOB)
-    participant F as Faculty/Admin
-    participant P as Public Portfolio
+The portal is built on the **REVN** stack (React, Express, Vite, Node) with **LibSQL/Turso** as the robust persistence layer.
 
-    S->>S: Formulate Metadata
-    S->>B: Upload Certificate (Sent as Buffer)
-    B->>B: Archive in 'files' table as BLOB
-    B-->>S: Return Dynamic Resource Pointer (/api/achievements/files/:id)
-
-    F->>F: Review High-Res Document from DB
-    alt Approved
-        F->>F: Verify Milestone & Assign Points
-        F-->>S: Real-time Analytics Update
-        F-->>P: Append to Shareable E-Portfolio
-    else Rejected
-        F->>S: Request Re-submission with Feedback
-    end
-```
+### Core Architecture Components:
+- **Frontend**: Vite + React 18 with a custom CSS design system.
+- **Backend**: Node.js & Express with RESTful architecture.
+- **Database**: Turso (LibSQL) - handles both relational metadata and binary (BLOB) file storage.
+- **Security**: JWT-based Authentication with Role-Based Access Control (RBAC).
 
 ---
 
-## 👥 User Personas & Permissions (RBAC)
+## 👥 Roles & Access Control
 
-| Role | Access Level | Primary Responsibility |
+| Role | Access Level | Responsibilities |
 | :-- | :-- | :-- |
-| **Student** | Learner | Achievement submission, Personal Portfolio management, ZIP Ledger export (Self only) |
-| **Faculty** | Overseer | Dept-wide monitoring, Notice broadcasting, Student analytics, **Resilient Archival Access** |
-| **Admin** | Validator | Achievement verification, Event management, Hackathon activity tracking, **Institutional Record Export** |
+| **Student** | Learner | Submit achievements, manage internships/projects, track courses, view public portfolios. |
+| **Faculty** | Overseer | Verify department achievements, browse scholar directory, broadcast notices. |
+| **Admin** | Manager | User management (Student/Faculty), platform-wide analytics, bulk purging, data verification. |
 
 ---
 
-## ✨ Features
+## ✨ System Features
 
-### 🎓 Student Features
-- **Dashboard** — Real-time stats: total achievements, verified count, pending, points earned.
-- **Persistent Evidence Storage** — Certificates are stored as BLOBs in Turso; no more 404 errors due to Render's ephemeral filesystem.
-- **Evidence Ledger Export** — Download all verified certificates in a single, synchronized ZIP archive.
-- **My Achievements** — Full history with status badges, filter, search, and edit/delete
-- **Live Hackathons Page** — 91+ real upcoming hackathons (2026+) across 13 categories:
-  - Govt of India, AI/ML, Web Development, Cybersecurity, Mobile App Dev
-  - Web3 & Blockchain, Data Science, Cloud Computing, Hardware & IoT
-  - Open Source, Startup, Social Impact, Women in Tech
-  - Search by name, filter by category, live count badge
-  - Scroll-to-Top button for easy navigation
-  - All links are real and verified; activity logged on Apply
-- **Public Portfolio** — Shareable profile with achievement cards, stats strip, course progress.
-- **Course Registry** — Track enrolled courses with progress bars
-- **Campus Events** — Browse and track institutional events
-- **Student Profile** — Edit bio, LinkedIn, GitHub, and upload persistent profile photos to the database.
+### 🎓 For Students
+- **Milestone Registry** — Submit achievements (Certificate, Title, Level, Category).
+- **Persistent Storage** — All certificates are stored as BLOBs in the database (No 404s on server restart).
+- **Public Portfolio** — A professional shareable link showcasing stats, verified achievements, and projects.
+- **Course & Internship Tracker** — Log ongoing learning activities and internship details.
+- **Hackathon Hub** — Live listing of 90+ real upcoming hackathons with integrated activity logging.
 
-### 🏫 Faculty Features
-- **Faculty Command Center** — Institution-wide student analytics dashboard.
-- **Resilient Archival Protocol** — Authorized access to download any student's certificate ledger as a ZIP file.
-- **Scholar Directory** — Filter by semester (1–8) and section (A–G), search by name/enrollment.
-- **Verification Matrix** — View total, verified, pending achievements per student
-- **Export Reports** — Export data to PDF (jsPDF + autoTable) or Excel (XLSX)
-- **Dispatch Notice** — Broadcast institutional notices to all students via SMTP email.
-- **Student Quick View** — Modal summary with achievement analytics per student
-- **Full Portfolio Access** — Direct link to any student's public portfolio
+### 🏫 For Faculty
+- **Verification Engine** — Review student submissions with high-res document previews directly from the DB.
+- **Scholar Directory** — Filter students by Department, Semester (1–8), and Section (A–G).
+- **Notification Center** — Broadcast official notices to student dashboards.
+- **Ledger Export** — Download any student's verified achievement evidence as a synchronized ZIP bundle.
 
-### 🔐 Admin Features
-- **Admin Dashboard** — Platform-wide charts: achievement trends, domain distribution, verification queue
-- **Institutional Record Export** — Download student evidence ZIPs automatically named by **Enrollment Number** for NAAC/NIRF audits.
-- **Verify Achievements** — Review and approve/reject uploaded certificates with feedback.
-- **All Achievements** — Browse every submission across the institution
-- **Student Management** — Full student directory with bulk delete support
-- **Faculty Management** — Activate/deactivate faculty access, export faculty roster
-- **Reports & Analytics** — Deep-dive statistical reports (by department, semester, category, level)
-- **Course Monitoring** — Track course enrollment and completion across all students
-- **Hackathon Activity Monitor** — Live log of which students clicked which hackathons, with CSV export.
-- **Student & Faculty Management** — Full control over platform-wide user access and activation.
-
-### 🌐 Public Pages
-- **Landing Page** — Hackathon-style hero, stats strip, feature cards
-- **Public Portfolio** — Publicly shareable student achievement page (Download button restricted to authorized roles).
-  - Stats: Achievements · Points · **Hackathons Explored** · Courses · Completed
-  - Achievement cards with category icons, level badges, verified stamp
-  - Course progress cards
-  - Category filter (desktop buttons + mobile dropdown)
-- **Public Portfolios Directory** — Browse all students by department.
-- **Strategic Hackathons Page** — 91+ real upcoming hackathons across 13 categories; activity logged for institutional analytics.
-- **How It Works**, **Features**, **About**, **Contact** pages
-
-### 🔒 Auth & Security
-- JWT-based authentication with auto-routing by role
-- CAPTCHA on login form
-- Forgot password / reset password via email OTP
-- Protected routes with role-based guards
-- Logout from any page always redirects to home (`/`)
+### 🔐 For Administrators
+- **User Lifecycle Management** — Bulk account management with automated cleanup of all related records (projects, achievements, etc.).
+- **Institutional Analytics** — Statistical reports on department-wide performance and achievement trends.
+- **Audit Trails** — Automated ZIP exports of evidence ledgers named by Student Enrollment Number for university audits.
 
 ---
 
-## 🆕 Recent Updates (March 2026)
+## 🆕 Recent Updates (March 16, 2026)
 
-| Feature | Description |
-|---------|-------------|
-| 🗄️ **Full DB Binary Storage** | Migrated from ephemeral disk to Turso SQL BLOB storage for all certificates and avatars. |
-| 📁 **Resilient Archival Protocol** | Added "Download Evidence Ledger" feature to package all student certificates into a ZIP archive. |
-| 🔐 **RBAC Download Security** | Restricted portfolio ZIP downloads to Faculty, Admins, and the student's own account. |
-| 🏷️ **Audit-Ready Naming** | ZIP files are automatically named by Student Name (for Students) or Enrollment No (for Admins). |
-| 🏆 **Strategic Hackathons** | 91+ real 2026 events with search, filtering, and "Apply Now" activity tracking. |
-| 📐 **Uniform UI Design** | Synchronized card heights and layout across all achievement and hackathon listings. |
-| ⬆️ **Scroll to Top** | Smooth scroll-to-top button on the Hackathons page |
-| 💻 **Hackathon Activity Tracking** | Backend logs every student's "Apply Now" click; admin can monitor & export |
-| 📊 **Portfolio Hackathon Stat** | Public portfolio now shows "Hackathons Explored" count in the stats strip |
-| 🎨 **Hackathon Monitoring CSS** | Admin hackathon monitoring page fully restyled with project design system |
-| 🎨 **Faculty Management CSS** | Added missing `.table-container` and `.hover-row` styles |
-| 🖼️ **Image Error Fallback** | Hackathon card images fall back gracefully to a placeholder on load error |
-| 🔁 **Logout → Home** | `AuthContext.logout()` now always redirects to `/` from any page |
-| 🔒 **Demo Credentials Hidden** | Removed visible demo credentials box from login page; saved to `demo_credentials.txt` |
-| 📐 **Uniform Card Sizes** | Hackathon cards have consistent height, image, title, and footer layout |
+| Update | Description |
+| :--- | :--- |
+| 🛡️ **Robust User Deletion** | Fixed critical 500 errors by implementing exhaustive batch deletion for all related user data (FK constraints). |
+| 🔄 **Unified Registration** | Implemented a single registration portal with a role-switcher for **Student** and **Faculty**. |
+| 🏷️ **Strict Prefix Validation** | Enforced enrollment number formats: `AJU/` for students and `ARKA/AJU/` for faculty. |
+| 🏥 **DB Reliability** | Optimized Turso schema with indexes for high-speed lookups across all management modules. |
 
 ---
 
