@@ -46,7 +46,7 @@ exports.register = async (req, res, next) => {
             batch: batch?.trim() || undefined,
             semester: !isNaN(semesterNum) ? semesterNum : undefined,
             section: section?.trim() || undefined,
-            role: 'student',
+            role: req.body.role || 'student',
         });
 
         sendTokenResponse(user, 201, res, 'Registration successful! Welcome to SOEIT Portal.');

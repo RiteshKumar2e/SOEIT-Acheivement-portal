@@ -2,7 +2,7 @@ import '../../styles/RegisterPage.css';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft, GraduationCap, User as UserIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const UniversityHeader = () => (
@@ -57,6 +57,7 @@ const RegisterPage = () => {
     const [form, setForm] = useState({
         name: '',
         email: '',
+        role: 'student', // default
         password: '',
         confirmPassword: '',
         department: '',
@@ -80,14 +81,20 @@ const RegisterPage = () => {
             e.password = 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)';
         }
         if (form.password !== form.confirmPassword) e.confirmPassword = 'Passwords do not match';
-        if (!form.department) e.department = 'Department is required';
-        if (!form.batch) e.batch = 'Batch is required';
-        else if (!/^\d{4}-\d{2}$/.test(form.batch)) e.batch = 'Invalid format (e.g. 2022-26)';
+
+        // Role-specific validation
+        if (form.role === 'student') {
+            if (!form.department) e.department = 'Department is required';
+            if (!form.batch) e.batch = 'Batch is required';
+            else if (!/^\d{4}-\d{2}$/.test(form.batch)) e.batch = 'Invalid format (e.g. 2022-26)';
+        }
 
         if (!form.enrollmentNo) {
             e.enrollmentNo = 'Enrollment No. is required';
-        } else if (!/^AJU\//i.test(form.enrollmentNo) && !/^ARKA\/AJU\//i.test(form.enrollmentNo)) {
-            e.enrollmentNo = 'Enrollment No. must start with AJU/';
+        } else if (form.role === 'student' && !/^AJU\//i.test(form.enrollmentNo)) {
+            e.enrollmentNo = 'Student Enrollment No. must start with AJU/';
+        } else if (form.role === 'faculty' && !/^ARKA\/AJU\//i.test(form.enrollmentNo)) {
+            e.enrollmentNo = 'Faculty ID must start with ARKA/AJU/';
         }
         setErrors(e);
         return Object.keys(e).length === 0;
@@ -121,70 +128,97 @@ const RegisterPage = () => {
                 <UniversityHeader />
 
                 <h1 className="register-heading">
-                    Student Registration
+                    {form.role === 'student' ? 'Student Registration' : 'Faculty Registration'}
                 </h1>
 
                 <div className="register-card">
+                    <div className="role-switcher">
+                        <button
+                            type="button"
+                            className={`role-btn ${form.role === 'student' ? 'active' : ''}`}
+                            onClick={() => {
+                                setForm(p => ({ ...p, role: 'student' }));
+                                setErrors({});
+                            }}
+                        >
+                            <UserIcon size={18} /> Student
+                        </button>
+                        <button
+                            type="button"
+                            className={`role-btn ${form.role === 'faculty' ? 'active' : ''}`}
+                            onClick={() => {
+                                setForm(p => ({ ...p, role: 'faculty' }));
+                                setErrors({});
+                            }}
+                        >
+                            <GraduationCap size={18} /> Faculty
+                        </button>
+                    </div>
+
                     <form onSubmit={handleSubmit}>
                         <div className="form-row">
                             <Field name="name" label="Full Name" placeholder="Full name" required form={form} setForm={setForm} errors={errors} />
-                            <Field name="enrollmentNo" label="Enrollment No." placeholder="AJU/221403" required form={form} setForm={setForm} errors={errors} />
+                            <Field name="enrollmentNo" label="Enrollment No." placeholder={form.role === 'student' ? "AJU/221403" : "ARKA/AJU/FACULTY"} required form={form} setForm={setForm} errors={errors} />
                         </div>
 
                         <Field name="email" label="Email Address" type="email" placeholder="example@arkajainuniversity.ac.in" required form={form} setForm={setForm} errors={errors} />
 
-                        <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                            <label className="form-label">Department *</label>
-                            <select
-                                className={`form-control ${errors.department ? 'error' : ''}`}
-                                value={form.department}
-                                onChange={e => setForm(p => ({ ...p, department: e.target.value }))}
-                            >
-                                <option value="">Select Department</option>
-                                {Object.entries(DEPARTMENTS).map(([group, depts]) => (
-                                    <optgroup key={group} label={group}>
-                                        {depts.map(d => <option key={d} value={d}>{d}</option>)}
-                                    </optgroup>
-                                ))}
-                            </select>
-                            {errors.department && <div className="input-error" style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.department}</div>}
-                        </div>
+                        {form.role === 'student' && (
+                            <>
+                                <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                                    <label className="form-label">Department *</label>
+                                    <select
+                                        className={`form-control ${errors.department ? 'error' : ''}`}
+                                        value={form.department}
+                                        onChange={e => setForm(p => ({ ...p, department: e.target.value }))}
+                                    >
+                                        <option value="">Select Department</option>
+                                        {Object.entries(DEPARTMENTS).map(([group, depts]) => (
+                                            <optgroup key={group} label={group}>
+                                                {depts.map(d => <option key={d} value={d}>{d}</option>)}
+                                            </optgroup>
+                                        ))}
+                                    </select>
+                                    {errors.department && <div className="input-error" style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.department}</div>}
+                                </div>
 
-                        <div className="form-row">
-                            <Field
-                                name="batch"
-                                label="Batch Year"
-                                placeholder="e.g. 2022-26"
-                                required
-                                form={form}
-                                setForm={setForm}
-                                errors={errors}
-                            />
-                            <div className="form-row-sm" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', flex: 1.2 }}>
-                                <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                                    <label className="form-label">Semester</label>
-                                    <select
-                                        className="form-control"
-                                        value={form.semester}
-                                        onChange={e => setForm(p => ({ ...p, semester: e.target.value }))}
-                                    >
-                                        <option value="">Select</option>
-                                        {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>{s}</option>)}
-                                    </select>
+                                <div className="form-row">
+                                    <Field
+                                        name="batch"
+                                        label="Batch Year"
+                                        placeholder="e.g. 2022-26"
+                                        required
+                                        form={form}
+                                        setForm={setForm}
+                                        errors={errors}
+                                    />
+                                    <div className="form-row-sm" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', flex: 1.2 }}>
+                                        <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                                            <label className="form-label">Semester</label>
+                                            <select
+                                                className="form-control"
+                                                value={form.semester}
+                                                onChange={e => setForm(p => ({ ...p, semester: e.target.value }))}
+                                            >
+                                                <option value="">Select</option>
+                                                {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>{s}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                                            <label className="form-label">Section</label>
+                                            <select
+                                                className="form-control"
+                                                value={form.section}
+                                                onChange={e => setForm(p => ({ ...p, section: e.target.value }))}
+                                            >
+                                                <option value="">Select</option>
+                                                {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(s => <option key={s} value={s}>{s}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                                    <label className="form-label">Section</label>
-                                    <select
-                                        className="form-control"
-                                        value={form.section}
-                                        onChange={e => setForm(p => ({ ...p, section: e.target.value }))}
-                                    >
-                                        <option value="">Select</option>
-                                        {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(s => <option key={s} value={s}>{s}</option>)}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+                            </>
+                        )}
 
                         <div className="form-row">
                             <div className="form-group" style={{ marginBottom: '1.25rem' }}>
