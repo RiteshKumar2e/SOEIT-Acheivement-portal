@@ -227,7 +227,7 @@ const PublicPortfolioPage = () => {
                                             disabled={downloading}
                                             style={{ background: 'var(--brand-700)', border: 'none', boxShadow: '0 4px 12px rgba(0,33,71,0.2)' }}
                                         >
-                                            {downloading ? <div className="spinner-sm" /> : <><Download size={14} /> Evidence Ledger</>}
+                                            {downloading ? <div className="spinner-sm" /> : <><Download size={14} /> Download Data</>}
                                         </button>
                                     </>
                                 )}
