@@ -7,7 +7,7 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
     const [user, setUser] = useState(() => {
-        const saved = localStorage.getItem('soeit_user');
+        const saved = sessionStorage.getItem('soeit_user');
         try {
             return saved ? JSON.parse(saved) : null;
         } catch {
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
     const [error, setError] = useState(null);
 
     const loadUser = useCallback(async () => {
-        const token = localStorage.getItem('soeit_token');
+        const token = sessionStorage.getItem('soeit_token');
         if (!token) {
             setUser(null);
             setLoading(false);
@@ -28,8 +28,8 @@ export const AuthProvider = ({ children }) => {
             const { data } = await authAPI.getProfile();
             setUser(data.user);
         } catch {
-            localStorage.removeItem('soeit_token');
-            localStorage.removeItem('soeit_user');
+            sessionStorage.removeItem('soeit_token');
+            sessionStorage.removeItem('soeit_user');
             setUser(null);
         } finally {
             setLoading(false);
@@ -41,8 +41,8 @@ export const AuthProvider = ({ children }) => {
     const login = async (credentials) => {
         setError(null);
         const { data } = await authAPI.login(credentials);
-        localStorage.setItem('soeit_token', data.token);
-        localStorage.setItem('soeit_user', JSON.stringify(data.user));
+        sessionStorage.setItem('soeit_token', data.token);
+        sessionStorage.setItem('soeit_user', JSON.stringify(data.user));
         setUser(data.user);
         return data;
     };
@@ -50,16 +50,16 @@ export const AuthProvider = ({ children }) => {
     const register = async (userData) => {
         setError(null);
         const { data } = await authAPI.register(userData);
-        localStorage.setItem('soeit_token', data.token);
-        localStorage.setItem('soeit_user', JSON.stringify(data.user));
+        sessionStorage.setItem('soeit_token', data.token);
+        sessionStorage.setItem('soeit_user', JSON.stringify(data.user));
         setUser(data.user);
         return data;
     };
 
     const logout = async () => {
         // Optimistic Logout: Clear instantly for O(1) perceived latency
-        localStorage.removeItem('soeit_token');
-        localStorage.removeItem('soeit_user');
+        sessionStorage.removeItem('soeit_token');
+        sessionStorage.removeItem('soeit_user');
         setUser(null);
         window.location.href = '/';
         
@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
 
     const updateUser = (updatedUser) => {
         setUser(updatedUser);
-        localStorage.setItem('soeit_user', JSON.stringify(updatedUser));
+        sessionStorage.setItem('soeit_user', JSON.stringify(updatedUser));
     };
 
     const isAdmin = user?.role === 'admin';

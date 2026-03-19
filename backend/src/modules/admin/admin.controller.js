@@ -203,7 +203,7 @@ exports.verifyAchievement = async (req, res, next) => {
                     
                     <p class="p">Thank you for maintaining your academic profile on the SOEIT Portal.</p>
                 `,
-                actionUrl: `${process.env.CLIENT_URL || 'https://soeit-ritesh.onrender.com'}/login`,
+                actionUrl: `${process.env.CLIENT_URL || 'https://soeit-ritesh.onrender.com'}/`,
                 actionText: 'Access My Dashboard',
                 footerText: 'This is an official automated registry notice. For queries, please contact the departmental coordinator.'
             });

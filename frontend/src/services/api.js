@@ -13,7 +13,7 @@ const API = axios.create({
 // Attach token to every request
 API.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('soeit_token');
+        const token = sessionStorage.getItem('soeit_token');
         if (token) config.headers.Authorization = `Bearer ${token}`;
         return config;
     },
@@ -25,12 +25,11 @@ API.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            localStorage.removeItem('soeit_token');
-            localStorage.removeItem('soeit_user');
+            sessionStorage.removeItem('soeit_token');
+            sessionStorage.removeItem('soeit_user');
             // Remove hard redirect to allow guests on public pages
         }
         return Promise.reject(error);
-
     }
 );
 
