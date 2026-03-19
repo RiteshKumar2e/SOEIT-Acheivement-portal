@@ -2,7 +2,7 @@ import '../../styles/pages/student/MyAchievementsPage.css';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { achievementAPI } from '../../services/api';
-import { Trophy, Search, Filter, Pencil, Trash2, Clock, CheckCircle, XCircle, Eye, Upload, ChevronLeft, ChevronRight, Star, GraduationCap, Download } from 'lucide-react';
+import { Trophy, Search, Filter, Pencil, Trash2, Clock, CheckCircle, XCircle, X, Eye, Upload, ChevronLeft, ChevronRight, Star, GraduationCap, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import JSZip from 'jszip';
@@ -36,6 +36,7 @@ const MyAchievementsPage = () => {
     const [total, setTotal] = useState(0);
     const [pages, setPages] = useState(1);
     const [filters, setFilters] = useState({ status: '', category: '', search: '', page: 1 });
+    const [selected, setSelected] = useState(null);
 
     const load = async () => {
         setLoading(true);
@@ -289,7 +290,7 @@ const MyAchievementsPage = () => {
                                                             <Pencil size={18} />
                                                         </Link>
                                                     )}
-                                                    <button className="btn btn-ghost btn-icon" style={{ borderRadius: '10px' }}>
+                                                    <button className="btn btn-ghost btn-icon" style={{ borderRadius: '10px' }} onClick={() => setSelected(a)}>
                                                         <Eye size={18} />
                                                     </button>
                                                     <button className="btn btn-ghost btn-icon" style={{ color: 'var(--error-500)', borderRadius: '10px' }} onClick={() => handleDelete(a._id)}>
@@ -325,6 +326,131 @@ const MyAchievementsPage = () => {
                     )}
                 </div>
             </div>
+
+            {/* Achievement Detail Modal */}
+            {selected && (
+                <div className="modal-overlay animate-fade-in" style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(15, 23, 42, 0.5)',
+                    backdropFilter: 'blur(4px)',
+                    zIndex: 9999,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '1.5rem',
+                    height: '100vh',
+                    width: '100vw'
+                }}>
+                    <div className="modal animate-scale-in" style={{ padding: 0, overflow: 'hidden', margin: '0' }}>
+                        <div className="modal-header" style={{ alignItems: 'flex-start', padding: '1.5rem 1.5rem 1.25rem' }}>
+                            <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', opacity: 0.8, marginBottom: '0.5rem' }}>
+                                    <Trophy size={14} />
+                                    <span style={{ fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Achievement Record</span>
+                                </div>
+                                <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.2 }}>{selected.title}</h3>
+                                <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    <span style={{ background: 'rgba(255,255,255,0.15)', padding: '0.3rem 0.6rem', borderRadius: '8px', fontSize: '0.7rem', fontWeight: 800 }}>{selected.category}</span>
+                                    <span style={{ background: 'rgba(255,255,255,0.15)', padding: '0.3rem 0.6rem', borderRadius: '8px', fontSize: '0.7rem', fontWeight: 800 }}>{selected.level}</span>
+                                    <span style={{
+                                        background: selected.status === 'approved' ? 'rgba(34, 197, 94, 0.2)' : selected.status === 'rejected' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                                        color: selected.status === 'approved' ? '#86efac' : selected.status === 'rejected' ? '#fca5a5' : '#fcd34d',
+                                        padding: '0.3rem 0.6rem',
+                                        borderRadius: '8px',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 900,
+                                        textTransform: 'uppercase'
+                                    }}>{selected.status}</span>
+                                </div>
+                            </div>
+                            <button className="btn btn-ghost" onClick={() => setSelected(null)} style={{ color: '#ef4444', padding: '0.25rem' }}>
+                                <X size={20} strokeWidth={3} />
+                            </button>
+                        </div>
+
+                        <div className="modal-body" style={{ maxHeight: '65vh', overflowY: 'auto', padding: '1.5rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+                                <div style={{ background: 'var(--slate-50)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-primary)' }}>
+                                    <div style={{ fontSize: '0.6rem', fontWeight: 900, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.25rem', letterSpacing: '0.05em' }}>Points Awarded</div>
+                                    <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--brand-700)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <Star size={16} fill="var(--brand-600)" />
+                                        {selected.points || 0}
+                                    </div>
+                                </div>
+                                <div style={{ background: 'var(--slate-50)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-primary)' }}>
+                                    <div style={{ fontSize: '0.6rem', fontWeight: 900, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.25rem', letterSpacing: '0.05em' }}>Event Date</div>
+                                    <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-primary)' }}>{format(new Date(selected.date || selected.createdAt), 'MMM dd, yyyy')}</div>
+                                </div>
+                            </div>
+
+                            <div style={{ marginBottom: '1.5rem' }}>
+                                <div style={{ fontSize: '0.65rem', fontWeight: 900, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <div style={{ width: 16, height: 2, background: 'var(--brand-500)' }}></div>
+                                    Description
+                                </div>
+                                <div style={{ background: 'white', border: '1px solid var(--border-primary)', padding: '1rem', borderRadius: '12px', fontSize: '0.85rem', lineHeight: 1.5, color: 'var(--text-secondary)', fontWeight: 500 }}>
+                                    {selected.description || "No description provided."}
+                                </div>
+                            </div>
+
+                            <div style={{ marginBottom: '0.5rem' }}>
+                                <div style={{ fontSize: '0.65rem', fontWeight: 900, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <div style={{ width: 16, height: 2, background: 'var(--brand-500)' }}></div>
+                                    Proof Documents
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    {(() => {
+                                        const fileUrl = selected.certificateUrl || (selected.proofFiles?.length > 0 ? selected.proofFiles[0].url : null);
+                                        if (fileUrl) {
+                                            return (
+                                                <a href={fileUrl.startsWith('http') ? fileUrl : `${STATIC_BASE_URL}${fileUrl}`} target="_blank" rel="noreferrer"
+                                                    className="proof-link-card"
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '1rem',
+                                                        padding: '1rem',
+                                                        background: 'var(--primary-50)',
+                                                        borderRadius: '12px',
+                                                        border: '1px solid var(--primary-100)',
+                                                        textDecoration: 'none',
+                                                    }}
+                                                >
+                                                    <div style={{ width: 36, height: 36, background: 'white', color: 'var(--brand-700)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-xs)' }}>
+                                                        <Trophy size={16} strokeWidth={2.5} />
+                                                    </div>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>Certificate File</div>
+                                                        <div style={{ fontSize: '0.65rem', color: 'var(--brand-600)', fontWeight: 800, textTransform: 'uppercase', marginTop: '2px' }}>Click to view original</div>
+                                                    </div>
+                                                    <ChevronRight size={16} className="text-brand" strokeWidth={3} />
+                                                </a>
+                                            );
+                                        }
+                                        return (
+                                            <div style={{ textAlign: 'center', padding: '1.5rem', background: 'var(--slate-50)', borderRadius: '12px', border: '1px dashed var(--border-primary)' }}>
+                                                <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700 }}>No proof files available for this record.</p>
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
+                            </div>
+                        </div>
+
+                        {selected.status !== 'approved' && (
+                            <div style={{ padding: '1rem 1.5rem', background: 'var(--slate-50)', borderTop: '1px solid var(--border-primary)', display: 'flex', justifyContent: 'flex-end' }}>
+                                <Link to={`/achievements/edit/${selected._id}`} className="btn btn-primary btn-sm" style={{ fontWeight: 800, padding: '0.5rem 1.5rem' }}>
+                                    Edit Achievement
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
