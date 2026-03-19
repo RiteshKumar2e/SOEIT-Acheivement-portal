@@ -55,7 +55,9 @@ const ProfilePage = () => {
         setLoading(true);
         try {
             const fd = new FormData();
-            Object.entries(form).forEach(([k, v]) => v && fd.append(k, v));
+            Object.entries(form).forEach(([k, v]) => {
+                if (v !== undefined) fd.append(k, v);
+            });
             if (profileImage) fd.append('profileImage', profileImage);
             const { data } = await authAPI.updateProfile(fd);
             updateUser(data.user);
