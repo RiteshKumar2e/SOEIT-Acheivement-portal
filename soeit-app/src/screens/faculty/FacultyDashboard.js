@@ -20,7 +20,7 @@ import { ROUTES } from '../../constants/api';
 const { width } = Dimensions.get('window');
 
 const FacultyDashboard = ({ navigation }) => {
-  const [stats, setStats] = useState({ totalStudents: 156, pendingCount: 12, approvedCount: 450 });
+  const [stats, setStats] = useState({ totalStudents: 0, pendingCount: 0, approvedCount: 0 });
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -34,7 +34,7 @@ const FacultyDashboard = ({ navigation }) => {
       setStats(statsRes.data.stats || stats);
       setStudents(studentsRes.data.data || []);
     } catch (error) {
-       // Keep demo if offline
+       // Silent fail, keep empty state
     } finally {
       setLoading(false);
       setRefreshing(false);

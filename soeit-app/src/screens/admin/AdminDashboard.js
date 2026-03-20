@@ -18,10 +18,10 @@ const { width } = Dimensions.get('window');
 
 const AdminDashboard = ({ navigation }) => {
   const [stats, setStats] = useState({
-    totalStudents: 1250,
-    pendingVerifications: 42,
-    totalAchievements: 850,
-    activeInternships: 15,
+    totalStudents: 0,
+    pendingVerifications: 0,
+    totalAchievements: 0,
+    activeInternships: 0,
   });
   const [refreshing, setRefreshing] = useState(false);
 
@@ -30,7 +30,7 @@ const AdminDashboard = ({ navigation }) => {
       const res = await api.get('/admin/stats');
       if (res.data.stats) setStats(res.data.stats);
     } catch (error) {
-       // Keep demo if offline
+       // Silent fail, keep zero state
     } finally {
       setRefreshing(false);
     }

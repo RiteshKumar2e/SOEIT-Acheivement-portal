@@ -21,11 +21,9 @@ const { width } = Dimensions.get('window');
 const StudentDashboard = ({ navigation }) => {
   const { user } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
-  const [stats, setStats] = useState({ verified: 12, pending: 3, total: 15 });
-  const [trending, setTrending] = useState([
-    { id: 1, title: 'Summer Internships Open', subtitle: 'Arka Tech, Google, Microsoft', icon: 'briefcase', color: '#3b82f6' },
-    { id: 2, title: 'Code AJU Hackathon', subtitle: 'Registration ends soon', icon: 'code-working', color: '#ec4899' },
-  ]);
+  const [stats, setStats] = useState({ verified: 0, pending: 0, total: 0 });
+  const [trending, setTrending] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -36,8 +34,12 @@ const StudentDashboard = ({ navigation }) => {
         pending: achs.filter(a => a.status === 'pending').length,
         total: achs.length,
       });
+      
+      // Attempt to fetch trending/leaderboard if endpoints exist
+      // setTrending(trendingRes.data);
+      // setLeaderboard(leaderboardRes.data);
     } catch (error) {
-       // Keep demo if offline
+       // Silent fail, keep empty state
     }
   }, []);
 
@@ -51,36 +53,35 @@ const StudentDashboard = ({ navigation }) => {
     setRefreshing(false);
   };
 
-  const renderLeaderboardMini = () => (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>🏆 Hall of Fame</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('History')}>
-          <Text style={styles.seeAll}>Leaderboard</Text>
-        </TouchableOpacity>
+  const renderLeaderboardMini = () => {
+    if (leaderboard.length === 0) return null;
+    return (
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>🏆 Hall of Fame</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('History')}>
+            <Text style={styles.seeAll}>Leaderboard</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.leaderboardPreview}>
+          {leaderboard.map((item, idx) => (
+            <View key={idx} style={styles.leaderItem}>
+              <View style={[styles.miniAvatar, { backgroundColor: COLORS.primary + '20' }]}>
+                 <Text style={styles.miniAvatarText}>{item.avatar}</Text>
+              </View>
+              <View style={{ flex: 1, marginLeft: 10 }}>
+                 <Text style={styles.leaderName}>{item.name}</Text>
+                 <Text style={styles.leaderPoints}>{item.points} Points</Text>
+              </View>
+              <View style={styles.rankBadge}>
+                 <Text style={styles.rankText}>#{item.rank}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
       </View>
-      <View style={styles.leaderboardPreview}>
-        {[
-          { name: 'Rahul Sharma', points: 4250, rank: 1, avatar: 'R' },
-          { name: 'Aditi Ray', points: 3820, rank: 2, avatar: 'A' },
-          { name: 'Vikram Singh', points: 3100, rank: 3, avatar: 'V' },
-        ].map((item, idx) => (
-          <View key={idx} style={styles.leaderItem}>
-            <View style={[styles.miniAvatar, { backgroundColor: COLORS.primary + '20' }]}>
-               <Text style={styles.miniAvatarText}>{item.avatar}</Text>
-            </View>
-            <View style={{ flex: 1, marginLeft: 10 }}>
-               <Text style={styles.leaderName}>{item.name}</Text>
-               <Text style={styles.leaderPoints}>{item.points} Points</Text>
-            </View>
-            <View style={styles.rankBadge}>
-               <Text style={styles.rankText}>#{item.rank}</Text>
-            </View>
-          </View>
-        ))}
-      </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <ScrollView
