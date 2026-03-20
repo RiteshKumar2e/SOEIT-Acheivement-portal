@@ -7,6 +7,8 @@ import {
   RefreshControl,
   TouchableOpacity,
   Dimensions,
+  Image,
+  FlatList,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,41 +18,26 @@ import api from '../../services/api';
 
 const { width } = Dimensions.get('window');
 
-const StatCard = ({ title, value, icon, colors, label }) => (
-  <TouchableOpacity style={styles.statCard}>
-    <LinearGradient colors={colors} style={styles.statIcon}>
-      <Ionicons name={icon} size={24} color="#fff" />
-    </LinearGradient>
-    <View style={styles.statContent}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statTitle}>{title}</Text>
-    </View>
-  </TouchableOpacity>
-);
-
 const StudentDashboard = ({ navigation }) => {
   const { user } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
-  const [stats, setStats] = useState({
-    verified: 0,
-    pending: 0,
-    total: 0,
-  });
+  const [stats, setStats] = useState({ verified: 12, pending: 3, total: 15 });
+  const [trending, setTrending] = useState([
+    { id: 1, title: 'Summer Internships Open', subtitle: 'Arka Tech, Google, Microsoft', icon: 'briefcase', color: '#3b82f6' },
+    { id: 2, title: 'Code AJU Hackathon', subtitle: 'Registration ends soon', icon: 'code-working', color: '#ec4899' },
+  ]);
 
   const fetchStats = useCallback(async () => {
     try {
       const res = await api.get('/achievements/my');
       const achs = res.data.achievements || [];
-      const stats = {
+      setStats({
         verified: achs.filter(a => a.status === 'verified').length,
         pending: achs.filter(a => a.status === 'pending').length,
         total: achs.length,
-      };
-      setStats(stats);
+      });
     } catch (error) {
-      console.error('Stats fetch error:', error);
-    } finally {
-      setRefreshing(false);
+       // Keep demo if offline
     }
   }, []);
 
@@ -64,92 +51,135 @@ const StudentDashboard = ({ navigation }) => {
     setRefreshing(false);
   };
 
+  const renderLeaderboardMini = () => (
+    <View style={styles.section}>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>🏆 Hall of Fame</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('History')}>
+          <Text style={styles.seeAll}>Leaderboard</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.leaderboardPreview}>
+        {[
+          { name: 'Rahul Sharma', points: 4250, rank: 1, avatar: 'R' },
+          { name: 'Aditi Ray', points: 3820, rank: 2, avatar: 'A' },
+          { name: 'Vikram Singh', points: 3100, rank: 3, avatar: 'V' },
+        ].map((item, idx) => (
+          <View key={idx} style={styles.leaderItem}>
+            <View style={[styles.miniAvatar, { backgroundColor: COLORS.primary + '20' }]}>
+               <Text style={styles.miniAvatarText}>{item.avatar}</Text>
+            </View>
+            <View style={{ flex: 1, marginLeft: 10 }}>
+               <Text style={styles.leaderName}>{item.name}</Text>
+               <Text style={styles.leaderPoints}>{item.points} Points</Text>
+            </View>
+            <View style={styles.rankBadge}>
+               <Text style={styles.rankText}>#{item.rank}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+
   return (
     <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
-      }
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />}
     >
-      <LinearGradient colors={COLORS.gradientDark} style={styles.header}>
-        <View style={styles.userInfo}>
-          <View>
-            <Text style={styles.welcomeText}>Hello, {user?.name.split(' ')[0]} 👋</Text>
-            <Text style={styles.enrollText}>{user?.enrollmentNo}</Text>
-          </View>
-          <TouchableOpacity 
-            style={styles.avatarContainer}
-            onPress={() => navigation.navigate('Profile')}
-          >
-            <LinearGradient colors={COLORS.gradientPrimary} style={styles.avatar}>
+      <LinearGradient colors={['#1e1b4b', '#000']} style={styles.header}>
+        <View style={styles.topBar}>
+          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            <LinearGradient colors={['#818cf8', '#4f46e5']} style={styles.avatar}>
               <Text style={styles.avatarChar}>{user?.name[0]}</Text>
             </LinearGradient>
           </TouchableOpacity>
+          <View style={styles.headerInfo}>
+            <Text style={styles.welcomeText}>Welcome, {user?.name.split(' ')[0]}</Text>
+            <Text style={styles.statusText}>{user?.enrollmentNo || 'Student Portal'}</Text>
+          </View>
+          <TouchableOpacity style={styles.notifBtn} onPress={() => navigation.navigate('Events')}>
+            <Ionicons name="notifications-outline" size={24} color="#fff" />
+            <View style={styles.notifDot} />
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.statsRow}>
-          <StatCard 
-            title="Verified" 
-            value={stats.verified} 
-            icon="checkmark-done-circle" 
-            colors={['#10b981', '#059669']} 
-          />
-          <StatCard 
-            title="Pending" 
-            value={stats.pending} 
-            icon="time" 
-            colors={['#f59e0b', '#d97706']} 
-          />
+        <View style={styles.statsContainer}>
+          <View style={styles.statBox}>
+             <Text style={styles.statLabel}>Verified</Text>
+             <Text style={[styles.statValue, { color: COLORS.success }]}>{stats.verified}</Text>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.statBox}>
+             <Text style={styles.statLabel}>Pending</Text>
+             <Text style={[styles.statValue, { color: COLORS.warning }]}>{stats.pending}</Text>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.statBox}>
+             <Text style={styles.statLabel}>Rank</Text>
+             <Text style={[styles.statValue, { color: COLORS.secondary }]}>14</Text>
+          </View>
         </View>
       </LinearGradient>
 
+      {/* Trending Section */}
+      <View style={styles.trendingContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trendingScroll}>
+          {trending.map(item => (
+            <TouchableOpacity key={item.id} style={[styles.trendingCard, { borderLeftColor: item.color }]}>
+               <View style={[styles.trendIcon, { backgroundColor: item.color + '20' }]}>
+                 <Ionicons name={item.icon} size={20} color={item.color} />
+               </View>
+               <View style={{ marginLeft: 12 }}>
+                 <Text style={styles.trendTitle}>{item.title}</Text>
+                 <Text style={styles.trendSub}>{item.subtitle}</Text>
+               </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
       <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-        </View>
-        <View style={styles.actionsGrid}>
+        <Text style={styles.sectionTitle}>🎯 Power Actions</Text>
+        <View style={styles.grid}>
           {[
-            { label: 'Upload', icon: 'cloud-upload-outline', color: COLORS.primary, route: 'Upload' },
-            { label: 'Achievements', icon: 'trophy-outline', color: '#8b5cf6', route: 'Achievements' },
-            { label: 'Academic', icon: 'book-outline', color: '#10b981', route: 'Courses' },
-            { label: 'Projects', icon: 'code-slash-outline', color: '#f59e0b', route: 'Projects' },
-            { label: 'Internships', icon: 'briefcase-outline', color: '#06b6d4', route: 'Internships' },
-            { label: 'Portfolios', icon: 'globe-outline', color: '#ec4899', route: 'Profile' },
+            { label: 'Upload', icon: 'add-circle-outline', color: '#10b981', route: 'Upload' },
+            { label: 'Certificate', icon: 'trophy-outline', color: '#8b5cf6', route: 'Achievements' },
+            { label: 'Events', icon: 'flash-outline', color: '#f59e0b', route: 'Hackathons' },
+            { label: 'Jobs', icon: 'briefcase-outline', color: '#06b6d4', route: 'Internships' },
           ].map((action, idx) => (
             <TouchableOpacity 
               key={idx} 
-              style={styles.actionItem}
+              style={styles.gridItem} 
               onPress={() => navigation.navigate(action.route)}
             >
-              <View style={[styles.actionIcon, { backgroundColor: action.color + '15' }]}>
-                <Ionicons name={action.icon} size={28} color={action.color} />
-              </View>
-              <Text style={styles.actionLabel}>{action.label}</Text>
+              <LinearGradient colors={[action.color + '20', 'transparent']} style={styles.gridIconBox}>
+                 <Ionicons name={action.icon} size={28} color={action.color} />
+              </LinearGradient>
+              <Text style={styles.gridLabel}>{action.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
       </View>
 
+      {renderLeaderboardMini()}
+
       <TouchableOpacity 
-        style={styles.banner} 
-        activeOpacity={0.9}
+        style={styles.promoBanner}
         onPress={() => navigation.navigate('Hackathons')}
       >
-        <LinearGradient
-          colors={COLORS.gradientSecondary}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.bannerGradient}
-        >
-          <View style={styles.bannerContent}>
-            <Text style={styles.bannerTitle}>AJU Hackathons Hub</Text>
-            <Text style={styles.bannerDesc}>Participate in 90+ upcoming hackathons</Text>
-            <View style={styles.bannerBtn}>
-              <Text style={styles.bannerBtnText}>View Listing</Text>
-            </View>
-          </View>
-          <Ionicons name="rocket-outline" size={80} color="rgba(255,255,255,0.2)" style={styles.bannerIcon} />
+        <Image 
+          source={{ uri: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800' }} 
+          style={styles.promoBg} 
+        />
+        <LinearGradient colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']} style={styles.promoOverlay}>
+           <Text style={styles.promoTag}>DISCOVER</Text>
+           <Text style={styles.promoTitle}>91+ Hackathons Waiting</Text>
+           <Text style={styles.promoDesc}>Filter by categories and apply directly from your portal.</Text>
+           <View style={styles.promoBtn}>
+              <Text style={styles.promoBtnText}>Explore Now</Text>
+           </View>
         </LinearGradient>
       </TouchableOpacity>
 
@@ -161,157 +191,81 @@ const StudentDashboard = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bgPrimary },
   header: {
-    paddingTop: 60,
+    paddingTop: 50,
     paddingHorizontal: 20,
-    paddingBottom: 30,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    paddingBottom: 40,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
   },
-  userInfo: {
+  topBar: { flexDirection: 'row', alignItems: 'center', gap: 15, marginBottom: 30 },
+  avatar: { width: 50, height: 50, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  avatarChar: { color: '#fff', fontSize: 22, fontWeight: '800' },
+  headerInfo: { flex: 1 },
+  welcomeText: { color: '#fff', fontSize: 20, fontWeight: '800' },
+  statusText: { color: 'rgba(255,255,255,0.6)', fontSize: 13, marginTop: 2 },
+  notifBtn: { width: 44, height: 44, borderRadius: 15, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' },
+  notifDot: { position: 'absolute', top: 12, right: 12, width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.secondary, borderWidth: 2, borderColor: '#1e1b4b' },
+  statsContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 30,
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-  },
-  enrollText: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    marginTop: 2,
-  },
-  avatarContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.1)',
-    padding: 2,
-  },
-  avatar: {
-    flex: 1,
-    borderRadius: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarChar: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  statCard: {
-    backgroundColor: COLORS.bgCard,
-    width: (width - 60) / 2,
-    borderRadius: 20,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  statIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-  },
-  statTitle: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    marginTop: 2,
-  },
-  section: { padding: 20, marginTop: 10 },
-  sectionHeader: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-  },
-  actionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  actionItem: {
-    width: (width - 60) / 2,
-    backgroundColor: COLORS.bgCard,
-    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 24,
     padding: 20,
     alignItems: 'center',
-    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  statBox: { flex: 1, alignItems: 'center' },
+  statLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginBottom: 5 },
+  statValue: { fontSize: 22, fontWeight: '900' },
+  divider: { width: 1, height: 30, backgroundColor: 'rgba(255,255,255,0.1)' },
+  trendingContainer: { marginTop: -25 },
+  trendingScroll: { paddingHorizontal: 20, gap: 15 },
+  trendingCard: {
+    backgroundColor: COLORS.bgCard,
+    padding: 15,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderLeftWidth: 4,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    minWidth: 260,
+  },
+  trendIcon: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  trendTitle: { color: COLORS.textPrimary, fontSize: 14, fontWeight: '700' },
+  trendSub: { color: COLORS.textMuted, fontSize: 11, marginTop: 2 },
+  section: { padding: 20, marginTop: 10 },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  sectionTitle: { fontSize: 19, fontWeight: '800', color: COLORS.textPrimary },
+  seeAll: { color: COLORS.primary, fontWeight: '700', fontSize: 13 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 15 },
+  gridItem: { 
+    width: (width - 55) / 2, 
+    backgroundColor: COLORS.bgCard, 
+    padding: 20, 
+    borderRadius: 24, 
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  actionIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  actionLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-  },
-  banner: {
-    margin: 20,
-    borderRadius: 24,
-    overflow: 'hidden',
-  },
-  bannerGradient: {
-    padding: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  bannerContent: { flex: 1, zIndex: 1 },
-  bannerTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#fff',
-  },
-  bannerDesc: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 4,
-    marginBottom: 16,
-  },
-  bannerBtn: {
-    backgroundColor: '#fff',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    alignSelf: 'flex-start',
-  },
-  bannerBtnText: {
-    color: COLORS.primary,
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  bannerIcon: {
-    position: 'absolute',
-    right: -10,
-    bottom: -10,
-    transform: [{ rotate: '-15deg' }],
-  },
+  gridIconBox: { width: 56, height: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
+  gridLabel: { color: COLORS.textPrimary, fontSize: 14, fontWeight: '700' },
+  leaderboardPreview: { backgroundColor: COLORS.bgCard, borderRadius: 24, padding: 15, borderWidth: 1, borderColor: COLORS.border },
+  leaderItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.border },
+  miniAvatar: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  miniAvatarText: { color: COLORS.primary, fontWeight: '800' },
+  leaderName: { color: COLORS.textPrimary, fontSize: 14, fontWeight: '700' },
+  leaderPoints: { color: COLORS.textMuted, fontSize: 12 },
+  rankBadge: { paddingHorizontal: 10, paddingVertical: 4, backgroundColor: COLORS.bgSecondary, borderRadius: 8 },
+  rankText: { color: COLORS.textSecondary, fontSize: 11, fontWeight: '800' },
+  promoBanner: { margin: 20, height: 200, borderRadius: 24, overflow: 'hidden' },
+  promoBg: { ...StyleSheet.absoluteFillObject },
+  promoOverlay: { ...StyleSheet.absoluteFillObject, padding: 25, justifyContent: 'flex-end' },
+  promoTag: { color: COLORS.secondary, fontWeight: '900', fontSize: 10, letterSpacing: 2, marginBottom: 8 },
+  promoTitle: { color: '#fff', fontSize: 24, fontWeight: '800' },
+  promoDesc: { color: 'rgba(255,255,255,0.7)', fontSize: 13, marginTop: 5, marginBottom: 15 },
+  promoBtn: { backgroundColor: '#fff', paddingVertical: 10, paddingHorizontal: 20, borderRadius: 12, alignSelf: 'flex-start' },
+  promoBtnText: { color: '#000', fontWeight: '800', fontSize: 13 },
 });
 
 export default StudentDashboard;

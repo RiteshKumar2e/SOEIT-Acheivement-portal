@@ -7,6 +7,7 @@ import {
   RefreshControl,
   TouchableOpacity,
   Dimensions,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,38 +16,21 @@ import api from '../../services/api';
 
 const { width } = Dimensions.get('window');
 
-const StatBox = ({ title, value, icon, color }) => (
-  <View style={styles.statBox}>
-    <View style={[styles.iconBox, { backgroundColor: color + '20' }]}>
-      <Ionicons name={icon} size={24} color={color} />
-    </View>
-    <View>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statTitle}>{title}</Text>
-    </View>
-  </View>
-);
-
 const AdminDashboard = ({ navigation }) => {
   const [stats, setStats] = useState({
-    totalStudents: 0,
-    pendingVerifications: 0,
-    totalAchievements: 0,
-    activeInternships: 0,
+    totalStudents: 1250,
+    pendingVerifications: 42,
+    totalAchievements: 850,
+    activeInternships: 15,
   });
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchStats = useCallback(async () => {
     try {
       const res = await api.get('/admin/stats');
-      setStats(res.data.stats || {
-        totalStudents: 1250,
-        pendingVerifications: 42,
-        totalAchievements: 850,
-        activeInternships: 15,
-      });
+      if (res.data.stats) setStats(res.data.stats);
     } catch (error) {
-      console.error('Fetch stats error:', error);
+       // Keep demo if offline
     } finally {
       setRefreshing(false);
     }
@@ -61,78 +45,83 @@ const AdminDashboard = ({ navigation }) => {
     fetchStats();
   };
 
+  const renderAction = (title, sub, icon, color, route) => (
+    <TouchableOpacity 
+      style={styles.actionCard} 
+      onPress={() => navigation.navigate(route)}
+      activeOpacity={0.7}
+    >
+      <LinearGradient colors={[color + '20', 'transparent']} style={styles.actionIconBox}>
+        <Ionicons name={icon} size={28} color={color} />
+      </LinearGradient>
+      <View style={styles.actionTextContent}>
+        <Text style={styles.actionTitle}>{title}</Text>
+        <Text style={styles.actionSub}>{sub}</Text>
+      </View>
+      <Ionicons name="chevron-forward" size={20} color={COLORS.textMuted} />
+    </TouchableOpacity>
+  );
+
   return (
     <ScrollView 
       style={styles.container} 
+      showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />}
     >
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Institutional Overview</Text>
-        <Text style={styles.headerSub}>SOEIT Management Dashboard</Text>
-      </View>
+      <LinearGradient colors={['#1e1b4b', '#312e81']} style={styles.header}>
+        <View style={styles.headerTop}>
+           <View>
+              <Text style={styles.headerTag}>INSTITUTIONAL ADMIN</Text>
+              <Text style={styles.headerTitle}>Operational Hub</Text>
+           </View>
+           <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
+              <View style={styles.avatarMini}>
+                 <Text style={styles.avatarText}>A</Text>
+              </View>
+           </TouchableOpacity>
+        </View>
 
-      <View style={styles.statsGrid}>
-        <StatBox title="Students" value={stats.totalStudents} icon="people" color={COLORS.primary} />
-        <StatBox title="Pending" value={stats.pendingVerifications} icon="time" color={COLORS.warning} />
-        <StatBox title="Achievements" value={stats.totalAchievements} icon="trophy" color={COLORS.secondary} />
-        <StatBox title="Internships" value={stats.activeInternships} icon="briefcase" color={COLORS.accent} />
-      </View>
+        <View style={styles.statsGrid}>
+           <View style={styles.statItem}>
+              <Text style={styles.statValue}>{stats.totalStudents}</Text>
+              <Text style={styles.statLabel}>Students</Text>
+           </View>
+           <View style={styles.statDivider} />
+           <View style={styles.statItem}>
+              <Text style={[styles.statValue, { color: COLORS.warning }]}>{stats.pendingVerifications}</Text>
+              <Text style={styles.statLabel}>Pending</Text>
+           </View>
+           <View style={styles.statDivider} />
+           <View style={styles.statItem}>
+              <Text style={styles.statValue}>{stats.totalAchievements}</Text>
+              <Text style={styles.statLabel}>Achievements</Text>
+           </View>
+        </View>
+      </LinearGradient>
 
-      <Text style={styles.sectionTitle}>Institutional Management</Text>
-      <View style={styles.actions}>
-        <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Verify')}>
-          <LinearGradient colors={COLORS.gradientPrimary} style={styles.actionIcon}>
-            <Ionicons name="checkmark-done-circle" size={32} color="#fff" />
-          </LinearGradient>
-          <View style={styles.actionText}>
-            <Text style={styles.actionTitle}>Verification Engine</Text>
-            <Text style={styles.actionSub}>Review and approve student milestones</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={24} color={COLORS.textMuted} />
-        </TouchableOpacity>
+      <View style={styles.content}>
+        <Text style={styles.sectionTitle}>System Controls</Text>
+        
+        {renderAction('Verification Engine', 'Review pending student evidence', 'shield-checkmark', COLORS.primary, 'Verify')}
+        {renderAction('Student Management', 'Browse directories and points', 'people', '#10b981', 'StudentManagement')}
+        {renderAction('Faculty Registry', 'Manage authorized educators', 'school', '#818cf8', 'FacultyManagement')}
+        {renderAction('Broadcast Center', 'Send announcements instantly', 'megaphone', COLORS.secondary, 'BroadcastNotice')}
+        {renderAction('Audit & Reports', 'Export institutional analytics', 'bar-chart', '#ec4899', 'Reports')}
 
-        <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('StudentManagement')}>
-          <LinearGradient colors={['#10b981', '#059669']} style={styles.actionIcon}>
-            <Ionicons name="people" size={32} color="#fff" />
-          </LinearGradient>
-          <View style={styles.actionText}>
-            <Text style={styles.actionTitle}>Student Directory</Text>
-            <Text style={styles.actionSub}>Browse scholar database & profiles</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={24} color={COLORS.textMuted} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('BroadcastNotice')}>
-          <LinearGradient colors={COLORS.gradientSecondary} style={styles.actionIcon}>
-            <Ionicons name="megaphone" size={32} color="#fff" />
-          </LinearGradient>
-          <View style={styles.actionText}>
-            <Text style={styles.actionTitle}>Broadcast Notice</Text>
-            <Text style={styles.actionSub}>Send alerts to students & faculty</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={24} color={COLORS.textMuted} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('FacultyManagement')}>
-          <LinearGradient colors={['#3b82f6', '#1d4ed8']} style={styles.actionIcon}>
-            <Ionicons name="school" size={32} color="#fff" />
-          </LinearGradient>
-          <View style={styles.actionText}>
-            <Text style={styles.actionTitle}>Faculty Registry</Text>
-            <Text style={styles.actionSub}>Manage faculty accounts & authorization</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={24} color={COLORS.textMuted} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Reports')}>
-          <LinearGradient colors={['#ec4899', '#db2777']} style={styles.actionIcon}>
-            <Ionicons name="bar-chart" size={32} color="#fff" />
-          </LinearGradient>
-          <View style={styles.actionText}>
-            <Text style={styles.actionTitle}>Audit Reports</Text>
-            <Text style={styles.actionSub}>Export academic & evidence ledgers</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={24} color={COLORS.textMuted} />
+        <TouchableOpacity 
+          style={styles.aiBanner}
+          onPress={() => navigation.navigate('Reports')}
+        >
+           <LinearGradient colors={['#4338ca', '#1e1b4b']} style={styles.aiGradient}>
+              <View style={styles.aiContent}>
+                 <Text style={styles.aiTitle}>Advanced Analytics</Text>
+                 <Text style={styles.aiSub}>View visual breakdowns of achievement trends across departments.</Text>
+                 <View style={styles.aiBtn}>
+                    <Text style={styles.aiBtnText}>Open Audit</Text>
+                 </View>
+              </View>
+              <Ionicons name="analytics" size={70} color="rgba(255,255,255,0.1)" style={styles.aiIcon} />
+           </LinearGradient>
         </TouchableOpacity>
       </View>
 
@@ -143,59 +132,32 @@ const AdminDashboard = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bgPrimary },
-  header: { paddingHorizontal: 20, paddingTop: 40, marginBottom: 30 },
-  headerTitle: { color: COLORS.textPrimary, fontSize: 32, fontWeight: '800' },
-  headerSub: { color: COLORS.textSecondary, fontSize: 16, marginTop: 4 },
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 10,
-    marginBottom: 30,
-  },
-  statBox: {
-    backgroundColor: COLORS.bgCard,
-    width: (width - 60) / 2,
-    margin: 10,
-    padding: 20,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  iconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  statValue: { color: COLORS.textPrimary, fontSize: 20, fontWeight: '800' },
-  statTitle: { color: COLORS.textMuted, fontSize: 12, marginTop: 2, fontWeight: '600' },
-  sectionTitle: { color: COLORS.textSecondary, fontSize: 16, fontWeight: '700', marginLeft: 20, marginBottom: 20, textTransform: 'uppercase' },
-  actions: { paddingHorizontal: 20 },
-  actionCard: {
-    backgroundColor: COLORS.bgCard,
-    borderRadius: 24,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  actionIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
-  },
-  actionText: { flex: 1 },
-  actionTitle: { color: COLORS.textPrimary, fontSize: 17, fontWeight: '700' },
-  actionSub: { color: COLORS.textMuted, fontSize: 13, marginTop: 4 },
+  header: { padding: 25, paddingTop: 60, paddingBottom: 40, borderBottomLeftRadius: 36, borderBottomRightRadius: 36 },
+  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 35 },
+  headerTag: { color: COLORS.secondary, fontSize: 11, fontWeight: '900', letterSpacing: 2, marginBottom: 5 },
+  headerTitle: { color: '#fff', fontSize: 28, fontWeight: '800' },
+  avatarMini: { width: 44, height: 44, borderRadius: 15, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' },
+  avatarText: { color: '#fff', fontWeight: '800', fontSize: 18 },
+  statsGrid: { flexDirection: 'row', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 24, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  statItem: { flex: 1, alignItems: 'center' },
+  statValue: { color: '#fff', fontSize: 20, fontWeight: '900' },
+  statLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: '800', marginTop: 4, textTransform: 'uppercase' },
+  statDivider: { width: 1, height: 25, backgroundColor: 'rgba(255,255,255,0.1)', alignSelf: 'center' },
+  content: { padding: 20 },
+  sectionTitle: { color: COLORS.textPrimary, fontSize: 18, fontWeight: '800', marginBottom: 20, marginLeft: 5 },
+  actionCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.bgCard, padding: 15, borderRadius: 24, marginBottom: 15, borderWidth: 1, borderColor: COLORS.border },
+  actionIconBox: { width: 52, height: 52, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  actionTextContent: { flex: 1, marginLeft: 15 },
+  actionTitle: { color: COLORS.textPrimary, fontSize: 16, fontWeight: '800' },
+  actionSub: { color: COLORS.textMuted, fontSize: 12, marginTop: 2, fontWeight: '600' },
+  aiBanner: { marginTop: 20, borderRadius: 28, overflow: 'hidden' },
+  aiGradient: { padding: 25, flexDirection: 'row', alignItems: 'center' },
+  aiContent: { flex: 1, zIndex: 1 },
+  aiTitle: { color: '#fff', fontSize: 20, fontWeight: '800' },
+  aiSub: { color: 'rgba(255,255,255,0.7)', fontSize: 13, marginTop: 5, marginBottom: 15, lineHeight: 18 },
+  aiBtn: { backgroundColor: COLORS.secondary, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, alignSelf: 'flex-start' },
+  aiBtnText: { color: '#1e1b4b', fontWeight: '800', fontSize: 13 },
+  aiIcon: { position: 'absolute', right: -10, bottom: -10, transform: [{ rotate: '-15deg' }] },
 });
 
 export default AdminDashboard;

@@ -208,6 +208,8 @@ const FacultyTabs = () => (
   </Tab.Navigator>
 );
 
+import WelcomeScreen from '../screens/auth/WelcomeScreen';
+
 const AppNavigator = () => {
   const { isAuthenticated, user, loading } = useAuth();
 
@@ -229,6 +231,11 @@ const AppNavigator = () => {
     >
       {!isAuthenticated ? (
         <>
+          <Stack.Screen 
+            name="Welcome" 
+            component={WelcomeScreen} 
+            options={{ headerShown: false }} 
+          />
           <Stack.Screen 
             name="Login" 
             component={LoginScreen} 

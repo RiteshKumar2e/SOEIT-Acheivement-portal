@@ -63,6 +63,9 @@ const LoginScreen = ({ navigation }) => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
+          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
+          </TouchableOpacity>
           <View style={styles.header}>
             <LinearGradient
               colors={COLORS.gradientPrimary}
@@ -160,6 +163,13 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingTop: Platform.OS === 'ios' ? 80 : 60,
     flexGrow: 1,
+  },
+  backBtn: {
+    position: 'absolute',
+    top: 10,
+    left: 0,
+    zIndex: 10,
+    padding: 10,
   },
   header: {
     alignItems: 'center',
