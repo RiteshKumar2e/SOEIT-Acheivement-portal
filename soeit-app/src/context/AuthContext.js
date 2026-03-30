@@ -4,6 +4,45 @@ import api from '../services/api';
 
 const AuthContext = createContext(null);
 
+// Storage abstraction layer for web and native
+const StorageManager = {
+  async getItem(key) {
+    try {
+      return await SecureStore.getItemAsync(key);
+    } catch (e) {
+      // Fallback to localStorage for web
+      if (typeof localStorage !== 'undefined') {
+        return localStorage.getItem(key);
+      }
+      throw e;
+    }
+  },
+  async setItem(key, value) {
+    try {
+      await SecureStore.setItemAsync(key, value);
+    } catch (e) {
+      // Fallback to localStorage for web
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(key, value);
+      } else {
+        throw e;
+      }
+    }
+  },
+  async removeItem(key) {
+    try {
+      await SecureStore.deleteItemAsync(key);
+    } catch (e) {
+      // Fallback to localStorage for web
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem(key);
+      } else {
+        throw e;
+      }
+    }
+  },
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
@@ -13,8 +52,8 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loadSession = async () => {
       try {
-        const savedToken = await SecureStore.getItemAsync('soeit_token');
-        const savedUser = await SecureStore.getItemAsync('soeit_user');
+        const savedToken = await StorageManager.getItem('soeit_token');
+        const savedUser = await StorageManager.getItem('soeit_user');
         if (savedToken && savedUser) {
           setToken(savedToken);
           setUser(JSON.parse(savedUser));
@@ -31,8 +70,8 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback(async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
     const { token: newToken, user: newUser } = res.data;
-    await SecureStore.setItemAsync('soeit_token', newToken);
-    await SecureStore.setItemAsync('soeit_user', JSON.stringify(newUser));
+    await StorageManager.setItem('soeit_token', newToken);
+    await StorageManager.setItem('soeit_user', JSON.stringify(newUser));
     setToken(newToken);
     setUser(newUser);
     return newUser;
@@ -46,8 +85,8 @@ export const AuthProvider = ({ children }) => {
       role: role,
     };
     const demoToken = 'demo-token-123';
-    await SecureStore.setItemAsync('soeit_token', demoToken);
-    await SecureStore.setItemAsync('soeit_user', JSON.stringify(demoUser));
+    await StorageManager.setItem('soeit_token', demoToken);
+    await StorageManager.setItem('soeit_user', JSON.stringify(demoUser));
     setToken(demoToken);
     setUser(demoUser);
     return demoUser;
@@ -60,8 +99,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(async () => {
     try { await api.post('/auth/logout'); } catch (_) {}
-    await SecureStore.deleteItemAsync('soeit_token');
-    await SecureStore.deleteItemAsync('soeit_user');
+    await StorageManager.removeItem('soeit_token');
+    await StorageManager.removeItem('soeit_user');
     setToken(null);
     setUser(null);
   }, []);
@@ -71,7 +110,7 @@ export const AuthProvider = ({ children }) => {
       const res = await api.get('/auth/me');
       const updated = res.data.user;
       setUser(updated);
-      await SecureStore.setItemAsync('soeit_user', JSON.stringify(updated));
+      await StorageManager.setItem('soeit_user', JSON.stringify(updated));
       return updated;
     } catch (e) {
       console.error('Refresh user error:', e);
