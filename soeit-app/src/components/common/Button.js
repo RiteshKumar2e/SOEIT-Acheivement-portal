@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, ActivityIndicator, AccessibilityInfo } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../../constants/colors';
+import { BUTTON_HEIGHT, getResponsiveFontSize, SPACING } from '../../utils/responsive';
 
 const Button = ({
   title,
@@ -12,6 +13,12 @@ const Button = ({
   style,
   textStyle,
   disabled = false,
+  width = '100%',
+  accessibilityLabel,
+  accessibilityHint,
+  testID,
+  icon: IconComponent,
+  fullWidth = true,
 }) => {
   const isOutline = variant === 'outline';
   const isSecondary = variant === 'secondary';
@@ -26,24 +33,53 @@ const Button = ({
 
   const getBorderColor = () => {
     if (disabled) return COLORS.textMuted;
-    if (isSecondary) return COLORS.accent;
+    if (isSecondary) return COLORS.secondary;
     if (isDanger) return COLORS.danger;
     return COLORS.primary;
+  };
+
+  const getButtonHeight = () => {
+    switch (size) {
+      case 'sm':
+        return 44;
+      case 'lg':
+        return 60;
+      default:
+        return BUTTON_HEIGHT;
+    }
+  };
+
+  const getTextSize = () => {
+    switch (size) {
+      case 'sm':
+        return getResponsiveFontSize(13);
+      case 'lg':
+        return getResponsiveFontSize(18);
+      default:
+        return getResponsiveFontSize(16);
+    }
   };
 
   const content = (
     <>
       {loading ? (
-        <ActivityIndicator color={isOutline ? COLORS.primary : COLORS.textPrimary} size="small" />
+        <ActivityIndicator
+          color={isOutline ? COLORS.primary : COLORS.textPrimary}
+          size="small"
+          accessible
+          accessibilityRole="progressbar"
+          accessibilityLabel="Loading"
+        />
       ) : (
         <Text
           style={[
             styles.text,
-            size === 'sm' && styles.textSm,
-            size === 'lg' && styles.textLg,
+            { fontSize: getTextSize() },
             isOutline && { color: COLORS.primary },
             textStyle,
           ]}
+          allowFontScaling
+          maxFontSizeMultiplier={1.3}
         >
           {title}
         </Text>
@@ -57,13 +93,25 @@ const Button = ({
         style={[
           styles.button,
           styles.outline,
-          { borderColor: getBorderColor() },
+          {
+            borderColor: getBorderColor(),
+            height: getButtonHeight(),
+            width: fullWidth ? width : 'auto',
+          },
           size === 'sm' && styles.btnSm,
           size === 'lg' && styles.btnLg,
+          disabled && styles.disabledButton,
           style,
         ]}
         onPress={onPress}
         disabled={disabled || loading}
+        activeOpacity={disabled ? 1 : 0.7}
+        accessible
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel || title}
+        accessibilityHint={accessibilityHint}
+        accessibilityState={{ disabled: disabled || loading }}
+        testID={testID}
       >
         {content}
       </TouchableOpacity>
@@ -72,21 +120,32 @@ const Button = ({
 
   return (
     <TouchableOpacity
-      activeOpacity={0.8}
+      activeOpacity={disabled ? 1 : 0.8}
       style={[
         styles.button,
+        {
+          height: getButtonHeight(),
+          width: fullWidth ? width : 'auto',
+        },
         size === 'sm' && styles.btnSm,
         size === 'lg' && styles.btnLg,
+        disabled && styles.disabledButton,
         style,
       ]}
       onPress={onPress}
       disabled={disabled || loading}
+      accessible
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel || title}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{ disabled: disabled || loading }}
+      testID={testID}
     >
       <LinearGradient
         colors={getGradientColors()}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        style={styles.gradient}
+        style={[styles.gradient, { borderRadius: size === 'sm' ? 8 : size === 'lg' ? 16 : 12 }]}
       >
         {content}
       </LinearGradient>
@@ -98,13 +157,15 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 12,
     overflow: 'hidden',
-    marginVertical: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   gradient: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 14,
     paddingHorizontal: 20,
+    flex: 1,
   },
   outline: {
     borderWidth: 1.5,
@@ -116,7 +177,6 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#fff',
-    fontSize: 16,
     fontWeight: '700',
     fontFamily: 'System',
   },
@@ -124,6 +184,9 @@ const styles = StyleSheet.create({
   textLg: { fontSize: 18 },
   btnSm: { borderRadius: 8 },
   btnLg: { borderRadius: 16 },
+  disabledButton: {
+    opacity: 0.5,
+  },
 });
 
 export default Button;
