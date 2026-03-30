@@ -41,11 +41,20 @@ const RegisterScreen = ({ navigation }) => {
 
   const departments = [
     'Select Department',
-    'Computer Science',
-    'Information Technology',
-    'Electronics',
-    'Mechanical Engineering',
-    'Civil Engineering',
+    // B.Tech
+    'B.Tech - CSE',
+    'B.Tech - AIDS (IBM)',
+    'B.Tech - AIML',
+    'B.Tech - ME',
+    'B.Tech - EEE',
+    // BCA
+    'BCA - Regular',
+    'BCA - AIDL',
+    'BCA - Cybersecurity',
+    // Diploma
+    'Diploma - DCSE',
+    'Diploma - DME',
+    'Diploma - DEEE',
   ];
 
   const batches = [
@@ -57,7 +66,7 @@ const RegisterScreen = ({ navigation }) => {
   ];
 
   const semesters = ['Select', '1', '2', '3', '4', '5', '6', '7', '8'];
-  const sections = ['Select', 'A', 'B', 'C', 'D', 'E'];
+  const sections = ['Select', 'A', 'B', 'C', 'D', 'E', 'F', 'G'];
 
   const validateForm = () => {
     if (!formData.name.trim()) {
