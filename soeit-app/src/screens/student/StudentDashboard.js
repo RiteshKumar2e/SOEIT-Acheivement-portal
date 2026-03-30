@@ -117,243 +117,144 @@ const StudentDashboard = ({ navigation }) => {
         />
       }
     >
-      <LinearGradient
-        colors={['#eef2ff', '#f8fafc']}
-        style={styles.header}
-      >
-        <View style={styles.topBar}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Profile')}
-            accessible
-            accessibilityRole="button"
-            accessibilityLabel="Go to profile"
-          >
+      {/* Alert Banner - Academic Profile Incomplete */}
+      <View style={styles.alertBanner}>
+        <View style={styles.alertContent}>
+          <Ionicons name="alert-circle" size={20} color="#1f2937" />
+          <View style={styles.alertText}>
+            <Text style={styles.alertTitle}>Academic Profile Incomplete</Text>
+            <Text style={styles.alertDesc}>
+              Please update your 10th, 12th, and CGPA details for accurate resume generation.
+            </Text>
+          </View>
+        </View>
+        <TouchableOpacity
+          style={styles.completeBtn}
+          onPress={() => navigation.navigate('Profile')}
+        >
+          <Text style={styles.completeBtnText}>Complete Now</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Page Title */}
+      <View style={styles.pageHeader}>
+        <View>
+          <Text style={styles.pageTitle}>Student Performance Dashboard</Text>
+          <Text style={styles.pageDesc}>
+            Track your achievements, certifications, and academic progress here.
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={styles.uploadBtn}
+          onPress={() => navigation.navigate('AchievementAdd')}
+        >
+          <Ionicons name="arrow-up" size={16} color="#fff" />
+          <Text style={styles.uploadBtnText}>Upload New</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Welcome Card with Student Info */}
+      <View style={styles.welcomeCard}>
+        <LinearGradient
+          colors={['#eff6ff', '#dbeafe']}
+          style={styles.welcomeGradient}
+        >
+          <View style={styles.welcomeContent}>
             <LinearGradient
-              colors={COLORS.gradientPrimary}
-              style={styles.avatar}
+              colors={['#1e3a8a', '#1e40af']}
+              style={styles.welcomeIcon}
             >
-              <Text style={styles.avatarChar}>{user?.name[0]}</Text>
+              <Ionicons name="school" size={24} color="#fff" />
             </LinearGradient>
-          </TouchableOpacity>
-          <View style={styles.headerInfo}>
-            <Text
-              style={styles.welcomeText}
-              allowFontScaling
-              maxFontSizeMultiplier={1.3}
-            >
-              Welcome, {user?.name.split(' ')[0]}
-            </Text>
-            <Text
-              style={styles.statusText}
-              allowFontScaling
-              maxFontSizeMultiplier={1.1}
-            >
-              {user?.enrollmentNo || 'Student Portal'}
-            </Text>
+            <View style={styles.welcomeInfo}>
+              <Text style={styles.welcomeName}>Welcome back, {user?.name}</Text>
+              <View style={styles.infoRow}>
+                <View style={styles.infoBadge}>
+                  <Text style={styles.infoBadgeText}>● {user?.department || 'CSE DEPARTMENT'}</Text>
+                </View>
+                <Text style={styles.infoText}>BATCH: 2022-26</Text>
+                <Text style={styles.infoText}>SEMESTER: 8</Text>
+              </View>
+            </View>
           </View>
-          <TouchableOpacity
-            style={styles.notifBtn}
-            onPress={() => navigation.navigate('Broadcasts')}
-            accessible
-            accessibilityRole="button"
-            accessibilityLabel="Notifications"
-            accessibilityHint="View broadcast messages"
-          >
-            <Ionicons
-              name="notifications-outline"
-              size={24}
-              color={COLORS.textPrimary}
-            />
-            <View style={styles.notifDot} />
+        </LinearGradient>
+      </View>
+
+      {/* Stats Grid */}
+      <View style={styles.statsGrid}>
+        <View style={styles.statBox}>
+          <View style={styles.statIconBox}>
+            <Ionicons name="trophy" size={24} color="#1e40af" />
+          </View>
+          <Text style={styles.statValue}>{stats.total}</Text>
+          <Text style={styles.statLabel}>TOTAL</Text>
+          <Text style={styles.statLabel}>ACHIEVEMENTS</Text>
+          <TouchableOpacity>
+            <Text style={styles.statLink}>Total Records</Text>
           </TouchableOpacity>
         </View>
 
-        <View
-          style={styles.statsContainer}
-          accessible
-          accessibilityRole="group"
-          accessibilityLabel="Achievement statistics"
-        >
-          <View style={styles.statBox}>
-            <Text style={styles.statLabel}>Verified</Text>
-            <Text style={[styles.statValue, { color: COLORS.success }]}>
-              {stats.verified}
-            </Text>
+        <View style={styles.statBox}>
+          <View style={[styles.statIconBox, { backgroundColor: '#dcfce7' }]}>
+            <Ionicons name="checkmark-circle" size={24} color="#22c55e" />
           </View>
-          <View style={styles.divider} />
-          <View style={styles.statBox}>
-            <Text style={styles.statLabel}>Pending</Text>
-            <Text style={[styles.statValue, { color: COLORS.warning }]}>
-              {stats.pending}
-            </Text>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.statBox}>
-            <Text style={styles.statLabel}>Total</Text>
-            <Text style={[styles.statValue, { color: COLORS.primary }]}>
-              {stats.total}
-            </Text>
-          </View>
+          <Text style={styles.statValue}>{stats.verified}</Text>
+          <Text style={styles.statLabel}>APPROVED</Text>
+          <Text style={styles.statLabel}>ACHIEVEMENTS</Text>
+          <Text style={styles.statMeta}>Verified by Faculty</Text>
         </View>
-      </LinearGradient>
 
-      {/* Trending Section */}
-      {trending.length > 0 && (
-        <View style={styles.trendingContainer}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.trendingScroll}
-            scrollEnabled={true}
-          >
-            {trending.map(item => (
-              <TouchableOpacity
-                key={item.id}
-                style={[
-                  styles.trendingCard,
-                  { borderLeftColor: item.color },
-                ]}
-                accessible
-                accessibilityRole="button"
-                accessibilityLabel={item.title}
-                accessibilityHint={item.subtitle}
-              >
-                <View
-                  style={[
-                    styles.trendIcon,
-                    { backgroundColor: item.color + '20' },
-                  ]}
-                >
-                  <Ionicons name={item.icon} size={20} color={item.color} />
-                </View>
-                <View style={{ marginLeft: SPACING.md }}>
-                  <Text style={styles.trendTitle}>{item.title}</Text>
-                  <Text style={styles.trendSub}>{item.subtitle}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+        <View style={styles.statBox}>
+          <View style={[styles.statIconBox, { backgroundColor: '#fef3c7' }]}>
+            <Ionicons name="time" size={24} color="#f59e0b" />
+          </View>
+          <Text style={styles.statValue}>{stats.pending}</Text>
+          <Text style={styles.statLabel}>PENDING</Text>
+          <Text style={styles.statLabel}>VERIFICATION</Text>
+          <Text style={styles.statMeta}>Awaiting Review</Text>
         </View>
-      )}
 
-      <View style={styles.section}>
-        <Text
-          style={styles.sectionTitle}
-          accessible
-          accessibilityRole="header"
-          allowFontScaling
-          maxFontSizeMultiplier={1.3}
-        >
-          🎯 Power Actions
-        </Text>
-        <View
-          style={styles.grid}
-          accessible
-          accessibilityRole="group"
-          accessibilityLabel="Action buttons"
-        >
-          {[
-            {
-              label: 'Upload',
-              icon: 'add-circle-outline',
-              color: '#10b981',
-              route: 'Upload',
-              hint: 'Upload a new achievement',
-            },
-            {
-              label: 'Achievements',
-              icon: 'trophy-outline',
-              color: '#8b5cf6',
-              route: 'Achievements',
-              hint: 'View your achievements',
-            },
-            {
-              label: 'Events',
-              icon: 'flash-outline',
-              color: '#f59e0b',
-              route: 'Hackathons',
-              hint: 'Explore events and hackathons',
-            },
-            {
-              label: 'Internships',
-              icon: 'briefcase-outline',
-              color: '#06b6d4',
-              route: 'Internships',
-              hint: 'Browse internship opportunities',
-            },
-          ].map((action, idx) => (
-            <TouchableOpacity
-              key={idx}
-              style={styles.gridItem}
-              onPress={() => navigation.navigate(action.route)}
-              accessible
-              accessibilityRole="button"
-              accessibilityLabel={action.label}
-              accessibilityHint={action.hint}
-            >
-              <LinearGradient
-                colors={[action.color + '20', 'transparent']}
-                style={styles.gridIconBox}
-              >
-                <Ionicons
-                  name={action.icon}
-                  size={28}
-                  color={action.color}
-                />
-              </LinearGradient>
-              <Text
-                style={styles.gridLabel}
-                allowFontScaling
-                maxFontSizeMultiplier={1.2}
-              >
-                {action.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
+        <View style={styles.statBox}>
+          <View style={[styles.statIconBox, { backgroundColor: '#ede9fe' }]}>
+            <Ionicons name="ribbon" size={24} color="#a855f7" />
+          </View>
+          <Text style={styles.statValue}>10</Text>
+          <Text style={styles.statLabel}>TOTAL</Text>
+          <Text style={styles.statLabel}>POINTS</Text>
+          <Text style={styles.statMeta}>Accumulated Score</Text>
         </View>
       </View>
 
-      {renderLeaderboardMini()}
-
-      <TouchableOpacity
-        style={styles.promoBanner}
-        onPress={() => navigation.navigate('Hackathons')}
-        accessible
-        accessibilityRole="button"
-        accessibilityLabel="Explore hackathons"
-        accessibilityHint="View available hackathon opportunities"
-      >
-        <Image
-          source={{
-            uri: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800',
-          }}
-          style={styles.promoBg}
-          accessible={false}
-        />
-        <LinearGradient
-          colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']}
-          style={styles.promoOverlay}
-        >
-          <Text style={styles.promoTag}>DISCOVER</Text>
-          <Text
-            style={styles.promoTitle}
-            allowFontScaling
-            maxFontSizeMultiplier={1.3}
-          >
-            91+ Hackathons Waiting
-          </Text>
-          <Text
-            style={styles.promoDesc}
-            allowFontScaling
-            maxFontSizeMultiplier={1.2}
-          >
-            Filter by categories and apply directly from your portal.
-          </Text>
-          <View style={styles.promoBtn}>
-            <Text style={styles.promoBtnText}>Explore Now</Text>
+      {/* Campus Events Section */}
+      <View style={styles.eventsSection}>
+        <View style={styles.sectionHeader}>
+          <View>
+            <Text style={styles.sectionTitle}>Campus Events</Text>
+            <Text style={styles.sectionDesc}>
+              View all upcoming workshops, seminars, and fests on campus.
+            </Text>
           </View>
-        </LinearGradient>
-      </TouchableOpacity>
+        </View>
+
+        {/* Event Category Filters */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.filterScroll}
+          contentContainerStyle={styles.filterContainer}
+        >
+          {['All', 'Technical', 'Cultural', 'Sports', 'Workshop', 'Seminar', 'Other'].map((cat, idx) => (
+            <TouchableOpacity
+              key={idx}
+              style={[styles.filterBtn, idx === 0 && styles.filterBtnActive]}
+            >
+              <Text style={[styles.filterText, idx === 0 && styles.filterTextActive]}>
+                {cat}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       <View style={{ height: SPACING.xxxl }} />
     </ScrollView>
@@ -630,6 +531,224 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: '800',
     fontSize: getResponsiveFontSize(13),
+  },
+  // New Styles for Professional Dashboard
+  alertBanner: {
+    marginHorizontal: SPACING.lg,
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.lg,
+    backgroundColor: '#eff6ff',
+    borderRadius: 12,
+    padding: SPACING.lg,
+    borderLeftWidth: 4,
+    borderLeftColor: '#3b82f6',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+  },
+  alertContent: {
+    flexDirection: 'row',
+    gap: SPACING.md,
+  },
+  alertText: {
+    flex: 1,
+  },
+  alertTitle: {
+    fontSize: getResponsiveFontSize(14),
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: SPACING.xs,
+  },
+  alertDesc: {
+    fontSize: getResponsiveFontSize(12),
+    color: '#6b7280',
+    lineHeight: 18,
+  },
+  completeBtn: {
+    backgroundColor: '#1e3a8a',
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    borderRadius: 6,
+    alignSelf: 'flex-start',
+    marginTop: SPACING.md,
+  },
+  completeBtnText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: getResponsiveFontSize(11),
+  },
+  pageHeader: {
+    paddingHorizontal: SPACING.lg,
+    marginBottom: SPACING.xl,
+  },
+  pageTitle: {
+    fontSize: getResponsiveFontSize(24),
+    fontWeight: '800',
+    color: '#1f2937',
+    marginBottom: SPACING.sm,
+  },
+  pageDesc: {
+    fontSize: getResponsiveFontSize(13),
+    color: '#6b7280',
+    marginBottom: SPACING.md,
+  },
+  uploadBtn: {
+    backgroundColor: '#1e40af',
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    alignSelf: 'flex-start',
+  },
+  uploadBtnText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: getResponsiveFontSize(12),
+  },
+  welcomeCard: {
+    marginHorizontal: SPACING.lg,
+    marginBottom: SPACING.xl,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  welcomeGradient: {
+    padding: SPACING.xl,
+  },
+  welcomeContent: {
+    flexDirection: 'row',
+    gap: SPACING.lg,
+    alignItems: 'flex-start',
+  },
+  welcomeIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  welcomeInfo: {
+    flex: 1,
+  },
+  welcomeName: {
+    fontSize: getResponsiveFontSize(18),
+    fontWeight: '800',
+    color: '#1f2937',
+    marginBottom: SPACING.sm,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+    alignItems: 'center',
+  },
+  infoBadge: {
+    backgroundColor: '#dcfce7',
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  infoBadgeText: {
+    fontSize: getResponsiveFontSize(11),
+    fontWeight: '600',
+    color: '#166534',
+  },
+  infoText: {
+    fontSize: getResponsiveFontSize(11),
+    fontWeight: '500',
+    color: '#4b5563',
+  },
+  statsGrid: {
+    paddingHorizontal: SPACING.lg,
+    marginBottom: SPACING.xl,
+    gap: SPACING.md,
+  },
+  statBox: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: SPACING.lg,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    alignItems: 'flex-start',
+    marginBottom: SPACING.md,
+  },
+  statIconBox: {
+    backgroundColor: '#e0f2fe',
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SPACING.md,
+  },
+  statValue: {
+    fontSize: getResponsiveFontSize(28),
+    fontWeight: '900',
+    color: '#1f2937',
+    marginBottom: SPACING.xs,
+  },
+  statLabel: {
+    fontSize: getResponsiveFontSize(10),
+    fontWeight: '700',
+    color: '#6b7280',
+    textTransform: 'uppercase',
+    lineHeight: 14,
+  },
+  statLink: {
+    fontSize: getResponsiveFontSize(12),
+    fontWeight: '600',
+    color: '#1e40af',
+    marginTop: SPACING.md,
+  },
+  statMeta: {
+    fontSize: getResponsiveFontSize(11),
+    color: '#6b7280',
+    marginTop: SPACING.sm,
+  },
+  eventsSection: {
+    paddingHorizontal: SPACING.lg,
+    marginBottom: SPACING.xl,
+  },
+  sectionHeader: {
+    marginBottom: SPACING.lg,
+  },
+  sectionTitle: {
+    fontSize: getResponsiveFontSize(18),
+    fontWeight: '800',
+    color: '#1f2937',
+    marginBottom: SPACING.sm,
+  },
+  sectionDesc: {
+    fontSize: getResponsiveFontSize(13),
+    color: '#6b7280',
+  },
+  filterScroll: {
+    marginHorizontal: -SPACING.lg,
+  },
+  filterContainer: {
+    paddingHorizontal: SPACING.lg,
+    gap: SPACING.md,
+  },
+  filterBtn: {
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  filterBtnActive: {
+    backgroundColor: '#1e3a8a',
+    borderColor: '#1e3a8a',
+  },
+  filterText: {
+    fontSize: getResponsiveFontSize(12),
+    fontWeight: '600',
+    color: '#4b5563',
+  },
+  filterTextActive: {
+    color: '#fff',
   },
 });
 

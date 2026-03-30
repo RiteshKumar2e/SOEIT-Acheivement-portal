@@ -91,6 +91,18 @@ const LoginScreen = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
+          {/* Back to Home Button */}
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel="Back to Home"
+          >
+            <Ionicons name="arrow-back" size={20} color="#455a64" />
+            <Text style={styles.backButtonText}>Back to Home</Text>
+          </TouchableOpacity>
+
           {/* Header with University Info */}
           <View style={styles.headerSection}>
             <View style={styles.headerTop}>
@@ -246,7 +258,23 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: SPACING.lg,
-    paddingTop: SPACING.lg,
+    paddingTop: SPACING.sm,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginBottom: SPACING.xl,
+    gap: SPACING.md,
+  },
+  backButtonText: {
+    color: '#455a64',
+    fontSize: getResponsiveFontSize(13),
+    fontWeight: '600',
   },
   headerSection: {
     marginBottom: SPACING.xxxl,

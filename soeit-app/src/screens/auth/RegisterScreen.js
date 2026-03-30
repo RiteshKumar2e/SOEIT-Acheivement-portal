@@ -37,6 +37,7 @@ const RegisterScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
   const { register } = useAuth();
 
   const departments = [
@@ -147,6 +148,18 @@ const RegisterScreen = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
+          {/* Back to Home Button */}
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel="Back to Home"
+          >
+            <Ionicons name="arrow-back" size={20} color="#455a64" />
+            <Text style={styles.backButtonText}>Back to Home</Text>
+          </TouchableOpacity>
+
           {/* Header with University Info */}
           <View style={styles.headerSection}>
             <View style={styles.headerTop}>
@@ -284,10 +297,16 @@ const RegisterScreen = ({ navigation }) => {
               {userType === 'student' && (
                 <View style={styles.fieldGroup}>
                   <Text style={styles.fieldLabel}>Department *</Text>
-                  <View style={[styles.inputContainer, styles.pickerContainer]}>
+                  <View style={[
+                    styles.inputContainer,
+                    styles.pickerContainer,
+                    focusedField === 'department' && styles.inputContainerFocused
+                  ]}>
                     <Picker
                       selectedValue={formData.department}
                       onValueChange={(value) => updateForm('department', value)}
+                      onFocus={() => setFocusedField('department')}
+                      onBlur={() => setFocusedField(null)}
                       style={styles.picker}
                       itemStyle={styles.pickerItem}
                       enabled={!loading}
@@ -450,7 +469,23 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: SPACING.lg,
-    paddingTop: SPACING.lg,
+    paddingTop: SPACING.sm,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginBottom: SPACING.xl,
+    gap: SPACING.md,
+  },
+  backButtonText: {
+    color: '#455a64',
+    fontSize: getResponsiveFontSize(13),
+    fontWeight: '600',
   },
   headerSection: {
     marginBottom: SPACING.xl,
@@ -529,21 +564,25 @@ const styles = StyleSheet.create({
   },
   formCard: {
     backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: SPACING.xl,
-    elevation: 3,
+    borderRadius: 20,
+    padding: SPACING.xl + SPACING.lg,
+    elevation: 1,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 1 },
+    borderWidth: 0.8,
+    borderColor: '#f3f4f6',
   },
   tabContainer: {
     flexDirection: 'row',
     gap: SPACING.md,
     marginBottom: SPACING.xl,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f9fafb',
     padding: SPACING.sm,
-    borderRadius: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
   },
   tab: {
     flex: 1,
@@ -558,7 +597,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#8b0000',
   },
   tabText: {
-    color: '#90a4ae',
+    color: '#6b7280',
     fontSize: getResponsiveFontSize(13),
     fontWeight: '600',
   },
@@ -572,49 +611,78 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   fieldLabel: {
-    color: '#455a64',
-    fontSize: getResponsiveFontSize(11),
-    fontWeight: '700',
-    letterSpacing: 0.8,
-    marginBottom: SPACING.sm,
+    color: '#374151',
+    fontSize: getResponsiveFontSize(12),
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    marginBottom: SPACING.md,
+    textTransform: 'none',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#e5e7eb',
     borderRadius: 8,
-    paddingHorizontal: SPACING.md,
-    backgroundColor: '#fafafa',
-    minHeight: 48,
+    paddingHorizontal: SPACING.lg,
+    backgroundColor: '#f9fafb',
+    minHeight: 52,
+    elevation: 0,
+    shadowColor: 'transparent',
   },
   input: {
     flex: 1,
     paddingVertical: SPACING.md,
-    color: '#212121',
-    fontSize: getResponsiveFontSize(13),
+    color: '#374151',
+    fontSize: getResponsiveFontSize(14),
+    fontWeight: '500',
+  },
+  inputContainerFocused: {
+    borderColor: '#d1d5db',
+    borderWidth: 1,
+    backgroundColor: '#ffffff',
+    elevation: 0,
+    shadowColor: 'transparent',
   },
   pickerContainer: {
-    paddingHorizontal: 0,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: 0,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 8,
+    backgroundColor: '#f9fafb',
+    minHeight: 52,
+    elevation: 0,
   },
   picker: {
     flex: 1,
-    color: '#212121',
+    color: '#374151',
+    height: 52,
+    backgroundColor: 'transparent',
   },
   pickerItem: {
-    fontSize: getResponsiveFontSize(13),
+    fontSize: getResponsiveFontSize(14),
+    fontWeight: '500',
+    color: '#374151',
   },
   twoColumnRow: {
     flexDirection: 'row',
-    gap: SPACING.md,
+    gap: SPACING.lg,
+    marginBottom: SPACING.lg,
   },
   signupBtn: {
     backgroundColor: '#2c3e50',
     paddingVertical: SPACING.lg,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
     marginTop: SPACING.xl,
     marginBottom: SPACING.lg,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
   },
   signupBtnDisabled: {
     opacity: 0.6,
