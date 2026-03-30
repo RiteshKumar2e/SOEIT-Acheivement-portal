@@ -20,14 +20,30 @@ import { SPACING, getResponsiveFontSize, percentWidth } from '../../utils/respon
 
 const { width } = Dimensions.get('window');
 
+// Generate random 4-digit numeric captcha code
+const generateCaptcha = () => {
+  let code = '';
+  for (let i = 0; i < 4; i++) {
+    code += Math.floor(Math.random() * 10);
+  }
+  return code;
+};
+
 const LoginScreen = ({ navigation }) => {
   const [enrollmentNo, setEnrollmentNo] = useState('');
   const [password, setPassword] = useState('');
   const [captcha, setCaptcha] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [captchaCode] = useState('4447');
+  const [captchaCode, setCaptchaCode] = useState(generateCaptcha());
   const { login } = useAuth();
+
+  // Refresh captcha function
+  const handleRefreshCaptcha = () => {
+    const newCaptcha = generateCaptcha();
+    setCaptchaCode(newCaptcha);
+    setCaptcha(''); // Clear the input field
+  };
 
   const validateForm = () => {
     if (!enrollmentNo.trim()) {
@@ -176,7 +192,7 @@ const LoginScreen = ({ navigation }) => {
                 </View>
                 <TouchableOpacity
                   style={styles.refreshBtn}
-                  onPress={() => setCaptcha('')}
+                  onPress={handleRefreshCaptcha}
                   accessible
                   accessibilityRole="button"
                   accessibilityLabel="Refresh captcha"
