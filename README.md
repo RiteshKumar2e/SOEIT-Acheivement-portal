@@ -33,7 +33,7 @@ The portal is built on a **full-stack modern architecture** (REVN Stack + React 
 | **Mobile App** | React Native + Expo | Cross-platform mobile companion app (iOS/Android) |
 | **Database** | Turso/LibSQL | Cloud SQLite with BLOB support for binary media storage |
 | **Security** | JWT + Bcrypt | Token-based auth with password hashing |
-| **Email** | Nodemailer | Transactional emails & notifications |
+| **Email** | Brevo API | REST-based email service (no SMTP needed) |
 | **File Handling** | Multer + Compression | Memory-efficient file uploads & BLOB database storage |
 
 ### Architecture Highlights:
@@ -242,38 +242,96 @@ npm install
 cp .env.example .env
 ```
 
-**Configure `backend/.env`:**
+**Detailed `backend/.env` Configuration:**
 ```env
+# ============================================
 # Server Configuration
+# ============================================
 PORT=5000
 NODE_ENV=development
+# Options: development, production, test
 
-# Database
-TURSO_URL=libsql://your-db-name-token.turso.io
-TURSO_AUTH_TOKEN=your_auth_token
+# ============================================
+# Database (Turso/LibSQL)
+# ============================================
+TURSO_URL=libsql://your-database-name-token.turso.io
+TURSO_AUTH_TOKEN=your_turso_authentication_token_here
+# Note: Keep TURSO_AUTH_TOKEN secret. Never commit to git.
+# Get from: https://turso.tech/console
 
-# Security & JWT
-JWT_SECRET=your_super_secret_key_minimum_32_chars_long
+# ============================================
+# JWT Authentication
+# ============================================
+JWT_SECRET=your_super_secret_key_minimum_32_characters_long_do_not_share
 JWT_EXPIRE=30d
+# JWT_SECRET must be at least 32 chars for security
 
-# Email Service (Gmail/SendGrid)
-SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_app_password
-SMTP_FROM=noreply@soeit.edu.in
+# ============================================
+# Email Service (Brevo/Sendinblue API)
+# ============================================
+BREVO_API_KEY=your_brevo_api_key_here
+# Get from: https://app.brevo.com/settings/account/api
+# Free tier available - no SMTP configuration needed
+FROM_NAME=SOEIT Portal
+FROM_EMAIL=noreply@soeit.edu.in
+# Email address must be verified in Brevo account
 
-# Frontend URL
+# ============================================
+# Frontend URLs
+# ============================================
 CLIENT_URL=http://localhost:5173
+# Production: https://your-frontend-domain.vercel.app
 MOBILE_APP_URL=exp://your-expo-project
+# For Expo published projects
 
-# File Upload
+# ============================================
+# File Upload Configuration
+# ============================================
 MAX_FILE_SIZE=5242880
+# 5242880 bytes = 5 MB
 ALLOWED_EXTENSIONS=pdf,jpg,jpeg,png,docx
+# Comma-separated file extensions
+
+# ============================================
+# CORS Origins (Hardcoded + env variable)
+# ============================================
+# Allowed in code:
+# - http://localhost:5173 (Frontend dev)
+# - http://localhost:3000 (Alt dev)
+# - *.vercel.app (Vercel deployments)
+# - *.onrender.com (Render deployments)
+# - ${CLIENT_URL} (from env above)
+
+# ============================================
+# Request Limits
+# ============================================
+# In code (not env): 
+# - JSON limit: 100mb
+# - URL-encoded limit: 100mb
+# - Compression level: 6 (max compression)
 ```
+
+**Backend Features:**
+- ✅ Helmet security headers enabled
+- ✅ CORS with credential support
+- ✅ Morgan logging (dev mode only)
+- ✅ Compression middleware (gzip, level 6)
+- ✅ Cookie parser for session management
+- ✅ Request size limit: 100MB
+- ✅ Health check: `GET /api/health`
+- ✅ Email via Brevo API (REST-based, not SMTP)
 
 **Start the backend:**
 ```bash
 npm run dev
 # Backend running at http://localhost:5000
+# API docs: http://localhost:5000/api/health
+```
+
+**Verify Backend is Working:**
+```bash
+curl http://localhost:5000/api/health
+# Expected response: { "success": true, "message": "SOEIT Achievements Portal API is running", "database": "Turso (LibSQL)" }
 ```
 
 ---
@@ -290,24 +348,65 @@ npm install
 cp .env.example .env
 ```
 
-**Configure `frontend/.env`:**
+**Comprehensive `frontend/.env` Configuration:**
 ```env
+# ============================================
+# Vite Configuration
+# ============================================
 VITE_API_URL=http://localhost:5000/api
+# Development: http://localhost:5000/api
+# Production: https://your-api-domain.com/api or onrender.com URL
+# Note: This is used in frontend/src/services/api.js
+
 VITE_APP_NAME=SOEIT Achievement Portal
 VITE_VERSION=2.0.0
+```
+
+**Vite Configuration Details (`vite.config.js`):**
+```javascript
+// Development Server
+- Port: 5173
+- Proxy for /api → Render backend
+- Proxy for /uploads → Backend static files
+
+// Build Optimization
+- Code splitting: vendor, utils chunks
+- Chunk size limit: 1000kb warning threshold
+- CSS code splitting: Enabled
+- Minification: Enabled (esbuild)
+- Drop console & debugger in production
+
+// Performance Optimizations
+- jquery optimization (jspdf, xlsx)
+- Lazy loading enabled
+- Tree shaking enabled
 ```
 
 **Start the development server:**
 ```bash
 npm run dev
 # Frontend running at http://localhost:5173
+# Auto-opens in browser
 ```
 
 **Build for production:**
 ```bash
 npm run build
-# Output in dist/ directory
+# Output: dist/ directory
+# Run: npm run preview (to test production build locally)
 ```
+
+**Lint code:**
+```bash
+npm run lint
+# Checks for code quality issues
+```
+
+**Production Build Details:**
+- **Output folder:** `dist/`
+- **Buildtime:** ~30-60 seconds
+- **Bundle size:** ~500KB (gzipped with optimizations)
+- **Chrome DevTools:** Console logs stripped in production
 
 ---
 
@@ -319,60 +418,159 @@ cd ../soeit-app
 # Install dependencies
 npm install
 
-# Create .env configuration
-cp .env.example .env
+# Create .env configuration (if needed)
+cp .env.example .env 2>/dev/null || echo "Using defaults"
 ```
 
-**Configure `soeit-app/.env`:**
-```env
-EXPO_PUBLIC_API_URL=http://your-backend-url/api
-EXPO_PUBLIC_APP_VERSION=1.0.0
+**Mobile App Configuration (`soeit-app/src/constants/api.js`):**
+
+The mobile app uses hardcoded API configuration for different environments:
+
+```javascript
+// ============================================
+// Local Development (Physical Device on LAN)
+// ============================================
+API_BASE_URL = 'http://192.168.1.100:5000/api'
+// Replace 192.168.1.100 with your computer's local IP
+// Find your IP: 
+// - Windows: ipconfig | findstr "IPv4"
+// - Mac/Linux: ifconfig | grep inet
+
+// ============================================
+// Android Emulator
+// ============================================
+API_BASE_URL = 'http://10.0.2.2:5000/api'
+// 10.0.2.2 is special alias for host machine in Android emulator
+
+// ============================================
+// iOS Simulator
+// ============================================
+API_BASE_URL = 'http://localhost:5000/api'
+// Or your machine's IP address
+
+// ============================================
+// Production
+// ============================================
+API_BASE_URL = 'https://soeit-acheivement-portal.onrender.com/api'
+// Use deployed backend URL
 ```
+
+**How to Find Your Local IP (for device testing):**
+```powershell
+# Windows
+ipconfig | findstr "IPv4"
+
+# Output example: IPv4 Address . . . . . . . . . : 192.168.1.100
+# Then use: http://192.168.1.100:5000/api
+```
+
+**Expo Configuration (`soeit-app/app.json`):**
+```json
+{
+  "expo": {
+    "name": "soeit-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "plugins": [
+      "expo-secure-store"  // For secure credential storage
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        // Icon configuration for Android
+      }
+    },
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    }
+  }
+}
+```
+
+**Required Assets:**
+- `assets/icon.png` — App icon (192x192)
+- `assets/splash-icon.png` — Splash screen (512x512)
+- `assets/android-icon-foreground.png` — Android adaptive icon
+- `assets/favicon.png` — Web favicon
 
 **Start Expo development server:**
 ```bash
 npm start
-# Scan QR code with Expo Go app (iOS/Android)
+# Outputs QR code for scanning with Expo Go app
+# Make sure backend is running before scanning!
 ```
 
 **Run on specific platform:**
 ```bash
-npm run android    # Android emulator/device
-npm run ios        # iOS simulator
-npm run web        # Web browser
+# Android Emulator/Device
+npm run android
+# Requires: Android SDK, emulator running, or device connected via USB
+
+# iOS Simulator (Mac only)
+npm run ios
+# Requires: Xcode, iOS SDK, Mac computer
+
+# Web Browser
+npm run web
+# Runs in browser on http://localhost:19006
 ```
 
-**Build for app stores:**
+**Build for App Stores (EAS):**
 ```bash
-# iOS
-expo build:ios
+npm install -g eas-cli
+eas login  # Sign in with Expo account
 
-# Android
-expo build:android
+# Build binaries
+eas build --platform ios
+eas build --platform android
+eas build --platform all  # Both platforms
 
-# Web
-expo export:web
+# Submit to stores
+eas submit --platform ios --latest
+eas submit --platform android --latest
+
+# Check build status
+eas build:list
 ```
 
----
-
-### 🔗 Full Stack Development (All Services)
-
-```bash
+**Local Development Workflow:**
+```powershell
 # Terminal 1: Backend
 cd backend && npm run dev
 
-# Terminal 2: Frontend  
+# Terminal 2: Frontend
 cd frontend && npm run dev
 
 # Terminal 3: Mobile App
 cd soeit-app && npm start
+
+# Scanner QR code with:
+# - Expo Go app (iOS/Android)
+# - Or press 'a' for Android, 'i' for iOS
 ```
 
-Visit:
+**Testing URLs:**
 - 🌐 **Frontend:** http://localhost:5173
 - 📡 **API:** http://localhost:5000/api
-- 📱 **Mobile:** Expo QR code in Terminal 3
+- 📱 **Mobile:** Scan QR from Terminal 3 with Expo Go
+- 🔍 **API Health Check:** http://localhost:5000/api/health
+
+---
+
+### 🔗 Full Stack Development Checklist
+
+Before starting development:
+
+- [ ] **Backend Running?** `curl http://localhost:5000/api/health` (expect success)
+- [ ] **Frontend Accessible?** http://localhost:5173 (no CSS errors)
+- [ ] **Mobile QR Scanned?** Expo app connects to backend
+- [ ] **Database Connected?** Check backend logs for "Database connected"
+- [ ] **Env Variables Set?** All three .env files configured
+- [ ] **No Port Conflicts?** Ports 5000, 5173, 19000+ are free
 
 ---
 
@@ -532,10 +730,12 @@ expo build:android
 - **Database:** Turso (LibSQL) - Cloud SQLite
 - **Authentication:** JWT (jsonwebtoken)
 - **Encryption:** Bcrypt for password hashing
-- **Email:** Nodemailer for transactional emails
+- **Email Service:** Brevo API (REST-based, replaces SMTP/Nodemailer)
 - **File Upload:** Multer with compression
 - **Caching:** node-cache for in-memory storage
 - **Utilities:** Cheerio for HTML parsing, Axios for HTTP requests
+
+**Note:** Nodemailer is listed in `package.json` but not actively used. Email functionality uses Brevo API instead.
 
 ### Frontend Stack
 - **Framework:** React 19.2
@@ -587,7 +787,97 @@ expo build:android
 
 ---
 
-## 🔒 Security Features
+## � Email Service Configuration (Brevo API)
+
+The project uses **Brevo (Sendinblue)** API for sending emails instead of traditional SMTP/Nodemailer approach. This provides better reliability, better deliverability, and scalability.
+
+### Brevo Setup Steps
+
+1. **Create Brevo Account**
+   - Go to [https://www.brevo.com/](https://www.brevo.com/)
+   - Sign up for free account (no credit card required for free tier)
+   - Get **10 free emails per day** on free plan
+
+2. **Get API Key**
+   - Login to Brevo Dashboard
+   - Go to **Settings → Account → API**
+   - Create new API key (token)
+   - Copy and add to `backend/.env` as `BREVO_API_KEY`
+
+3. **Verify Sender Email**
+   - Go to **Senders & IP**
+   - Add verified sender email address
+   - Brevo will send verification email
+   - Confirm to whitelist the email
+   - Use this email in `FROM_EMAIL` env variable
+
+4. **Configure Environment Variables**
+   ```env
+   BREVO_API_KEY=your_api_key_from_step_2
+   FROM_NAME=SOEIT Portal
+   FROM_EMAIL=your_verified_email@domain.com
+   ```
+
+### How Emails Work
+
+**Email Service Location:** `backend/src/utils/sendEmail.js`
+
+**Features:**
+- ✅ Automatic fallback to console logging if API key missing
+- ✅ Supports single recipient emails
+- ✅ Supports bulk emails (BCC mode for privacy)
+- ✅ HTML & text content
+- ✅ Error handling with Brevo error codes
+- ✅ Message ID tracking
+
+**Triggers for Emails:**
+- User registration & verification
+- Password reset requests
+- Achievement verification notifications
+- Faculty notices to students
+- Admin alerts
+
+### Email Template
+
+**Template Location:** `backend/src/utils/emailTemplates.js`
+
+**Features:**
+- Professional corporate design
+- Responsive HTML email format
+- Status badges (success, error, info)
+- CTA button support
+- Branding with AJU logo
+- Dark header (#002147) matching brand
+
+### Testing Emails in Development
+
+```bash
+# Without API key - emails print to console
+❌ [BREVO] API Key missing. Skipping email send.
+--- MAIL SIMULATION ---
+To: student@example.com
+Subject: Your Email Subject
+
+# With API key - real emails sent to Brevo
+✅ [BREVO] Successfully sent. Message ID: <12345-67890>
+```
+
+### Free Plan Limitations
+
+- **Free Tier:** 10 emails/day
+- **Paid Plans:** Starting from €20/month with unlimited emails
+- **Recommended:** Upgrade when at ~5+ emails/day
+
+### Migration from Nodemailer
+
+If you need to switch back to Nodemailer/SMTP:
+1. Update `sendEmail.js` to use Nodemailer instead of Brevo fetch
+2. Change env variables back to SMTP_USER, SMTP_PASS
+3. Remove BREVO_API_KEY
+
+---
+
+
 
 ✅ **JWT Authentication** — Secure token-based access control
 ✅ **Role-Based Access Control (RBAC)** — Student/Faculty/Admin permissions
