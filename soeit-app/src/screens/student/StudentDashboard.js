@@ -30,14 +30,18 @@ const StudentDashboard = ({ navigation }) => {
   const fetchStats = useCallback(async () => {
     try {
       const res = await api.get('/achievements/my');
-      const achs = res.data.achievements || [];
+      const achs = res.data.data || [];
       setStats({
-        verified: achs.filter(a => a.status === 'verified').length,
+        verified: achs.filter(a => a.status === 'approved' || a.status === 'verified').length,
         pending: achs.filter(a => a.status === 'pending').length,
         total: achs.length,
       });
     } catch (error) {
-      // Silent fail, keep empty state
+      console.warn('Dashboard stats fetch failed:', error.message);
+      // Fallback for demo mode or unauthorized access
+      if (stats.total === 0) {
+        setStats({ verified: 0, pending: 0, total: 0 });
+      }
     }
   }, []);
 

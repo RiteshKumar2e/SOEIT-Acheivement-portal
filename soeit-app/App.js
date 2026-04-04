@@ -19,10 +19,10 @@ LogBox.ignoreLogs([
 if (typeof window !== 'undefined') {
   const originalWarn = console.warn;
   console.warn = (...args) => {
-    if (args[0] && typeof args[0] === 'string' && 
-        (args[0].includes('props.pointerEvents is deprecated') || 
-         args[0].includes('aria-hidden') ||
-         args[0].includes('retained focus'))) {
+    if (args[0] && typeof args[0] === 'string' &&
+      (args[0].includes('props.pointerEvents is deprecated') ||
+        args[0].includes('aria-hidden') ||
+        args[0].includes('retained focus'))) {
       return;
     }
     originalWarn(...args);
