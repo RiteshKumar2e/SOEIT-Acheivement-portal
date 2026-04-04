@@ -59,10 +59,10 @@ const PublicNavbar = () => {
 
                     {/* Auth Actions */}
                     <div className="nav-cta-group">
-                        <Link to="/login" className="btn btn-secondary btn-sm rounded-md px-6 font-bold">
+                        <Link to="/login" className="btn btn-secondary btn-md rounded-lg px-8 py-3 font-bold text-[15px]">
                             Sign In
                         </Link>
-                        <Link to="/register" className="btn btn-primary btn-sm rounded-md px-6 bg-brand-600 border-none font-bold">
+                        <Link to="/register" className="btn btn-primary btn-md rounded-lg px-8 py-3 bg-brand-900 border-none font-bold text-[15px] shadow-lg hover:scale-105 transition-transform">
                             Register
                         </Link>
 

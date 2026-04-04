@@ -7,6 +7,8 @@ import {
     FileDown, Layout, MessageSquare, Trophy, UserCheck, FileSearch, History,
     ClipboardList, BarChart3, Zap
 } from 'lucide-react';
+import Footer from '../../components/common/Footer';
+import ScrollToTopButton from '../../components/common/ScrollToTopButton';
 import '../../styles/pages/public/UserManual.css';
 
 const UserManual = () => {
@@ -451,6 +453,8 @@ const UserManual = () => {
                     </div>
                 </div>
             </section>
+            <Footer />
+            <ScrollToTopButton />
         </div>
     );
 };

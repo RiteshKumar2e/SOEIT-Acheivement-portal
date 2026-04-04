@@ -3,6 +3,7 @@ import '../../styles/pages/public/LandingPage.css';
 import { Link } from 'react-router-dom';
 import PublicNavbar from '../../components/common/PublicNavbar';
 import Footer from '../../components/common/Footer';
+import ScrollToTopButton from '../../components/common/ScrollToTopButton';
 import {
     Trophy, Shield, BarChart3, CircleCheck,
     Users, Star, ArrowRight, ArrowLeft, Zap, Globe, Award, BookOpen, Clock, GraduationCap, FileCheck, Briefcase, ChevronDown,
@@ -10,7 +11,7 @@ import {
 } from 'lucide-react';
 
 const quickLinks = [
-    { title: 'Hackathons', icon: Trophy, color: '#ff6b6b' },
+    { title: 'Hackathons', icon: 'https://img.icons8.com/?size=100&id=wgH2Qk7mFnEl&format=png&color=ff6b6b', color: '#ff6b6b' },
     { title: 'Coding', icon: Terminal, color: '#4facfe' },
     { title: 'Internships', icon: Briefcase, color: '#00f2fe' },
     { title: 'Mentorship', icon: Users, color: '#f093fb' },
@@ -229,10 +230,29 @@ const testimonials = [
     { quote: "We are documenting a revolution in engineering education, one verified achievement at a time.", author: "Principal SOEIT", role: "NAAC A Accredited University", initial: "P" }
 ];
 
+const heroImages = [
+    "https://arkajainuniversity.ac.in/wp-content/uploads/2023/01/1-2.jpg",
+    "https://arkajainuniversity.ac.in/wp-content/uploads/2023/05/9-3.jpg",
+    "https://arkajainuniversity.ac.in/wp-content/uploads/2022/10/11.jpg",
+    "https://arkajainuniversity.ac.in/wp-content/uploads/2022/10/13.jpg",
+    "https://arkajainuniversity.ac.in/wp-content/uploads/2020/11/8-5.jpg",
+    "https://arkajainuniversity.ac.in/wp-content/uploads/2022/05/9-2.jpg"
+];
+
 const LandingPage = () => {
     const [activeFaq, setActiveFaq] = useState(null);
     const [activeTestimonial, setActiveTestimonial] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
+    const [currentImg, setCurrentImg] = useState(0);
+
+    // Auto-rotate hero images every 5s
+    useEffect(() => {
+        if (isPaused) return;
+        const timer = setInterval(() => {
+            setCurrentImg((prev) => (prev + 1) % heroImages.length);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, [isPaused]);
 
     // Warm up backend on mount to avoid Render cold-start lag during login
     useEffect(() => {
@@ -277,14 +297,15 @@ const LandingPage = () => {
         <div className="landing-page">
             <PublicNavbar />
 
-            {/* Hero Section - Split Layout (Devpost Style) */}
+            {/* Hero Section - Static Content + Visual Slideshow */}
             <section className="hero-section">
                 <div className="hero-mesh" />
+                <div className="hero-glow" />
 
                 <div className="container hero-container">
                     <div className="hero-content">
                         <div className="hero-badge">
-                            <Shield size={14} />
+                            <Shield size={14} className="text-brand-600" />
                             <span className="hero-badge-text">Official SOEIT Student Portal</span>
                         </div>
 
@@ -294,49 +315,63 @@ const LandingPage = () => {
                         </h1>
 
                         <p className="hero-subtitle">
-                            Arka Jain University's (NAAC A Accredited) premier hub for tracking academic milestones, technical certifications, and global competition wins.
+                            The premier hub for School of Engineering & IT (NAAC A) to track academic milestones, global competition wins, and professional growth.
                         </p>
 
-                        <div className="flex gap-4">
-                            <Link to="/login" className="btn btn-primary btn-lg rounded-xl px-10 shadow-2xl hover:scale-105 transition-transform bg-brand-600 border-none">
-                                Explore Opportunities
+                        <div className="flex gap-4 items-center">
+                            <Link to="/login" className="btn btn-primary btn-lg rounded-xl px-10 shadow-2xl hover:scale-105 transition-transform bg-brand-900 border-none flex items-center gap-2">
+                                Explore Opportunities <ArrowRight size={18} />
                             </Link>
-                            <Link to="/register" className="btn btn-secondary btn-lg rounded-xl px-10 border-gray-200">
+                            <Link to="/register" className="btn btn-secondary btn-lg rounded-xl px-10 border-gray-200 hover:bg-gray-50 text-gray-700 font-bold">
                                 Register Now
                             </Link>
+                        </div>
+
+                        <div className="mt-10 flex items-center gap-6">
+                            <div className="flex -space-x-3">
+                                {[1, 2, 3, 4].map((i) => (
+                                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
+                                        <img src={`https://i.pravatar.cc/100?img=${i + 15}`} alt="User" />
+                                    </div>
+                                ))}
+                                <div className="w-10 h-10 rounded-full border-2 border-white bg-brand-600 flex items-center justify-center text-[10px] text-white font-bold">
+                                    +5k
+                                </div>
+                            </div>
+                            <div className="text-sm font-medium text-gray-500">
+                                <span className="text-gray-900 font-bold">7,000+</span> Enrolled Students
+                            </div>
                         </div>
                     </div>
 
                     <div className="hero-visual desktop-only-hero">
-                        <div className="hero-main-card">
-                            <div className="flex items-center justify-between mb-8">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 font-bold border border-brand-100">RK</div>
-                                    <div>
-                                        <div className="font-bold text-gray-900">Ritesh Kumar</div>
-                                        <div className="text-xs text-gray-500">B.Tech | 4th Year</div>
+                        <div
+                            className="hero-collage"
+                            onMouseEnter={() => setIsPaused(true)}
+                            onMouseLeave={() => setIsPaused(false)}
+                        >
+                            {/* Visual Slider - Nested in Collage Space */}
+                            <div className="hero-main-img-slider">
+                                {heroImages.map((img, idx) => (
+                                    <img
+                                        key={idx}
+                                        src={img}
+                                        alt={`University Preview ${idx + 1}`}
+                                        className={`hero-main-img ${currentImg === idx ? 'active' : ''}`}
+                                    />
+                                ))}
+                                
+                                {heroImages.length > 1 && (
+                                    <div className="hero-img-indicators">
+                                        {heroImages.map((_, idx) => (
+                                            <div 
+                                                key={idx} 
+                                                className={`hero-img-dot ${currentImg === idx ? 'active' : ''}`}
+                                                onClick={() => setCurrentImg(idx)}
+                                            />
+                                        ))}
                                     </div>
-                                </div>
-                                <Award className="text-accent-gold" size={24} />
-                            </div>
-                            <div className="space-y-5">
-                                <div className="flex justify-between items-end">
-                                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Level 12 Architect</span>
-                                    <span className="text-brand-600 font-black">2,450 XP</span>
-                                </div>
-                                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                                    <div className="h-full bg-brand-600 rounded-full" style={{ width: '75%' }}></div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4 pt-2">
-                                    <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-                                        <div className="text-[10px] text-gray-400 font-bold uppercase">Hackathons</div>
-                                        <div className="text-lg font-black text-gray-900">08</div>
-                                    </div>
-                                    <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-                                        <div className="text-[10px] text-gray-400 uppercase">Projects</div>
-                                        <div className="text-lg font-black text-gray-900">14</div>
-                                    </div>
-                                </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -348,11 +383,20 @@ const LandingPage = () => {
                 <div className="container">
                     <div className="quick-access-grid">
                         {quickLinks.map((link, idx) => {
-                            const Icon = link.icon;
+                            const isUrlIcon = typeof link.icon === 'string';
+                            const Icon = !isUrlIcon ? link.icon : null;
                             return (
                                 <div key={idx} className="quick-card">
                                     <div className="quick-icon" style={{ background: `${link.color}10`, color: link.color }}>
-                                        <Icon size={24} />
+                                        {isUrlIcon ? (
+                                            <img 
+                                                src={link.icon} 
+                                                alt={link.title} 
+                                                className="quick-img-icon"
+                                            />
+                                        ) : (
+                                            <Icon size={24} />
+                                        )}
                                     </div>
                                     <span className="quick-label">{link.title}</span>
                                 </div>
@@ -570,26 +614,47 @@ const LandingPage = () => {
                         <h2 className="text-3xl font-bold mb-4 text-gray-900">Connected to the <span className="text-brand-600">Global Tech Ecosystem</span></h2>
                         <p className="text-gray-500 max-w-2xl mx-auto">We integrate with industry-leading platforms to ensure your achievements are recognized beyond the university campus.</p>
                     </div>
-                    <div className="ecosystem-grid">
-                        <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item text-github">
-                            <Github size={24} />
-                            <span>GitHub</span>
+                </div>
+
+                <div className="ecosystem-marquee-container">
+                    <div className="ecosystem-reel">
+                        {/* Original Set */}
+                        <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="GitHub">
+                            <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/github-icon.png" alt="GitHub" className="ecosystem-logo" />
                         </a>
-                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item text-linkedin">
-                            <Linkedin size={24} />
-                            <span>LinkedIn</span>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="LinkedIn">
+                            <img src="https://miro.medium.com/1*kBWo_GWrG58h28kDHwnBfg.png" alt="LinkedIn" className="ecosystem-logo" />
                         </a>
-                        <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item text-leetcode">
-                            <Code size={24} />
-                            <span>LeetCode</span>
+                        <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="LeetCode">
+                            <img src="https://media.licdn.com/dms/image/v2/D5612AQH_wBNAqIO3Lw/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1685507296579?e=2147483647&v=beta&t=zFLpkUROoe9YkiZI9ItntjlY--lM92X6_HhlfaZPS2U" alt="LeetCode" className="ecosystem-logo logo-leetcode" />
                         </a>
-                        <a href="https://coursera.org" target="_blank" rel="noopener noreferrer" className="ecosystem-item text-coursera">
-                            <GraduationCap size={24} />
-                            <span>Coursera</span>
+                        <a href="https://coursera.org" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="Coursera">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Coursera_logo_%282020%29.svg/3840px-Coursera_logo_%282020%29.svg.png" alt="Coursera" className="ecosystem-logo" />
                         </a>
-                        <a href="https://hackerrank.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item text-hackerrank">
-                            <Terminal size={24} />
-                            <span>HackerRank</span>
+                        <a href="https://hackerrank.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="HackerRank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/6/65/HackerRank_logo.png" alt="HackerRank" className="ecosystem-logo" />
+                        </a>
+                        <a href="https://geeksforgeeks.org" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="GeeksForGeeks">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/GeeksForGeeks_logo.png" alt="GeeksForGeeks" className="ecosystem-logo" />
+                        </a>
+                        {/* Duplicate Set for Infinite Scroll */}
+                        <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="GitHub">
+                            <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/github-icon.png" alt="GitHub" className="ecosystem-logo" />
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="LinkedIn">
+                            <img src="https://miro.medium.com/1*kBWo_GWrG58h28kDHwnBfg.png" alt="LinkedIn" className="ecosystem-logo" />
+                        </a>
+                        <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="LeetCode">
+                            <img src="https://media.licdn.com/dms/image/v2/D5612AQH_wBNAqIO3Lw/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1685507296579?e=2147483647&v=beta&t=zFLpkUROoe9YkiZI9ItntjlY--lM92X6_HhlfaZPS2U" alt="LeetCode" className="ecosystem-logo logo-leetcode" />
+                        </a>
+                        <a href="https://coursera.org" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="Coursera">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Coursera_logo_%282020%29.svg/3840px-Coursera_logo_%282020%29.svg.png" alt="Coursera" className="ecosystem-logo" />
+                        </a>
+                        <a href="https://hackerrank.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="HackerRank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/6/65/HackerRank_logo.png" alt="HackerRank" className="ecosystem-logo" />
+                        </a>
+                        <a href="https://geeksforgeeks.org" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="GeeksForGeeks">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/GeeksForGeeks_logo.png" alt="GeeksForGeeks" className="ecosystem-logo" />
                         </a>
                     </div>
                 </div>
@@ -598,12 +663,12 @@ const LandingPage = () => {
             {/* Support & Manual CTA */}
             <section className="py-20 bg-white">
                 <div className="container">
-                    <div className="cta-support-card">
+                    <div className="cta-support-card cta-education-theme">
                         {/* Decorative Circles */}
                         <div className="cta-circle-top"></div>
                         <div className="cta-circle-bottom"></div>
 
-                        <div className="relative z-10">
+                        <div className="relative z-10 text-center flex flex-col items-center">
                             <div className="cta-support-badge">
                                 <CircleHelp size={16} /> Need Assistance?
                             </div>
@@ -613,7 +678,7 @@ const LandingPage = () => {
                             <p className="cta-support-desc">
                                 Explore our comprehensive user guide to master the achievement verification workflow or reach out to our support team for any technical help.
                             </p>
-                            <div className="flex justify-center">
+                            <div className="flex justify-center mt-8">
                                 <Link to="/manual" className="btn btn-secondary btn-lg rounded-md px-10 bg-white text-brand-600 border-none hover:bg-brand-50 shadow-lg flex items-center gap-3 font-bold text-lg">
                                     <BookOpen size={22} /> View User Guide
                                 </Link>
@@ -624,6 +689,7 @@ const LandingPage = () => {
             </section>
 
             <Footer />
+            <ScrollToTopButton />
         </div>
     );
 };

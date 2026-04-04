@@ -114,16 +114,20 @@
     /* Ensures buttons stick to the right edge */
 }
 
+.nav-cta-group .btn {
+    font-size: 0.95rem; /* Slightly larger base */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .nav-cta-group .btn-secondary {
-    border: 2px solid var(--brand-600);
-    color: var(--brand-600);
+    border: 2px solid var(--brand-900);
+    color: var(--brand-900);
     background: transparent;
-    transition: all 0.3s ease;
 }
 
 .nav-cta-group .btn-secondary:hover {
-    background: var(--brand-50);
-    transform: translateY(-1px);
+    background: rgba(0, 21, 71, 0.05); /* Very subtle tint */
+    transform: translateY(-2px);
 }
 
 @media (max-width: 1024px) {

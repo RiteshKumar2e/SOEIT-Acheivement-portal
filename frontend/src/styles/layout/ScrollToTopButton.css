@@ -18,8 +18,8 @@
 .scroll-to-top button {
     width: 2.75rem;
     height: 2.75rem;
-    background-color: var(--brand-600);
-    color: white;
+    background-color: var(--brand-600); /* Original Navy Background */
+    color: #ffffff; /* Original White Arrow */
     border: none;
     border-radius: 50%;
     cursor: pointer;
@@ -27,13 +27,25 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
-    transition: all 0.3s ease;
+    transition: background-color 0.4s ease, color 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .scroll-to-top button:hover {
     background-color: var(--brand-700);
     transform: translateY(-5px);
     box-shadow: 0 15px 30px -5px rgba(59, 130, 246, 0.5);
+}
+
+/* Specific styling for the Footer area only */
+.scroll-to-top.in-footer button {
+    background-color: #ffffff; /* Turns White in footer as requested */
+    color: var(--brand-600); /* Arrow turns Navy (the original circle color) */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.scroll-to-top.in-footer button:hover {
+    background-color: #f8fafc;
+    color: var(--brand-700);
 }
 
 @media (max-width: 768px) {
