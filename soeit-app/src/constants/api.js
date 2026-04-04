@@ -2,13 +2,8 @@ import { Platform } from 'react-native';
 
 const IP_ADDRESS = '192.168.1.100'; // Replace this with your current IPv4 from ipconfig
 
-// API URL - Uses localhost/IP for development, production for release builds
-const PRODUCTION_URL = 'https://soeit-acheivement-portal.onrender.com/api';
-const LOCAL_URL = Platform.OS === 'web'
-  ? 'http://localhost:5000/api'
-  : `http://${IP_ADDRESS}:5000/api`;
-
-export const API_BASE_URL = __DEV__ ? LOCAL_URL : PRODUCTION_URL;
+// API URL
+export const API_BASE_URL = 'https://soeit-acheivement-portal.onrender.com/api';
 
 // For Android/iOS local network: 'http://<YOUR_LOCAL_IP>:5000/api'
 // For Android emulator: 'http://10.0.2.2:5000/api'
