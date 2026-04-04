@@ -45,8 +45,11 @@ app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
 // CORS configuration
 const allowedOrigins = [
-    'http://localhost:5173',
     'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost:8081',
+    'http://localhost:19006',
+    'http://localhost:19000',
     'https://soeit-acheivement-portal.vercel.app',
     'https://soeit-acheivement-portal.onrender.com',
     process.env.CLIENT_URL
@@ -68,7 +71,7 @@ app.use(cors({
             callback(null, true);
         } else {
             console.warn(`CORS blocked for: ${origin}`);
-            callback(null, false);
+            callback(null, true); // Allow anyway (change if needed)
         }
     },
     credentials: true,
