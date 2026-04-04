@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { LinearGradient } from 'expo-linear-gradient';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { COLORS } from '../../constants/colors';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
@@ -32,6 +33,29 @@ const UploadAchievement = ({ navigation }) => {
   });
   const [certificate, setCertificate] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const formatDateToDisplay = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const handleDateChange = (event, selectedDate) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+    if (selectedDate) {
+      const dateString = selectedDate.toISOString().split('T')[0];
+      updateForm('date', dateString);
+    }
+  };
+
+  const handleDatePickerPress = () => {
+    setShowDatePicker(true);
+  };
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -129,12 +153,42 @@ const UploadAchievement = ({ navigation }) => {
             ))}
           </View>
 
-          <Input
-            label="Date of Achievement"
-            placeholder="YYYY-MM-DD"
-            value={formData.date}
-            onChangeText={(v) => updateForm('date', v)}
-          />
+          <Text style={styles.label}>Date of Achievement</Text>
+          <TouchableOpacity 
+            style={styles.dateInput}
+            onPress={handleDatePickerPress}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="calendar-outline" size={20} color={COLORS.primary} style={styles.dateIcon} />
+            <Text style={styles.dateText}>{formatDateToDisplay(formData.date)}</Text>
+          </TouchableOpacity>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={new Date(formData.date)}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={handleDateChange}
+              maximumDate={new Date()}
+            />
+          )}
+
+          {Platform.OS === 'ios' && showDatePicker && (
+            <View style={styles.datePickerButtons}>
+              <TouchableOpacity 
+                style={styles.cancelBtn}
+                onPress={() => setShowDatePicker(false)}
+              >
+                <Text style={styles.cancelBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.confirmBtn}
+                onPress={() => setShowDatePicker(false)}
+              >
+                <Text style={styles.confirmBtnText}>Done</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           <Input
             label="Additional Notes (Optional)"
@@ -242,6 +296,55 @@ const styles = StyleSheet.create({
   },
   chipTextActive: {
     color: COLORS.primary,
+  },
+  dateInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    backgroundColor: COLORS.bgInput,
+    marginBottom: 16,
+  },
+  dateIcon: {
+    marginRight: 12,
+  },
+  dateText: {
+    fontSize: 16,
+    color: COLORS.textPrimary,
+    fontWeight: '500',
+  },
+  datePickerButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginBottom: 16,
+  },
+  cancelBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: COLORS.border,
+    alignItems: 'center',
+  },
+  cancelBtnText: {
+    color: COLORS.textSecondary,
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  confirmBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+  },
+  confirmBtnText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
   },
   uploadBox: {
     width: '100%',

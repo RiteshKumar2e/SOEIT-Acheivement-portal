@@ -1,8 +1,8 @@
 import { Platform } from 'react-native';
 
 const IP_ADDRESS = '192.168.1.100'; // Replace this with your current IPv4 from ipconfig
-export const API_BASE_URL = Platform.OS === 'web' 
-  ? 'http://localhost:5000/api' 
+export const API_BASE_URL = Platform.OS === 'web'
+  ? 'https://soeit-backend.onrender.com/api'
   : `http://${IP_ADDRESS}:5000/api`;
 
 // For emulator use: 'http://10.0.2.2:5000/api'
