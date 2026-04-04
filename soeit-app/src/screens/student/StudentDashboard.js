@@ -147,7 +147,7 @@ const StudentDashboard = ({ navigation }) => {
         </View>
         <TouchableOpacity
           style={styles.uploadBtn}
-          onPress={() => navigation.navigate('AchievementAdd')}
+          onPress={() => navigation.navigate('Upload')}
         >
           <Ionicons name="arrow-up" size={16} color="#fff" />
           <Text style={styles.uploadBtnText}>Upload New</Text>
