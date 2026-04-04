@@ -21,23 +21,13 @@ import api from '../../services/api';
 const { width } = Dimensions.get('window');
 
 const StudentDashboard = ({ navigation }) => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState({ verified: 0, pending: 0, total: 0 });
   const [trending, setTrending] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
 
   const fetchStats = useCallback(async () => {
-    // 🚨 If in demo mode, use mock data instead of real API call to avoid 401 Unauthorized 🚨
-    if (token === 'demo-token-123') {
-      setStats({
-        verified: 2,
-        pending: 1,
-        total: 3,
-      });
-      return;
-    }
-
     try {
       const res = await api.get('/achievements/my');
       const achs = res.data.data || [];
@@ -50,7 +40,7 @@ const StudentDashboard = ({ navigation }) => {
       console.warn('Dashboard stats fetch failed:', error.message);
       if (stats.total === 0) setStats({ verified: 0, pending: 0, total: 0 });
     }
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     fetchStats();
@@ -226,15 +216,7 @@ const StudentDashboard = ({ navigation }) => {
           <Text style={styles.statMeta}>Awaiting Review</Text>
         </View>
 
-        <View style={styles.statBox}>
-          <View style={[styles.statIconBox, { backgroundColor: '#ede9fe' }]}>
-            <Ionicons name="ribbon" size={24} color="#a855f7" />
-          </View>
-          <Text style={styles.statValue}>10</Text>
-          <Text style={styles.statLabel}>TOTAL</Text>
-          <Text style={styles.statLabel}>POINTS</Text>
-          <Text style={styles.statMeta}>Accumulated Score</Text>
-        </View>
+
       </View>
 
       {/* Campus Events Section */}

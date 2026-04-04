@@ -62,14 +62,10 @@ const StudentProjectsPage = () => {
   const fetchProjects = useCallback(async () => {
     try {
       const res = await api.get('/projects');
-      setProjects(res.data.projects || []);
+      setProjects(res.data.data || res.data.projects || []);
     } catch (error) {
-      console.error('Fetch projects error:', error);
-      // Fallback for demo
-      setProjects([
-        { id: 1, title: 'Smart Attendance System', techStack: 'Python, OpenCV, Flutter', status: 'Completed', year: 'Final Year' },
-        { id: 2, title: 'SOEIT Portal Mobile App', techStack: 'React Native, Expo, LibSQL', status: 'Active', year: 'Sem 6' },
-      ]);
+      // API connection failed silently - show empty state
+      setProjects([]);
     } finally {
       setLoading(false);
       setRefreshing(false);

@@ -64,14 +64,10 @@ const StudentCoursesPage = () => {
   const fetchCourses = useCallback(async () => {
     try {
       const res = await api.get('/courses');
-      setCourses(res.data.courses || []);
+      setCourses(res.data.data || res.data.courses || []);
     } catch (error) {
-      console.error('Fetch courses error:', error);
-      // Fallback for demo
-      setCourses([
-        { id: 1, name: 'Machine Learning Advanced', instructor: 'Prof. Sharma', progress: 85, credits: 4, code: 'AI-401' },
-        { id: 2, name: 'Cloud Computing & Security', instructor: 'Dr. Verma', progress: 40, credits: 3, code: 'CS-302' },
-      ]);
+      // API connection failed silently - show empty state
+      setCourses([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
