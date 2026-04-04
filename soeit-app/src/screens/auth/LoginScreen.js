@@ -186,17 +186,19 @@ const LoginScreen = ({ navigation }) => {
             <View style={styles.fieldGroup}>
               <Text style={styles.fieldLabel}>SECURITY CHECK</Text>
               <View style={styles.captchaContainer}>
-                <TextInput
-                  style={[styles.input, styles.captchaInput]}
-                  placeholder="Captcha code"
-                  placeholderTextColor="#b0bec5"
-                  value={captcha}
-                  onChangeText={setCaptcha}
-                  editable={!loading}
-                  accessible
-                  accessibilityLabel="Captcha code"
-                  accessibilityHint="Enter the captcha code shown in the image"
-                />
+                <View style={[styles.inputContainer, { flex: 1 }]}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Captcha code"
+                    placeholderTextColor="#b0bec5"
+                    value={captcha}
+                    onChangeText={setCaptcha}
+                    editable={!loading}
+                    accessible
+                    accessibilityLabel="Captcha code"
+                    accessibilityHint="Enter the captcha code shown in the image"
+                  />
+                </View>
                 <View style={styles.captchaBox}>
                   <Text style={styles.captchaText}>{captchaCode}</Text>
                 </View>
