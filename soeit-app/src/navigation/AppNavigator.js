@@ -59,9 +59,8 @@ const StudentTabs = () => (
       tabBarInactiveTintColor: COLORS.textMuted,
       headerStyle: {
         backgroundColor: COLORS.bgSecondary,
-        elevation: 0,
-        boxShadow: 'none',
       },
+      headerShadowVisible: false,
       headerTintColor: COLORS.textPrimary,
       headerRight: () => <LogoutButton />,
     }}

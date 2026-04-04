@@ -151,7 +151,7 @@ const RegisterScreen = ({ navigation }) => {
           {/* Back to Home Button */}
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate('Welcome')}
             accessible
             accessibilityRole="button"
             accessibilityLabel="Back to Home"
@@ -565,8 +565,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 20,
     padding: SPACING.xl + SPACING.lg,
-    elevation: 1,
-    boxShadow: '0 1px 6px rgba(0, 0, 0, 0.02)',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
     borderWidth: 0.8,
     borderColor: '#f3f4f6',
   },
@@ -623,8 +626,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
     backgroundColor: '#f9fafb',
     minHeight: 52,
-    elevation: 0,
-    boxShadow: 'none',
   },
   input: {
     flex: 1,
@@ -637,8 +638,6 @@ const styles = StyleSheet.create({
     borderColor: '#d1d5db',
     borderWidth: 1,
     backgroundColor: '#ffffff',
-    elevation: 0,
-    boxShadow: 'none',
   },
   pickerContainer: {
     paddingHorizontal: SPACING.lg,
@@ -649,7 +648,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#f9fafb',
     minHeight: 52,
-    elevation: 0,
   },
   picker: {
     flex: 1,
@@ -674,8 +672,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: SPACING.xl,
     marginBottom: SPACING.lg,
-    elevation: 1,
-    boxShadow: '0 1px 4px rgba(0, 0, 0, 0.03)',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   signupBtnDisabled: {
     opacity: 0.6,

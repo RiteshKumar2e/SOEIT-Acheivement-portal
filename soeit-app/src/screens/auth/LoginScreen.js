@@ -36,7 +36,7 @@ const LoginScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [captchaCode, setCaptchaCode] = useState(generateCaptcha());
-  const { login } = useAuth();
+  const { login, loginDemo } = useAuth();
 
   // Refresh captcha function
   const handleRefreshCaptcha = () => {
@@ -80,6 +80,17 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
+  const handleDemoLogin = async () => {
+    setLoading(true);
+    try {
+      await loginDemo('student');
+    } catch (error) {
+      Alert.alert('Demo Error', 'Failed to use demo login.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
@@ -94,7 +105,7 @@ const LoginScreen = ({ navigation }) => {
           {/* Back to Home Button */}
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate('Welcome')}
             accessible
             accessibilityRole="button"
             accessibilityLabel="Back to Home"
@@ -229,6 +240,18 @@ const LoginScreen = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
 
+            {/* Demo Login Button */}
+            <TouchableOpacity
+              style={styles.demoBtn}
+              onPress={handleDemoLogin}
+              disabled={loading}
+              accessible
+              accessibilityRole="button"
+              accessibilityLabel="Demo login button"
+            >
+              <Text style={styles.demoBtnText}>QUICK DEMO LOGIN</Text>
+            </TouchableOpacity>
+
             {/* Sign Up Link */}
             <View style={styles.signupContainer}>
               <Text style={styles.signupText}>Don't have an account?{' '}</Text>
@@ -351,7 +374,10 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: SPACING.xl,
     elevation: 3,
-    boxShadow: '0px 2px 8px 0px rgba(0, 0, 0, 0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   fieldGroup: {
     marginBottom: SPACING.xl,
@@ -420,6 +446,22 @@ const styles = StyleSheet.create({
     fontSize: getResponsiveFontSize(14),
     fontWeight: '700',
     letterSpacing: 1,
+  },
+  demoBtn: {
+    backgroundColor: 'transparent',
+    paddingVertical: SPACING.md,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
+    borderWidth: 1,
+    borderColor: '#2c3e50',
+    borderStyle: 'dashed',
+  },
+  demoBtnText: {
+    color: '#2c3e50',
+    fontSize: getResponsiveFontSize(12),
+    fontWeight: '600',
+    letterSpacing: 1.5,
   },
   signupContainer: {
     flexDirection: 'row',
