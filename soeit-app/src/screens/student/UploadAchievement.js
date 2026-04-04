@@ -140,10 +140,17 @@ const UploadAchievement = ({ navigation }) => {
             label="Additional Notes (Optional)"
             placeholder="Describe your achievement..."
             multiline
-            numberOfLines={4}
+            numberOfLines={5}
             value={formData.description}
             onChangeText={(v) => updateForm('description', v)}
-            inputStyle={{ height: 100, textAlignVertical: 'top', paddingTop: 12 }}
+            inputStyle={{ 
+              height: 120, 
+              textAlignVertical: 'top', 
+              paddingTop: 14,
+              paddingBottom: 14,
+              fontSize: 15,
+              lineHeight: 22,
+            }}
           />
 
           <Text style={styles.label}>Upload Certificate</Text>
