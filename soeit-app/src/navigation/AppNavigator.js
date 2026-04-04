@@ -1,7 +1,7 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 import { useAuth } from '../context/AuthContext';
@@ -32,179 +32,232 @@ import FacultyManagementScreen from '../screens/admin/FacultyManagementScreen';
 import BroadcastNoticeScreen from '../screens/shared/BroadcastNoticeScreen';
 
 const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
-const LogoutButton = () => {
-  const { logout } = useAuth();
-  return (
-    <TouchableOpacity onPress={logout} style={{ marginRight: 15 }}>
-      <Ionicons name="log-out-outline" size={24} color={COLORS.textPrimary} />
-    </TouchableOpacity>
-  );
-};
+const Drawer = createDrawerNavigator();
 
-const TabIcon = ({ name, color, size }) => (
+const DrawerIcon = ({ name, color, size }) => (
   <Ionicons name={name} size={size} color={color} />
 );
 
-const StudentTabs = () => (
-  <Tab.Navigator
+const CustomDrawerContent = (props) => {
+  const { logout, user } = useAuth();
+  const navigation = props.navigation;
+
+  const DrawerSectionHeader = ({ title }) => (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionHeaderText}>{title}</Text>
+    </View>
+  );
+
+  const CustomDrawerItem = ({ label, icon, screenName, active }) => (
+    <TouchableOpacity 
+      style={[styles.drawerItem, active && styles.drawerItemActive]} 
+      onPress={() => navigation.navigate(screenName)}
+    >
+      <Ionicons name={icon} size={22} color={active ? COLORS.primary : COLORS.textMuted} style={styles.drawerItemIcon} />
+      <Text style={[styles.drawerItemLabel, active && styles.drawerItemLabelActive]}>{label}</Text>
+    </TouchableOpacity>
+  );
+
+  const activeRouteName = props.state?.routeNames[props.state?.index] || 'Dashboard';
+
+  return (
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      {/* Sidebar Header */}
+      <View style={styles.drawerHeader}>
+        <View style={styles.logoContainer}>
+          <View style={styles.logoCircle}>
+            <Ionicons name="school" size={24} color="#fff" />
+          </View>
+          <View>
+            <Text style={styles.logoText}>SOEIT</Text>
+            <Text style={styles.logoSubText}>ACHIEVEMENT PORTAL</Text>
+          </View>
+        </View>
+        <TouchableOpacity onPress={() => navigation.closeDrawer()}>
+          <Ionicons name="close-outline" size={28} color={COLORS.textMuted} />
+        </TouchableOpacity>
+      </View>
+
+      <DrawerContentScrollView {...props} showsVerticalScrollIndicator={false}>
+        {/* Profile Card */}
+        <View style={styles.profileCard}>
+          <View style={styles.avatarContainer}>
+            <Ionicons name="person-circle" size={54} color={COLORS.primary} />
+          </View>
+          <View>
+            <Text style={styles.profileName}>{user?.name || 'Ritesh Kumar'}</Text>
+            <Text style={styles.profileRole}>{user?.role?.toUpperCase() || 'STUDENT'}</Text>
+          </View>
+        </View>
+
+        {/* Sections */}
+        <DrawerSectionHeader title="MAIN MENU" />
+        <CustomDrawerItem label="Dashboard" icon="grid-outline" screenName="Dashboard" active={activeRouteName === 'Dashboard'} />
+        <CustomDrawerItem label="Campus Events" icon="calendar-outline" screenName="Broadcasts" active={activeRouteName === 'Broadcasts'} />
+
+        <DrawerSectionHeader title="ACHIEVEMENTS" />
+        <CustomDrawerItem label="My Achievements" icon="trophy-outline" screenName="Achievements" active={activeRouteName === 'Achievements'} />
+        <CustomDrawerItem label="Upload Achievement" icon="cloud-upload-outline" screenName="Upload" active={activeRouteName === 'Upload'} />
+
+        <DrawerSectionHeader title="ACADEMIC" />
+        <CustomDrawerItem label="Course Registry" icon="book-outline" screenName="Courses" active={activeRouteName === 'Courses'} />
+        <CustomDrawerItem label="My Projects" icon="layers-outline" screenName="Projects" active={activeRouteName === 'Projects'} />
+
+        <DrawerSectionHeader title="CAREER & TALENT" />
+        <CustomDrawerItem label="My Internships" icon="briefcase-outline" screenName="Internships" active={activeRouteName === 'Internships'} />
+        <CustomDrawerItem label="Opportunities" icon="star-outline" screenName="Internships" active={activeRouteName === 'Internships_opp'} />
+        <CustomDrawerItem label="Live Hackathons" icon="terminal-outline" screenName="Hackathons" active={activeRouteName === 'Hackathons'} />
+
+        <DrawerSectionHeader title="ACCOUNT" />
+        <CustomDrawerItem label="My Profile" icon="person-outline" screenName="Profile" active={activeRouteName === 'Profile'} />
+        
+        <View style={{ height: 20 }} />
+      </DrawerContentScrollView>
+
+      {/* Footer Buttons */}
+      <View style={styles.drawerFooter}>
+        <TouchableOpacity style={styles.portfolioBtn}>
+          <Ionicons name="star" size={20} color="#059669" style={{ marginRight: 10 }} />
+          <Text style={styles.portfolioBtnText}>Public Portfolio</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
+          <Ionicons name="log-out-outline" size={20} color="#dc2626" style={{ marginRight: 10 }} />
+          <Text style={styles.logoutBtnText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+const StudentDrawer = () => (
+  <Drawer.Navigator
+    drawerContent={(props) => <CustomDrawerContent {...props} />}
     screenOptions={{
-      tabBarStyle: {
-        backgroundColor: COLORS.bgSecondary,
-        borderTopColor: COLORS.border,
-        paddingBottom: 5,
-        height: 60,
+      drawerType: 'front',
+      drawerStyle: {
+        width: 300,
       },
-      tabBarActiveTintColor: COLORS.primary,
-      tabBarInactiveTintColor: COLORS.textMuted,
       headerStyle: {
         backgroundColor: COLORS.bgSecondary,
       },
       headerShadowVisible: false,
       headerTintColor: COLORS.textPrimary,
-      headerRight: () => <LogoutButton />,
+      headerTitleStyle: {
+        fontWeight: '700',
+      },
     }}
   >
-    <Tab.Screen
-      name="Dashboard"
-      component={StudentDashboard}
-      options={{
-        tabBarIcon: (props) => <TabIcon name="grid-outline" {...props} />,
-      }}
-    />
-    <Tab.Screen
-      name="Achievements"
-      component={MyAchievements}
-      options={{
-        tabBarIcon: (props) => <TabIcon name="trophy-outline" {...props} />,
-      }}
-    />
-    <Tab.Screen
-      name="Academic"
-      component={StudentCoursesPage}
-      options={{
-        tabBarIcon: (props) => <TabIcon name="book-outline" {...props} />,
-      }}
-    />
-    <Tab.Screen
-      name="Broadcasts"
-      component={EventsPage}
-      options={{
-        tabBarIcon: (props) => <TabIcon name="notifications-outline" {...props} />,
-      }}
-    />
-    <Tab.Screen
-      name="Profile"
-      component={ProfileScreen}
-      options={{
-        tabBarIcon: (props) => <TabIcon name="person-outline" {...props} />,
-      }}
-    />
-  </Tab.Navigator>
+    <Drawer.Screen name="Dashboard" component={StudentDashboard} options={{ title: 'Student Dashboard' }} />
+    <Drawer.Screen name="Achievements" component={MyAchievements} options={{ title: 'My Achievements' }} />
+    <Drawer.Screen name="Upload" component={UploadAchievement} options={{ title: 'Upload New' }} />
+    <Drawer.Screen name="Courses" component={StudentCoursesPage} options={{ title: 'Course Registry' }} />
+    <Drawer.Screen name="Projects" component={StudentProjectsPage} options={{ title: 'My Projects' }} />
+    <Drawer.Screen name="Internships" component={InternshipsPage} options={{ title: 'Internships' }} />
+    <Drawer.Screen name="Hackathons" component={HackathonsPage} options={{ title: 'Live Hackathons' }} />
+    <Drawer.Screen name="Broadcasts" component={EventsPage} options={{ title: 'Campus Events' }} />
+    <Drawer.Screen name="Profile" component={ProfileScreen} options={{ title: 'My Profile' }} />
+  </Drawer.Navigator>
 );
 
-const AdminTabs = () => (
-  <Tab.Navigator
+const AdminDrawer = () => (
+  <Drawer.Navigator
+    drawerContent={(props) => <CustomDrawerContent {...props} />}
     screenOptions={{
-      tabBarStyle: {
-        backgroundColor: COLORS.bgSecondary,
-        borderTopColor: COLORS.border,
-        paddingBottom: 5,
-        height: 60,
+      drawerStyle: {
+        backgroundColor: COLORS.bgPrimary,
+        width: 260,
       },
-      tabBarActiveTintColor: COLORS.secondary,
-      tabBarInactiveTintColor: COLORS.textMuted,
+      drawerActiveTintColor: COLORS.secondary,
+      drawerInactiveTintColor: COLORS.textPrimary,
       headerStyle: {
         backgroundColor: COLORS.bgSecondary,
       },
       headerTintColor: COLORS.textPrimary,
-      headerRight: () => <LogoutButton />,
     }}
   >
-    <Tab.Screen
+    <Drawer.Screen
       name="AdminHome"
       component={AdminDashboard}
       options={{
         title: 'Dashboard',
-        tabBarIcon: (props) => <TabIcon name="stats-chart-outline" {...props} />,
+        drawerIcon: (props) => <DrawerIcon name="stats-chart-outline" {...props} />,
       }}
     />
-    <Tab.Screen
+    <Drawer.Screen
       name="Verify"
       component={VerifyAchievements}
       options={{
-        tabBarIcon: (props) => <TabIcon name="checkmark-done-circle-outline" {...props} />,
+        drawerIcon: (props) => <DrawerIcon name="checkmark-done-circle-outline" {...props} />,
       }}
     />
-    <Tab.Screen
+    <Drawer.Screen
       name="Notices"
       component={EventsPage}
       options={{
-        tabBarIcon: (props) => <TabIcon name="megaphone-outline" {...props} />,
+        drawerIcon: (props) => <DrawerIcon name="megaphone-outline" {...props} />,
       }}
     />
-    <Tab.Screen
+    <Drawer.Screen
       name="Profile"
       component={ProfileScreen}
       options={{
         title: 'Profile',
-        tabBarIcon: (props) => <TabIcon name="person-outline" {...props} />,
+        drawerIcon: (props) => <DrawerIcon name="person-outline" {...props} />,
       }}
     />
-  </Tab.Navigator>
+  </Drawer.Navigator>
 );
 
-const FacultyTabs = () => (
-  <Tab.Navigator
+const FacultyDrawer = () => (
+  <Drawer.Navigator
+    drawerContent={(props) => <CustomDrawerContent {...props} />}
     screenOptions={{
-      tabBarStyle: {
-        backgroundColor: COLORS.bgSecondary,
-        borderTopColor: COLORS.border,
-        paddingBottom: 5,
-        height: 60,
+      drawerStyle: {
+        backgroundColor: COLORS.bgPrimary,
+        width: 260,
       },
-      tabBarActiveTintColor: '#8b5cf6',
-      tabBarInactiveTintColor: COLORS.textMuted,
+      drawerActiveTintColor: '#8b5cf6',
+      drawerInactiveTintColor: COLORS.textPrimary,
       headerStyle: {
         backgroundColor: COLORS.bgSecondary,
       },
       headerTintColor: COLORS.textPrimary,
-      headerRight: () => <LogoutButton />,
     }}
   >
-    <Tab.Screen
+    <Drawer.Screen
       name="FacultyHome"
       component={FacultyDashboard}
       options={{
         title: 'Dashboard',
-        tabBarIcon: (props) => <TabIcon name="school-outline" {...props} />,
+        drawerIcon: (props) => <DrawerIcon name="school-outline" {...props} />,
       }}
     />
-    <Tab.Screen
+    <Drawer.Screen
       name="Postings"
       component={ManageInternshipsPage}
       options={{
         title: 'Internships',
-        tabBarIcon: (props) => <TabIcon name="briefcase-outline" {...props} />,
+        drawerIcon: (props) => <DrawerIcon name="briefcase-outline" {...props} />,
       }}
     />
-    <Tab.Screen
+    <Drawer.Screen
       name="FacultyEvents"
       component={EventsPage}
       options={{
         title: 'Broadcasts',
-        tabBarIcon: (props) => <TabIcon name="megaphone-outline" {...props} />,
+        drawerIcon: (props) => <DrawerIcon name="megaphone-outline" {...props} />,
       }}
     />
-    <Tab.Screen
+    <Drawer.Screen
       name="Profile"
       component={ProfileScreen}
       options={{
         title: 'Profile',
-        tabBarIcon: (props) => <TabIcon name="person-outline" {...props} />,
+        drawerIcon: (props) => <DrawerIcon name="person-outline" {...props} />,
       }}
     />
-  </Tab.Navigator>
+  </Drawer.Navigator>
 );
 
 import WelcomeScreen from '../screens/auth/WelcomeScreen';
@@ -252,7 +305,7 @@ const AppNavigator = () => {
             <Stack.Group>
               <Stack.Screen 
                 name="StudentMain" 
-                component={StudentTabs} 
+                component={StudentDrawer} 
                 options={{ headerShown: false }}
               />
               <Stack.Screen name="Upload" component={UploadAchievement} />
@@ -265,7 +318,7 @@ const AppNavigator = () => {
             <Stack.Group>
               <Stack.Screen 
                 name="FacultyMain" 
-                component={FacultyTabs} 
+                component={FacultyDrawer} 
                 options={{ headerShown: false }}
               />
               <Stack.Screen 
@@ -281,7 +334,7 @@ const AppNavigator = () => {
             <Stack.Group>
               <Stack.Screen 
                 name="AdminMain" 
-                component={AdminTabs} 
+                component={AdminDrawer} 
                 options={{ headerShown: false }}
               />
               <Stack.Screen 
@@ -301,5 +354,132 @@ const AppNavigator = () => {
     </Stack.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  drawerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#0f172a',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  logoText: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#1e293b',
+    letterSpacing: 0.5,
+  },
+  logoSubText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#64748b',
+    letterSpacing: 1,
+  },
+  profileCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 16,
+    padding: 16,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+    boxShadow: '0px 2px 10px rgba(0,0,0,0.05)',
+    elevation: 2,
+  },
+  avatarContainer: {
+    marginRight: 16,
+  },
+  profileName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1e293b',
+  },
+  profileRole: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#64748b',
+    letterSpacing: 1,
+    marginTop: 2,
+  },
+  sectionHeader: {
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 8,
+  },
+  sectionHeaderText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#94a3b8',
+    letterSpacing: 1.5,
+  },
+  drawerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginHorizontal: 8,
+    borderRadius: 12,
+  },
+  drawerItemActive: {
+    backgroundColor: '#f8fafc',
+  },
+  drawerItemIcon: {
+    marginRight: 16,
+  },
+  drawerItemLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  drawerItemLabelActive: {
+    color: '#0f172a',
+    fontWeight: '700',
+  },
+  drawerFooter: {
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#f3f4f6',
+  },
+  portfolioBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0fdf4',
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 10,
+  },
+  portfolioBtnText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#065f46',
+  },
+  logoutBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fef2f2',
+    padding: 14,
+    borderRadius: 12,
+  },
+  logoutBtnText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#991b1b',
+  },
+});
 
 export default AppNavigator;
