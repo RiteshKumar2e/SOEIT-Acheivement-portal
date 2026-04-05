@@ -563,7 +563,7 @@ const ProfileScreen = ({ navigation }) => {
                 title={loading ? 'Saving...' : 'Save Changes'}
                 onPress={() => handleUpdateProfile()}
                 disabled={loading}
-                style={{ flex: 1 }}
+                width="48%"
               />
               <Button
                 title="Cancel"
@@ -582,7 +582,7 @@ const ProfileScreen = ({ navigation }) => {
                   setActiveTab('view');
                 }}
                 variant="outline"
-                style={{ flex: 1, marginLeft: SPACING.md }}
+                width="48%"
               />
             </View>
           </View>
@@ -635,7 +635,7 @@ const ProfileScreen = ({ navigation }) => {
                 title={loading ? 'Updating...' : 'Update Password'}
                 onPress={handleChangePassword}
                 disabled={loading}
-                style={{ flex: 1 }}
+                width="48%"
               />
               <Button
                 title="Cancel"
@@ -648,7 +648,7 @@ const ProfileScreen = ({ navigation }) => {
                   setActiveTab('view');
                 }}
                 variant="outline"
-                style={{ flex: 1, marginLeft: SPACING.md }}
+                width="48%"
               />
             </View>
           </View>
@@ -885,6 +885,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: SPACING.xl,
     gap: SPACING.md,
+    justifyContent: 'space-between',
   },
   resumeBtn: {
     marginVertical: SPACING.md,

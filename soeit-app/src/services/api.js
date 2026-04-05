@@ -9,7 +9,7 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Request interceptor → attach JWT token
+// Request interceptor → attach JWT token & handle mock data for demo mode
 api.interceptors.request.use(
   async (config) => {
     try {
@@ -26,6 +26,20 @@ api.interceptors.request.use(
 
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+      }
+
+      // MOCK DATA LOGIC: If using demo token, intercept certain GET requests to prevent 401s
+      if (token === 'demo-token-123' && config.method === 'get') {
+        const url = config.url;
+        if (url.includes('/achievements/my')) {
+          return { ...config, adapter: () => Promise.resolve({ data: { success: true, data: [] }, status: 200, statusText: 'OK', headers: {}, config }) };
+        }
+        if (url.includes('/internships')) {
+          return { ...config, adapter: () => Promise.resolve({ data: { success: true, data: [] }, status: 200, statusText: 'OK', headers: {}, config }) };
+        }
+        if (url.includes('/courses')) {
+          return { ...config, adapter: () => Promise.resolve({ data: { success: true, data: [] }, status: 200, statusText: 'OK', headers: {}, config }) };
+        }
       }
     } catch (e) {
       console.warn('Token retrieval error:', e);

@@ -31,7 +31,9 @@ if (typeof window !== 'undefined') {
       msg.includes('retained focus') ||
       msg.includes('touch start') ||
       msg.includes('Touch End') ||
-      msg.includes('Touch Bank')
+      msg.includes('Touch Bank') ||
+      msg.includes('Dashboard stats fetch failed') ||
+      msg.includes('status code 401')
     );
   };
 
