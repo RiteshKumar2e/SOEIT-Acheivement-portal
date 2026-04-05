@@ -18,6 +18,9 @@ api.interceptors.request.use(
       // Robust token retrieval for both native and web
       if (Platform.OS === 'web') {
         token = typeof localStorage !== 'undefined' ? localStorage.getItem('soeit_token') : null;
+        if (!token && typeof sessionStorage !== 'undefined') {
+          token = sessionStorage.getItem('soeit_token');
+        }
       } else {
         token = await SecureStore.getItemAsync('soeit_token').catch(() => null);
         if (!token && typeof localStorage !== 'undefined') {

@@ -52,7 +52,10 @@ const allowedOrigins = [
     'http://localhost:19000',
     'https://soeit-acheivement-portal.vercel.app',
     'https://soeit-acheivement-portal-5ojpz1d9b.vercel.app',
+    'https://soeit-achievement-portal.onrender.com',
     'https://soeit-acheivement-portal.onrender.com',
+    'http://127.0.0.1:8081',
+    'http://127.0.0.1:5173',
     process.env.CLIENT_URL
 ].filter(Boolean);
 
