@@ -13,24 +13,28 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../../constants/colors';
 import api from '../../services/api';
+import { INTERNSHIPS as DEMO_INTERNSHIPS } from '../../constants/internships';
 
 const InternshipsPage = () => {
-  const [internships, setInternships] = useState([]);
+  const [internships, setInternships] = useState(DEMO_INTERNSHIPS);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchInternships = useCallback(async () => {
     try {
       const res = await api.get('/internships');
-      setInternships(res.data.internships || []);
+      if (res.data && res.data.internships) {
+        setInternships(res.data.internships);
+      }
     } catch (error) {
-      // API connection failed silently - show empty state
-      setInternships([]);
+      console.warn('Internships fetch failed:', error.message);
+      // Fallback to demo data if the API fails (especially for 401 in demo mode)
+      if (internships.length === 0) setInternships(DEMO_INTERNSHIPS);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [internships.length]);
 
   useEffect(() => {
     fetchInternships();

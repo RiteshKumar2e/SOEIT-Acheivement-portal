@@ -331,14 +331,16 @@ const seedHackathons = async (client) => {
 };
 
 const connectDB = async () => {
+  const url = process.env.TURSO_URL;
+  if (!url) {
+    console.error('❌ TURSO_URL is not set in environment variables');
+    process.exit(1);
+  }
+
   try {
-    const url = process.env.TURSO_URL;
-
-    if (!url) throw new Error('TURSO_URL is not set in environment variables');
-
     const client = createClient({ url });
 
-    // Verify connection
+    // Verify connection (essential check)
     await client.execute('SELECT 1');
     console.log('✅ Turso (LibSQL) Connected');
 
@@ -346,15 +348,11 @@ const connectDB = async () => {
     console.log('📐 Schema initialized');
 
     db = client;
-
-    // Seeding disabled for production environment to prevent demo data persistence
-    // await seedDemoUsers(client);
-    // await seedHackathons(client);
-
+    return db;
   } catch (error) {
     console.error('❌ Turso Connection Failed:', error.message);
-    console.log('🔄 Retrying in 5 seconds...');
-    setTimeout(connectDB, 5000);
+    // If we can't connect at startup, we should likely stop the server
+    throw error;
   }
 };
 

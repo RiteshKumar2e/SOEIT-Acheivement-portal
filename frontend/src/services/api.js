@@ -10,11 +10,31 @@ const API = axios.create({
     headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach token to every request
+// Attach token to every request & handle demo mode
 API.interceptors.request.use(
     (config) => {
-        const token = sessionStorage.getItem('soeit_token');
+        const token = sessionStorage.getItem('soeit_token') || localStorage.getItem('soeit_token');
         if (token) config.headers.Authorization = `Bearer ${token}`;
+
+        // MOCK INTERCEPTOR FOR DEMO MODE
+        if (token && token.startsWith('demo-token-') && config.method === 'get') {
+            const url = config.url || '';
+            const mockRes = (data) => ({
+                data: { success: true, data: data, notices: data, notifications: data },
+                status: 200, statusText: 'OK', headers: {}, config
+            });
+
+            if (url.includes('/admin/dashboard')) {
+                return { ...config, adapter: () => Promise.resolve(mockRes({ totalStudents: 120, totalFaculties: 15, totalAchievements: 450, pendingCount: 25 })) };
+            }
+            if (url.includes('/notifications')) {
+                const demoNotifs = [
+                    { id: '1', title: 'Welcome', message: 'You are in demo mode!', isRead: false, createdAt: new Date().toISOString() },
+                    { id: '2', title: 'Update', message: 'Portfolio features are live.', isRead: true, createdAt: new Date().toISOString() }
+                ];
+                return { ...config, adapter: () => Promise.resolve(mockRes(demoNotifs)) };
+            }
+        }
         return config;
     },
     (error) => Promise.reject(error)

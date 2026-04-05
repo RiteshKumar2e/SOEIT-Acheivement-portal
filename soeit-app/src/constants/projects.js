@@ -1,0 +1,32 @@
+export const PROJECTS = [
+  {
+    id: 1,
+    title: 'E-Commerce Platform',
+    description: 'Full-stack e-commerce application with payment integration, product management, and user authentication.',
+    githubLink: 'https://github.com/example/ecommerce',
+    liveLink: 'https://ecommerce-app.demo.com',
+    techStack: 'React, Node.js, MongoDB, Stripe',
+    status: 'Completed',
+    year: '2024',
+  },
+  {
+    id: 2,
+    title: 'AI Chat Bot',
+    description: 'Intelligent chatbot using NLP and machine learning for customer support automation.',
+    githubLink: 'https://github.com/example/chatbot',
+    liveLink: 'https://chatbot.demo.com',
+    techStack: 'Python, TensorFlow, Flask, React',
+    status: 'Completed',
+    year: '2024',
+  },
+  {
+    id: 3,
+    title: 'Real-time Collaboration Tool',
+    description: 'Collaborative editor with real-time sync, user presence, and code formatting support.',
+    githubLink: 'https://github.com/example/collab-tool',
+    liveLink: 'https://collab.demo.com',
+    techStack: 'React, WebSocket, Express, PostgreSQL',
+    status: 'Completed',
+    year: '2024',
+  },
+];

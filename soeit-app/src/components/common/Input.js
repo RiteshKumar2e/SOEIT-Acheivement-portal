@@ -93,7 +93,7 @@ const Input = ({
         <TextInput
           style={[
             styles.input,
-            { fontSize: getResponsiveFontSize(16), height: INPUT_HEIGHT },
+            { fontSize: getResponsiveFontSize(16), height: !props.multiline ? INPUT_HEIGHT : undefined },
             disabled && styles.disabledText,
             inputStyle,
           ]}
@@ -168,18 +168,19 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     borderWidth: 1.5,
     borderRadius: 12,
-    height: INPUT_HEIGHT,
+    minHeight: INPUT_HEIGHT,
     paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     borderColor: COLORS.border,
     backgroundColor: COLORS.bgInput,
   },
   input: {
     flex: 1,
     color: COLORS.textPrimary,
-    height: INPUT_HEIGHT,
+    minHeight: INPUT_HEIGHT,
     paddingVertical: SPACING.md,
   },
   icon: {

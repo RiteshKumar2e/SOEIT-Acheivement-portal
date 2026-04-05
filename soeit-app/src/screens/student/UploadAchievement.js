@@ -14,9 +14,11 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { LinearGradient } from 'expo-linear-gradient';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { COLORS } from '../../constants/colors';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
+import { ROUTES } from '../../constants/api';
 import api from '../../services/api';
 
 const CATEGORIES = ['Technical', 'Sports', 'Cultural', 'Academic', 'Research', 'Other'];
@@ -29,24 +31,77 @@ const UploadAchievement = ({ navigation }) => {
     level: 'Institutional',
     date: new Date().toISOString().split('T')[0],
     description: '',
+    institution: '',
   });
-  const [certificate, setCertificate] = useState(null);
+  const [proofFile, setProofFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const formatDateToDisplay = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const handleDateChange = (event, selectedDate) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+    if (selectedDate) {
+      const dateString = selectedDate.toISOString().split('T')[0];
+      updateForm('date', dateString);
+    }
+  };
+
+  const handleDatePickerPress = () => {
+    setShowDatePicker(true);
+  };
+
+  const pickFile = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['image/*', 'application/pdf'],
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setProofFile(result.assets[0]);
+      }
+    } catch (err) {
+      console.error('Error picking document:', err);
+      Alert.alert('Error', 'Could not access documents');
+    }
+  };
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaType.Images,
-      allowsEditing: true,
-      quality: 0.7,
-    });
+    if (Platform.OS !== 'web') {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'We need access to your photos to upload certificates.');
+        return;
+      }
+    }
 
-    if (!result.canceled) {
-      setCertificate(result.assets[0]);
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setProofFile(result.assets[0]);
+      }
+    } catch (err) {
+      console.error('Error picking image:', err);
+      Alert.alert('Error', 'Could not open image library');
     }
   };
 
   const handleUpload = async () => {
-    if (!formData.title || !certificate) {
+    if (!formData.title || !proofFile) {
       Alert.alert('Missing Info', 'Please provide a title and certificate file.');
       return;
     }
@@ -58,26 +113,40 @@ const UploadAchievement = ({ navigation }) => {
       data.append('category', formData.category);
       data.append('level', formData.level);
       data.append('date', formData.date);
-      data.append('description', formData.description);
-      
-      data.append('certificate', {
-        uri: certificate.uri,
-        name: certificate.fileName || 'certificate.jpg',
-        type: certificate.mimeType || 'image/jpeg',
+      data.append('description', formData.description || '');
+      data.append('institution', formData.institution || '');
+
+      // Axios in RN requires this specific format for FormData fields containing files
+      const fileUri = Platform.OS === 'ios' ? proofFile.uri.replace('file://', '') : proofFile.uri;
+
+      data.append('proofFiles', {
+        uri: proofFile.uri,
+        name: proofFile.name || proofFile.fileName || `certificate_${Date.now()}.${proofFile.uri.split('.').pop()}`,
+        type: proofFile.mimeType || proofFile.type || 'image/jpeg',
       });
 
-      await api.post('/achievements/upload', data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      await api.post(ROUTES.UPLOAD_ACHIEVEMENT, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       Alert.alert('Success', 'Achievement uploaded successfully and is pending verification.', [
         { text: 'View All', onPress: () => navigation.navigate('Achievements') }
       ]);
     } catch (error) {
-      console.error('Upload error:', error);
-      Alert.alert('Upload Failed', 'Something went wrong. Please try again.');
+      console.error('Upload error details:', error.response?.data || error.message);
+      const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';
+      Alert.alert('Upload Failed', errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleWebDateChange = (value) => {
+    // For web date input, convert YYYY-MM-DD to same format
+    if (value) {
+      updateForm('date', value);
     }
   };
 
@@ -91,7 +160,7 @@ const UploadAchievement = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Achievement Details</Text>
-          
+
           <Input
             label="Title"
             placeholder="e.g. Smart India Hackathon Winner"
@@ -130,31 +199,106 @@ const UploadAchievement = ({ navigation }) => {
           </View>
 
           <Input
-            label="Date of Achievement"
-            placeholder="YYYY-MM-DD"
-            value={formData.date}
-            onChangeText={(v) => updateForm('date', v)}
+            label="Institution / Organization"
+            placeholder="e.g. S.O.E.I.T, D.A.V.V"
+            value={formData.institution}
+            onChangeText={(v) => updateForm('institution', v)}
           />
 
+          <Text style={styles.label}>Date of Achievement</Text>
+          {Platform.OS === 'web' ? (
+            <View style={styles.webDateInput}>
+              <input
+                type="date"
+                value={formData.date}
+                onChange={(e) => handleWebDateChange(e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
+                style={{
+                  width: '100%',
+                  padding: '12px 14px',
+                  fontSize: '16px',
+                  borderRadius: '8px',
+                  borderWidth: '1.5px',
+                  borderColor: '#e5e7eb',
+                  backgroundColor: '#f9fafb',
+                  borderStyle: 'solid',
+                  fontFamily: 'inherit',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </View>
+          ) : (
+            <>
+              <TouchableOpacity 
+                style={styles.dateInput}
+                onPress={handleDatePickerPress}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="calendar-outline" size={20} color={COLORS.primary} style={styles.dateIcon} />
+                <Text style={styles.dateText}>{formatDateToDisplay(formData.date)}</Text>
+              </TouchableOpacity>
+
+              {showDatePicker && (
+                <DateTimePicker
+                  value={new Date(formData.date)}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={handleDateChange}
+                  maximumDate={new Date()}
+                />
+              )}
+
+              {Platform.OS === 'ios' && showDatePicker && (
+                <View style={styles.datePickerButtons}>
+                  <TouchableOpacity
+                    style={styles.cancelBtn}
+                    onPress={() => setShowDatePicker(false)}
+                  >
+                    <Text style={styles.cancelBtnText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.confirmBtn}
+                    onPress={() => setShowDatePicker(false)}
+                  >
+                    <Text style={styles.confirmBtnText}>Done</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </>
+          )}
           <Input
             label="Additional Notes (Optional)"
             placeholder="Describe your achievement..."
             multiline
-            numberOfLines={4}
+            numberOfLines={5}
             value={formData.description}
             onChangeText={(v) => updateForm('description', v)}
-            inputStyle={{ height: 100, textAlignVertical: 'top', paddingTop: 12 }}
+            inputStyle={{
+              height: 120,
+              textAlignVertical: 'top',
+              paddingTop: 14,
+              paddingBottom: 14,
+              fontSize: 15,
+              lineHeight: 22,
+            }}
           />
 
           <Text style={styles.label}>Upload Certificate</Text>
-          <TouchableOpacity 
-            style={styles.uploadBox} 
-            onPress={pickImage}
+          <TouchableOpacity
+            style={styles.uploadBox}
+            onPress={pickFile}
             activeOpacity={0.8}
           >
-            {certificate ? (
+            {proofFile ? (
               <View style={styles.previewContainer}>
-                <Image source={{ uri: certificate.uri }} style={styles.preview} />
+                {proofFile.mimeType?.includes('image') || proofFile.type?.includes('image') ? (
+                  <Image source={{ uri: proofFile.uri }} style={styles.preview} />
+                ) : (
+                  <View style={styles.pdfPlaceholder}>
+                    <Ionicons name="document-text" size={60} color={COLORS.primary} />
+                    <Text style={styles.fileName}>{proofFile.name || proofFile.fileName}</Text>
+                  </View>
+                )}
                 <View style={styles.changeOverlay}>
                   <Ionicons name="camera" size={24} color="#fff" />
                   <Text style={styles.changeText}>Change</Text>
@@ -168,7 +312,7 @@ const UploadAchievement = ({ navigation }) => {
                 >
                   <Ionicons name="cloud-upload-outline" size={40} color={COLORS.primary} />
                   <Text style={styles.uploadTitle}>Tap to select certificate</Text>
-                  <Text style={styles.uploadSub}>PNG, JPG are supported</Text>
+                  <Text style={styles.uploadSub}>PDF, PNG, JPG are supported</Text>
                 </LinearGradient>
               </View>
             )}
@@ -236,6 +380,58 @@ const styles = StyleSheet.create({
   chipTextActive: {
     color: COLORS.primary,
   },
+  dateInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    backgroundColor: COLORS.bgInput,
+    marginBottom: 16,
+  },
+  webDateInput: {
+    marginBottom: 16,
+  },
+  dateIcon: {
+    marginRight: 12,
+  },
+  dateText: {
+    fontSize: 16,
+    color: COLORS.textPrimary,
+    fontWeight: '500',
+  },
+  datePickerButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginBottom: 16,
+  },
+  cancelBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: COLORS.border,
+    alignItems: 'center',
+  },
+  cancelBtnText: {
+    color: COLORS.textSecondary,
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  confirmBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+  },
+  confirmBtnText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
+  },
   uploadBox: {
     width: '100%',
     height: 180,
@@ -285,6 +481,20 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   submitBtn: { marginTop: 10 },
+  pdfPlaceholder: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.05)',
+  },
+  fileName: {
+    fontSize: 14,
+    color: COLORS.textPrimary,
+    marginTop: 10,
+    fontWeight: '600',
+    paddingHorizontal: 20,
+    textAlign: 'center',
+  },
 });
 
 export default UploadAchievement;

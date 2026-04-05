@@ -45,6 +45,8 @@ The portal is built on a **full-stack modern architecture** (REVN Stack + React 
 
 ---
 
+
+
 ## 👥 Roles & Access Control
 
 | Role | Access Level | Responsibilities |

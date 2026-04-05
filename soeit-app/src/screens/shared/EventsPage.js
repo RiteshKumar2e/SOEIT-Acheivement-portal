@@ -24,7 +24,8 @@ const EventsPage = () => {
       const res = await api.get('/notices');
       setNotices(res.data.notices || []);
     } catch (error) {
-      console.error('Fetch notices error:', error);
+      // Silently fail with fallback data - API might not be available
+      console.warn('Notices API unavailable, using demo data');
       // Fallback data for demo
       setNotices([
         {

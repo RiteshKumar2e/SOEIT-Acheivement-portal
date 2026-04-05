@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   Image,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -155,8 +156,19 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1,
     borderColor: COLORS.border,
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+    borderColor: COLORS.border,
     elevation: 4,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+      },
+      web: {
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+      },
+    }),
   },
   cardHeader: {
     flexDirection: 'row',
