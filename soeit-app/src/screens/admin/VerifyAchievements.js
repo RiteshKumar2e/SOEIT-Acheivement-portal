@@ -31,7 +31,7 @@ const VerifyAchievements = () => {
       // In the backend, there's usually a route for pending achievements
       // Using /admin/achievements or similar. Let's assume based on backend analysis
       const res = await api.get('/admin/achievements?status=pending');
-      setPending(res.data.achievements || []);
+      setPending(res.data.data || []);
     } catch (error) {
       console.error('Fetch pending error:', error);
       setPending([]);
@@ -53,8 +53,8 @@ const VerifyAchievements = () => {
   const handleAction = async (id, status) => {
     setVerifying(true);
     try {
-      await api.patch(`/admin/achievements/${id}/verify`, { status });
-      Alert.alert('Success', `Achievement ${status === 'verified' ? 'Approved' : 'Rejected'}`);
+      await api.put(`/admin/achievements/${id}/verify`, { action: status });
+      Alert.alert('Success', `Achievement ${status === 'approved' ? 'Approved' : 'Rejected'}`);
       setModalVisible(false);
       fetchPending();
     } catch (error) {

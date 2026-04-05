@@ -22,7 +22,7 @@ export const ROUTES = {
   UPLOAD_ACHIEVEMENT: '/achievements',
 
   // Admin
-  ADMIN_STATS: '/admin/stats',
+  ADMIN_STATS: '/admin/dashboard',
   ADMIN_USERS: '/admin/users',
   ADMIN_STUDENTS: '/admin/students',
   ADMIN_FACULTY: '/admin/faculty',

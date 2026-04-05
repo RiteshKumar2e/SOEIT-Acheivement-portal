@@ -51,15 +51,24 @@ const allowedOrigins = [
     'http://localhost:19006',
     'http://localhost:19000',
     'https://soeit-acheivement-portal.vercel.app',
+    'https://soeit-acheivement-portal-5ojpz1d9b.vercel.app',
     'https://soeit-acheivement-portal.onrender.com',
     process.env.CLIENT_URL
 ].filter(Boolean);
+
+// Matches any Vercel preview deployment for this project:
+// e.g. soeit-acheivement-portal-<hash>-<team>.vercel.app
+const vercelPreviewPattern = /^https:\/\/soeit-acheivement-portal(-[a-z0-9]+)*\.vercel\.app$/;
 
 app.use(cors({
     origin: function (origin, callback) {
         // allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+        if (
+            allowedOrigins.indexOf(origin) !== -1 ||
+            vercelPreviewPattern.test(origin) ||
+            process.env.NODE_ENV === 'development'
+        ) {
             callback(null, true);
         } else {
             console.log('CORS blocked origin:', origin);

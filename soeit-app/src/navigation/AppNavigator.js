@@ -61,6 +61,75 @@ const CustomDrawerContent = (props) => {
 
   const activeRouteName = props.state?.routeNames[props.state?.index] || 'Dashboard';
 
+  const renderStudentItems = () => (
+    <>
+      <DrawerSectionHeader title="MAIN MENU" />
+      <CustomDrawerItem label="Dashboard" icon="grid-outline" screenName="Dashboard" active={activeRouteName === 'Dashboard'} />
+      <CustomDrawerItem label="Campus Events" icon="calendar-outline" screenName="Broadcasts" active={activeRouteName === 'Broadcasts'} />
+
+      <DrawerSectionHeader title="ACHIEVEMENTS" />
+      <CustomDrawerItem label="My Achievements" icon="trophy-outline" screenName="Achievements" active={activeRouteName === 'Achievements'} />
+      <CustomDrawerItem label="Upload Achievement" icon="cloud-upload-outline" screenName="Upload" active={activeRouteName === 'Upload'} />
+
+      <DrawerSectionHeader title="ACADEMIC" />
+      <CustomDrawerItem label="Course Registry" icon="book-outline" screenName="Courses" active={activeRouteName === 'Courses'} />
+      <CustomDrawerItem label="My Projects" icon="layers-outline" screenName="Projects" active={activeRouteName === 'Projects'} />
+
+      <DrawerSectionHeader title="CAREER & TALENT" />
+      <CustomDrawerItem label="My Internships" icon="briefcase-outline" screenName="Internships" active={activeRouteName === 'Internships'} />
+      <CustomDrawerItem label="Live Hackathons" icon="terminal-outline" screenName="Hackathons" active={activeRouteName === 'Hackathons'} />
+    </>
+  );
+
+  const renderFacultyItems = () => (
+    <>
+      <DrawerSectionHeader title="MAIN MENU" />
+      <CustomDrawerItem label="Dashboard" icon="grid-outline" screenName="FacultyHome" active={activeRouteName === 'FacultyHome'} />
+      <CustomDrawerItem label="Campus Events" icon="calendar-outline" screenName="Broadcasts" active={activeRouteName === 'Broadcasts'} />
+
+      <DrawerSectionHeader title="ACHIEVEMENTS" />
+      <CustomDrawerItem label="Verify Achievements" icon="checkmark-circle-outline" screenName="Verify" active={activeRouteName === 'Verify'} />
+      <CustomDrawerItem label="All Achievements" icon="trophy-outline" screenName="AllAchievements" active={activeRouteName === 'AllAchievements'} />
+
+      <DrawerSectionHeader title="ACADEMIC" />
+      <CustomDrawerItem label="Students" icon="people-outline" screenName="StudentManagement" active={activeRouteName === 'StudentManagement'} />
+      <CustomDrawerItem label="Course Monitoring" icon="book-outline" screenName="Courses" active={activeRouteName === 'Courses'} />
+      <CustomDrawerItem label="Project Monitoring" icon="layers-outline" screenName="Projects" active={activeRouteName === 'Projects'} />
+
+      <DrawerSectionHeader title="RESOURCES" />
+      <CustomDrawerItem label="Internship Postings" icon="cloud-upload-outline" screenName="Postings" active={activeRouteName === 'Postings'} />
+      <CustomDrawerItem label="Internship Monitoring" icon="briefcase-outline" screenName="InternshipMonitoring" active={activeRouteName === 'InternshipMonitoring'} />
+      <CustomDrawerItem label="Hackathon Control" icon="pulse-outline" screenName="Hackathons" active={activeRouteName === 'Hackathons'} />
+
+      <DrawerSectionHeader title="ANALYTICS" />
+      <CustomDrawerItem label="Reports & Analytics" icon="bar-chart-outline" screenName="Reports" active={activeRouteName === 'Reports'} />
+    </>
+  );
+
+  const renderAdminItems = () => (
+    <>
+      <DrawerSectionHeader title="SYSTEM ADMIN" />
+      <CustomDrawerItem label="Main Dashboard" icon="stats-chart-outline" screenName="AdminHome" active={activeRouteName === 'AdminHome'} />
+      <CustomDrawerItem label="Verification" icon="shield-checkmark-outline" screenName="Verify" active={activeRouteName === 'Verify'} />
+      
+      <DrawerSectionHeader title="USER MANAGEMENT" />
+      <CustomDrawerItem label="Student Registry" icon="people-outline" screenName="StudentManagement" active={activeRouteName === 'StudentManagement'} />
+      <CustomDrawerItem label="Faculty Registry" icon="school-outline" screenName="FacultyManagement" active={activeRouteName === 'FacultyManagement'} />
+
+      <DrawerSectionHeader title="INSTITUTION" />
+      <CustomDrawerItem label="Public Notices" icon="megaphone-outline" screenName="Notices" active={activeRouteName === 'Notices'} />
+      <CustomDrawerItem label="System Reports" icon="analytics-outline" screenName="Reports" active={activeRouteName === 'Reports'} />
+    </>
+  );
+
+  const renderContent = () => {
+    switch (user?.role) {
+      case 'admin': return renderAdminItems();
+      case 'faculty': return renderFacultyItems();
+      default: return renderStudentItems();
+    }
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       {/* Sidebar Header */}
@@ -78,52 +147,38 @@ const CustomDrawerContent = (props) => {
           <Ionicons name="close-outline" size={28} color={COLORS.textMuted} />
         </TouchableOpacity>
       </View>
-
+ 
       <DrawerContentScrollView {...props} showsVerticalScrollIndicator={false}>
         {/* Profile Card */}
         <View style={styles.profileCard}>
           <View style={styles.avatarContainer}>
-            <Ionicons name="person-circle" size={54} color={COLORS.primary} />
+             <View style={styles.avatarCircle}>
+                <Text style={styles.avatarText}>{user?.name?.substring(0, 2).toUpperCase() || 'AJ'}</Text>
+             </View>
           </View>
           <View>
-            <Text style={styles.profileName}>{user?.name || 'Ritesh Kumar'}</Text>
+            <Text style={styles.profileName}>{user?.name || 'Demo User'}</Text>
             <Text style={styles.profileRole}>{user?.role?.toUpperCase() || 'STUDENT'}</Text>
           </View>
         </View>
 
-        {/* Sections */}
-        <DrawerSectionHeader title="MAIN MENU" />
-        <CustomDrawerItem label="Dashboard" icon="grid-outline" screenName="Dashboard" active={activeRouteName === 'Dashboard'} />
-        <CustomDrawerItem label="Campus Events" icon="calendar-outline" screenName="Broadcasts" active={activeRouteName === 'Broadcasts'} />
-
-        <DrawerSectionHeader title="ACHIEVEMENTS" />
-        <CustomDrawerItem label="My Achievements" icon="trophy-outline" screenName="Achievements" active={activeRouteName === 'Achievements'} />
-        <CustomDrawerItem label="Upload Achievement" icon="cloud-upload-outline" screenName="Upload" active={activeRouteName === 'Upload'} />
-
-        <DrawerSectionHeader title="ACADEMIC" />
-        <CustomDrawerItem label="Course Registry" icon="book-outline" screenName="Courses" active={activeRouteName === 'Courses'} />
-        <CustomDrawerItem label="My Projects" icon="layers-outline" screenName="Projects" active={activeRouteName === 'Projects'} />
-
-        <DrawerSectionHeader title="CAREER & TALENT" />
-        <CustomDrawerItem label="My Internships" icon="briefcase-outline" screenName="Internships" active={activeRouteName === 'Internships'} />
-        <CustomDrawerItem label="Opportunities" icon="star-outline" screenName="Internships" active={activeRouteName === 'Internships_opp'} />
-        <CustomDrawerItem label="Live Hackathons" icon="terminal-outline" screenName="Hackathons" active={activeRouteName === 'Hackathons'} />
-
-        <DrawerSectionHeader title="ACCOUNT" />
-        <CustomDrawerItem label="My Profile" icon="person-outline" screenName="Profile" active={activeRouteName === 'Profile'} />
+        {/* Dynamic Items Based on Role */}
+        {renderContent()}
         
         <View style={{ height: 20 }} />
       </DrawerContentScrollView>
 
       {/* Footer Buttons */}
       <View style={styles.drawerFooter}>
-        <TouchableOpacity 
-          style={styles.portfolioBtn}
-          onPress={() => navigation.navigate('Portfolio')}
-        >
-          <Ionicons name="star" size={20} color="#059669" style={{ marginRight: 10 }} />
-          <Text style={styles.portfolioBtnText}>Public Portfolio</Text>
-        </TouchableOpacity>
+        {user?.role === 'student' && (
+          <TouchableOpacity 
+            style={styles.portfolioBtn}
+            onPress={() => navigation.navigate('Portfolio')}
+          >
+            <Ionicons name="star" size={20} color="#059669" style={{ marginRight: 10 }} />
+            <Text style={styles.portfolioBtnText}>Public Portfolio</Text>
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
           <Ionicons name="log-out-outline" size={20} color="#dc2626" style={{ marginRight: 10 }} />
@@ -226,41 +281,22 @@ const FacultyDrawer = () => (
       headerStyle: {
         backgroundColor: COLORS.bgSecondary,
       },
+      headerShadowVisible: false,
       headerTintColor: COLORS.textPrimary,
     }}
   >
-    <Drawer.Screen
-      name="FacultyHome"
-      component={FacultyDashboard}
-      options={{
-        title: 'Dashboard',
-        drawerIcon: (props) => <DrawerIcon name="school-outline" {...props} />,
-      }}
-    />
-    <Drawer.Screen
-      name="Postings"
-      component={ManageInternshipsPage}
-      options={{
-        title: 'Internships',
-        drawerIcon: (props) => <DrawerIcon name="briefcase-outline" {...props} />,
-      }}
-    />
-    <Drawer.Screen
-      name="FacultyEvents"
-      component={EventsPage}
-      options={{
-        title: 'Broadcasts',
-        drawerIcon: (props) => <DrawerIcon name="megaphone-outline" {...props} />,
-      }}
-    />
-    <Drawer.Screen
-      name="Profile"
-      component={ProfileScreen}
-      options={{
-        title: 'Profile',
-        drawerIcon: (props) => <DrawerIcon name="person-outline" {...props} />,
-      }}
-    />
+    <Drawer.Screen name="FacultyHome" component={FacultyDashboard} options={{ title: 'Faculty Dashboard' }} />
+    <Drawer.Screen name="Verify" component={VerifyAchievements} options={{ title: 'Verify Achievements' }} />
+    <Drawer.Screen name="AllAchievements" component={MyAchievements} options={{ title: 'All Achievements' }} />
+    <Drawer.Screen name="StudentManagement" component={StudentManagementScreen} options={{ title: 'Student Directory' }} />
+    <Drawer.Screen name="Courses" component={StudentCoursesPage} options={{ title: 'Course Monitoring' }} />
+    <Drawer.Screen name="Projects" component={StudentProjectsPage} options={{ title: 'Project Monitoring' }} />
+    <Drawer.Screen name="Postings" component={ManageInternshipsPage} options={{ title: 'Internship Postings' }} />
+    <Drawer.Screen name="InternshipMonitoring" component={ManageInternshipsPage} options={{ title: 'Internship Monitoring' }} />
+    <Drawer.Screen name="Hackathons" component={HackathonsPage} options={{ title: 'Hackathon Control' }} />
+    <Drawer.Screen name="Broadcasts" component={EventsPage} options={{ title: 'Campus Events' }} />
+    <Drawer.Screen name="Reports" component={ReportsScreen} options={{ title: 'Reports & Analytics' }} />
+    <Drawer.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
   </Drawer.Navigator>
 );
 
@@ -417,6 +453,21 @@ const styles = StyleSheet.create({
   },
   avatarContainer: {
     marginRight: 16,
+  },
+  avatarCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: '#f1f5f9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  avatarText: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: COLORS.primary,
   },
   profileName: {
     fontSize: 16,

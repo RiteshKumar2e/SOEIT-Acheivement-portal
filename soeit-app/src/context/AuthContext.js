@@ -78,13 +78,47 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const loginDemo = useCallback(async (role = 'student') => {
-    const demoUser = {
-      id: 'demo-id',
-      name: `Demo ${role.charAt(0).toUpperCase() + role.slice(1)}`,
-      email: `${role}@demo.com`,
+    // Generate realistic demo users based on role
+    let demoUser = {
+      id: `demo-${role}-123`,
+      email: `${role.toLowerCase()}@demo.arkajainuniversity.ac.in`,
       role: role,
+      isDemo: true,
     };
-    const demoToken = 'demo-token-123';
+
+    if (role === 'student') {
+      demoUser = {
+        ...demoUser,
+        name: 'Ritesh Kumar',
+        email: 'student@demo.arkajainuniversity.ac.in',
+        role: 'student',
+        enrollmentNo: 'AJU/221403',
+        department: 'B.Tech (CSE)',
+        semester: 6,
+        section: 'A',
+        batch: '2022',
+      };
+    } else if (role === 'faculty') {
+      demoUser = {
+        ...demoUser,
+        name: 'Dr. Priya Sharma',
+        email: 'faculty@demo.arkajainuniversity.ac.in',
+        role: 'faculty',
+        employeeId: 'FAC/001',
+        department: 'Computer Science',
+      };
+    } else if (role === 'admin') {
+      demoUser = {
+        ...demoUser,
+        name: 'Rajesh Singh',
+        email: 'admin@demo.arkajainuniversity.ac.in',
+        role: 'admin',
+        employeeId: 'ADMIN/001',
+        department: 'Administration',
+      };
+    }
+
+    const demoToken = `demo-token-${role}-${Date.now()}`;
     await StorageManager.setItem('soeit_token', demoToken);
     await StorageManager.setItem('soeit_user', JSON.stringify(demoUser));
     setToken(demoToken);

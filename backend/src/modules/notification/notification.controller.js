@@ -6,7 +6,8 @@ const Notification = require('../../modules/notification/notification.model');
 exports.getNotifications = async (req, res, next) => {
     try {
         const notifications = await Notification.findByUser(req.user.id);
-        res.status(200).json({ success: true, count: notifications.length, data: notifications });
+        const cleanedNotifications = notifications.map(notif => notif.toObject ? notif.toObject() : notif);
+        res.status(200).json({ success: true, count: cleanedNotifications.length, data: cleanedNotifications });
     } catch (error) {
         next(error);
     }
@@ -37,7 +38,8 @@ exports.markAsRead = async (req, res, next) => {
         }
 
         await notification.markAsRead();
-        res.status(200).json({ success: true, message: 'Notification marked as read' });
+        const cleanedNotification = notification.toObject ? notification.toObject() : notification;
+        res.status(200).json({ success: true, message: 'Notification marked as read', data: cleanedNotification });
     } catch (error) {
         next(error);
     }

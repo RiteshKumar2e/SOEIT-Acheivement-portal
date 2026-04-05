@@ -80,10 +80,10 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-  const handleDemoLogin = async () => {
+  const handleDemoLogin = async (role = 'student') => {
     setLoading(true);
     try {
-      await loginDemo('student');
+      await loginDemo(role);
     } catch (error) {
       Alert.alert('Demo Error', 'Failed to use demo login.');
     } finally {
@@ -240,17 +240,47 @@ const LoginScreen = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
 
-            {/* Demo Login Button */}
-            <TouchableOpacity
-              style={styles.demoBtn}
-              onPress={handleDemoLogin}
-              disabled={loading}
-              accessible
-              accessibilityRole="button"
-              accessibilityLabel="Demo login button"
-            >
-              <Text style={styles.demoBtnText}>QUICK DEMO LOGIN</Text>
-            </TouchableOpacity>
+            {/* Quick Demo Access */}
+            <View style={styles.demoSection}>
+              <Text style={styles.demoSectionTitle}>Quick Demo Access</Text>
+              <View style={styles.demoBtnGroup}>
+                <TouchableOpacity
+                  style={[styles.demoBtn, styles.demoBtnStudent]}
+                  onPress={() => handleDemoLogin('student')}
+                  disabled={loading}
+                  accessible
+                  accessibilityRole="button"
+                  accessibilityLabel="Demo student login"
+                >
+                  <Ionicons name="person-circle" size={18} color="#fff" style={{ marginRight: 8 }} />
+                  <Text style={styles.demoBtnText}>Student</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.demoBtn, styles.demoBtnFaculty]}
+                  onPress={() => handleDemoLogin('faculty')}
+                  disabled={loading}
+                  accessible
+                  accessibilityRole="button"
+                  accessibilityLabel="Demo faculty login"
+                >
+                  <Ionicons name="school" size={18} color="#fff" style={{ marginRight: 8 }} />
+                  <Text style={styles.demoBtnText}>Faculty</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.demoBtn, styles.demoBtnAdmin]}
+                  onPress={() => handleDemoLogin('admin')}
+                  disabled={loading}
+                  accessible
+                  accessibilityRole="button"
+                  accessibilityLabel="Demo admin login"
+                >
+                  <Ionicons name="shield-checkmark" size={18} color="#fff" style={{ marginRight: 8 }} />
+                  <Text style={styles.demoBtnText}>Admin</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
 
             {/* Sign Up Link */}
             <View style={styles.signupContainer}>
@@ -458,20 +488,42 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   demoBtn: {
-    backgroundColor: 'transparent',
+    flexDirection: 'row',
     paddingVertical: SPACING.md,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: SPACING.lg,
-    borderWidth: 1,
-    borderColor: '#2c3e50',
-    borderStyle: 'dashed',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  demoBtnStudent: {
+    backgroundColor: '#0891b2',
+  },
+  demoBtnFaculty: {
+    backgroundColor: '#8b5cf6',
+  },
+  demoBtnAdmin: {
+    backgroundColor: '#dc2626',
   },
   demoBtnText: {
-    color: '#2c3e50',
-    fontSize: getResponsiveFontSize(12),
+    color: '#fff',
+    fontSize: getResponsiveFontSize(13),
     fontWeight: '600',
-    letterSpacing: 1.5,
+  },
+  demoSection: {
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.lg,
+  },
+  demoSectionTitle: {
+    color: '#455a64',
+    fontSize: getResponsiveFontSize(11),
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    marginBottom: SPACING.md,
+  },
+  demoBtnGroup: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+    width: '100%',
   },
   signupContainer: {
     flexDirection: 'row',
