@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -7,9 +7,12 @@ import {
   TouchableOpacity,
   Alert,
   Platform,
+  TextInput,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from 'expo-image-picker';
 import { COLORS } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
@@ -20,59 +23,84 @@ const ProfileItem = ({
   label,
   value,
   color = COLORS.primary,
-  accessible = true,
 }) => (
-  <View
-    style={styles.profileItem}
-    accessible
-    accessibilityRole="text"
-    accessibilityLabel={`${label}: ${value || 'Not Set'}`}
-  >
+  <View style={styles.profileItem}>
     <View style={[styles.itemIcon, { backgroundColor: color + '15' }]}>
       <Ionicons name={icon} size={22} color={color} />
     </View>
     <View style={styles.itemContent}>
-      <Text
-        style={styles.itemLabel}
-        allowFontScaling
-        maxFontSizeMultiplier={1.2}
-      >
+      <Text style={styles.itemLabel} allowFontScaling maxFontSizeMultiplier={1.2}>
         {label}
       </Text>
-      <Text
-        style={styles.itemValue}
-        allowFontScaling
-        maxFontSizeMultiplier={1.2}
-      >
+      <Text style={styles.itemValue} allowFontScaling maxFontSizeMultiplier={1.2}>
         {value || 'Not Set'}
       </Text>
     </View>
   </View>
 );
 
-const MenuItem = ({ icon, label, onPress, testID }) => (
-  <TouchableOpacity
-    style={styles.menuItem}
-    onPress={onPress}
-    accessible
-    accessibilityRole="button"
-    accessibilityLabel={label}
-    testID={testID}
-  >
+const MenuItem = ({ icon, label, onPress }) => (
+  <TouchableOpacity style={styles.menuItem} onPress={onPress}>
     <Ionicons name={icon} size={22} color={COLORS.textSecondary} />
-    <Text
-      style={styles.menuText}
-      allowFontScaling
-      maxFontSizeMultiplier={1.2}
-    >
+    <Text style={styles.menuText} allowFontScaling maxFontSizeMultiplier={1.2}>
       {label}
     </Text>
     <Ionicons name="chevron-forward" size={18} color={COLORS.textMuted} />
   </TouchableOpacity>
 );
 
-const ProfileScreen = () => {
-  const { user, logout, isAdmin } = useAuth();
+const EditableField = ({
+  label,
+  value,
+  onChange,
+  icon,
+  placeholder,
+  editable = true,
+}) => (
+  <View style={styles.fieldContainer}>
+    <Text style={styles.fieldLabel}>{label}</Text>
+    <View style={[styles.fieldInput, !editable && { backgroundColor: COLORS.bgSecondary }]}>
+      <Ionicons 
+        name={icon} 
+        size={18} 
+        color={editable ? COLORS.primary : COLORS.textMuted}
+        style={styles.fieldIcon}
+      />
+      <TextInput
+        style={styles.input}
+        value={value}
+        onChangeText={onChange}
+        placeholder={placeholder}
+        placeholderTextColor={COLORS.textMuted}
+        editable={editable}
+        {...(icon === 'mail' && { keyboardType: 'email-address' })}
+        {...(icon === 'call' && { keyboardType: 'phone-pad' })}
+      />
+    </View>
+  </View>
+);
+
+const ProfileScreen = ({ navigation }) => {
+  const { user, logout, isAdmin, updateProfile, changePassword, updateUser } = useAuth();
+  const [activeTab, setActiveTab] = useState('view');
+  const [loading, setLoading] = useState(false);
+  const [profileImage, setProfileImage] = useState(user?.profileImage || null);
+  const [formData, setFormData] = useState({
+    name: user?.name || '',
+    phone: user?.phone || '',
+    bio: user?.bio || '',
+    batch: user?.batch || '',
+    semester: user?.semester || '',
+    section: user?.section || '',
+    linkedIn: user?.linkedIn || '',
+    github: user?.github || '',
+    portfolio: user?.portfolio || '',
+  });
+  const [pwFormData, setPwFormData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
 
   const handleLogout = () => {
     Alert.alert(
@@ -85,45 +113,150 @@ const ProfileScreen = () => {
     );
   };
 
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Required', 'We need access to your photo library');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      const selectedUri = result.assets[0].uri;
+      setProfileImage(selectedUri);
+      
+      // If we're not in edit mode, suggest saving or automatically switch to edit
+      if (activeTab !== 'edit') {
+        Alert.alert(
+          'Update Profile Picture',
+          'Would you like to save this as your new profile picture?',
+          [
+            { text: 'Cancel', style: 'cancel', onPress: () => setProfileImage(user?.profileImage) },
+            { 
+              text: 'Save Now', 
+              onPress: () => {
+                // We'll call the update logic directly here for a better UX
+                requestAnimationFrame(() => handleUpdateProfile(selectedUri));
+              } 
+            },
+          ]
+        );
+      }
+    }
+  };
+
+  const handleUpdateProfile = async (directImageUri = null) => {
+    setLoading(true);
+    try {
+      const fd = new FormData();
+      
+      // Add text fields
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value && value.toString().trim()) {
+          fd.append(key, value);
+        }
+      });
+
+      // Add image - use direct URI if provided (from pickImage) or state
+      const imgToUpload = directImageUri || (profileImage !== user?.profileImage ? profileImage : null);
+
+      if (imgToUpload) {
+        const filename = imgToUpload.split('/').pop();
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : 'image/jpeg';
+        
+        fd.append('profileImage', {
+          uri: imgToUpload,
+          type: type,
+          name: filename,
+        });
+      }
+
+      const updated = await updateProfile(fd);
+      updateUser(updated);
+      Alert.alert('Success', 'Profile updated successfully!');
+      setActiveTab('view');
+    } catch (error) {
+      const message = error?.response?.data?.message || error?.message || 'Failed to update profile';
+      Alert.alert('Error', message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    setLoading(true);
+    try {
+      if (pwFormData.newPassword !== pwFormData.confirmPassword) {
+        Alert.alert('Error', 'Passwords do not match');
+        setLoading(false);
+        return;
+      }
+
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!passwordRegex.test(pwFormData.newPassword)) {
+        Alert.alert(
+          'Weak Password',
+          'Password must be at least 8 chars with uppercase, lowercase, number, and special character'
+        );
+        setLoading(false);
+        return;
+      }
+
+      await changePassword({
+        currentPassword: pwFormData.currentPassword,
+        newPassword: pwFormData.newPassword,
+      });
+      Alert.alert('Success', 'Password changed successfully!');
+      setPwFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setActiveTab('view');
+    } catch (error) {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to change password');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <ScrollView
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
-      scrollEnabled={true}
-    >
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* Header */}
       <View style={styles.header}>
-        <LinearGradient
-          colors={isAdmin ? COLORS.gradientSecondary : COLORS.gradientPrimary}
-          style={styles.avatarLarge}
-        >
-          <Text
-            style={styles.avatarChar}
-            allowFontScaling
-            maxFontSizeMultiplier={1.3}
+        <View style={styles.avatarWrapper}>
+          <LinearGradient
+            colors={isAdmin ? COLORS.gradientSecondary : COLORS.gradientPrimary}
+            style={styles.avatarLarge}
           >
-            {user?.name[0]}
-          </Text>
-        </LinearGradient>
-        <Text
-          style={styles.userName}
-          allowFontScaling
-          maxFontSizeMultiplier={1.3}
-          accessible
-          accessibilityRole="header"
-        >
+            {profileImage ? (
+              <Image
+                source={{ uri: profileImage }}
+                style={styles.avatarImage}
+              />
+            ) : (
+              <Text style={styles.avatarChar} allowFontScaling maxFontSizeMultiplier={1.3}>
+                {user?.name?.[0]?.toUpperCase() || 'U'}
+              </Text>
+            )}
+          </LinearGradient>
+          <TouchableOpacity style={styles.cameraButton} onPress={pickImage}>
+            <Ionicons name="camera" size={20} color="#fff" />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.userName} allowFontScaling maxFontSizeMultiplier={1.3}>
           {user?.name}
         </Text>
         <View
           style={[
             styles.roleLabel,
             {
-              backgroundColor: isAdmin
-                ? COLORS.secondary + '20'
-                : COLORS.primary + '20',
+              backgroundColor: isAdmin ? COLORS.secondary + '20' : COLORS.primary + '20',
             },
           ]}
-          accessible
-          accessibilityLabel={`Role: ${user?.role}`}
         >
           <Text
             style={[
@@ -133,54 +266,204 @@ const ProfileScreen = () => {
             allowFontScaling
             maxFontSizeMultiplier={1.1}
           >
-            {user?.role.toUpperCase()}
+            {user?.role?.toUpperCase()}
           </Text>
+        </View>
+
+        {/* Tab Buttons */}
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[styles.tabButton, activeTab === 'view' && styles.tabActive]}
+            onPress={() => setActiveTab('view')}
+          >
+            <Ionicons
+              name="eye-outline"
+              size={16}
+              color={activeTab === 'view' ? COLORS.primary : COLORS.textMuted}
+            />
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === 'view' && styles.tabTextActive,
+              ]}
+            >
+              View
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tabButton, activeTab === 'edit' && styles.tabActive]}
+            onPress={() => setActiveTab('edit')}
+          >
+            <Ionicons
+              name="create-outline"
+              size={16}
+              color={activeTab === 'edit' ? COLORS.primary : COLORS.textMuted}
+            />
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === 'edit' && styles.tabTextActive,
+              ]}
+            >
+              Edit
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tabButton, activeTab === 'password' && styles.tabActive]}
+            onPress={() => setActiveTab('password')}
+          >
+            <Ionicons
+              name="lock-closed-outline"
+              size={16}
+              color={activeTab === 'password' ? COLORS.primary : COLORS.textMuted}
+            />
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === 'password' && styles.tabTextActive,
+              ]}
+            >
+              Security
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 
-      <View style={styles.section}>
-        <Text
-          style={styles.sectionTitle}
-          accessible
-          accessibilityRole="header"
-          allowFontScaling
-          maxFontSizeMultiplier={1.2}
-        >
-          Account Information
-        </Text>
-        <View style={styles.card}>
-          <ProfileItem
-            icon="mail-outline"
-            label="Email Address"
-            value={user?.email}
-          />
-          <View style={styles.divider} />
-          {user?.enrollmentNo && (
-            <>
-              <ProfileItem
-                icon="id-card-outline"
-                label="Enrollment Number"
-                value={user?.enrollmentNo}
-                color={COLORS.secondary}
-              />
+      {/* View Tab */}
+      {activeTab === 'view' && (
+        <>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle} allowFontScaling maxFontSizeMultiplier={1.2}>
+              Account Information
+            </Text>
+            <View style={styles.card}>
+              <ProfileItem icon="mail-outline" label="Email" value={user?.email} />
               <View style={styles.divider} />
-            </>
+              {user?.enrollmentNo && (
+                <>
+                  <ProfileItem
+                    icon="id-card-outline"
+                    label="Enrollment No."
+                    value={user?.enrollmentNo}
+                    color={COLORS.secondary}
+                  />
+                  <View style={styles.divider} />
+                </>
+              )}
+              {user?.batch && (
+                <>
+                  <ProfileItem
+                    icon="school-outline"
+                    label="Batch"
+                    value={user?.batch}
+                    color={COLORS.secondary}
+                  />
+                  <View style={styles.divider} />
+                </>
+              )}
+              {user?.semester && (
+                <>
+                  <ProfileItem
+                    icon="layers-outline"
+                    label="Semester"
+                    value={`Sem ${user?.semester}`}
+                    color="#f59e0b"
+                  />
+                  <View style={styles.divider} />
+                </>
+              )}
+              {user?.section && (
+                <>
+                  <ProfileItem
+                    icon="documents-outline"
+                    label="Section"
+                    value={user?.section}
+                    color="#8b5cf6"
+                  />
+                  <View style={styles.divider} />
+                </>
+              )}
+              {user?.phone && (
+                <>
+                  <ProfileItem
+                    icon="call-outline"
+                    label="Phone"
+                    value={user?.phone}
+                    color="#10b981"
+                  />
+                  <View style={styles.divider} />
+                </>
+              )}
+              {user?.bio && (
+                <>
+                  <ProfileItem
+                    icon="information-circle-outline"
+                    label="Bio"
+                    value={user?.bio}
+                    color="#ec4899"
+                  />
+                  <View style={styles.divider} />
+                </>
+              )}
+              <ProfileItem
+                icon="calendar-outline"
+                label="Joined On"
+                value={user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'August 2024'}
+                color="#ec4899"
+              />
+            </View>
+          </View>
+
+          {(user?.linkedIn || user?.github || user?.portfolio) && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle} allowFontScaling maxFontSizeMultiplier={1.2}>
+                Social Links
+              </Text>
+              <View style={styles.card}>
+                {user?.linkedIn && (
+                  <>
+                    <ProfileItem
+                      icon="logo-linkedin"
+                      label="LinkedIn"
+                      value={user?.linkedIn}
+                      color="#0a66c2"
+                    />
+                    <View style={styles.divider} />
+                  </>
+                )}
+                {user?.github && (
+                  <>
+                    <ProfileItem
+                      icon="logo-github"
+                      label="GitHub"
+                      value={user?.github}
+                      color={COLORS.textPrimary}
+                    />
+                    <View style={styles.divider} />
+                  </>
+                )}
+                {user?.portfolio && (
+                  <ProfileItem
+                    icon="globe-outline"
+                    label="Portfolio"
+                    value={user?.portfolio}
+                    color="#06b6d4"
+                  />
+                )}
+              </View>
+            </View>
           )}
+
           {!isAdmin && (
-            <>
+            <View style={styles.section}>
               <TouchableOpacity
                 style={styles.resumeBtn}
-                activeOpacity={0.8}
                 onPress={() =>
                   Alert.alert(
                     'Resume Hub',
                     'Your professional resume is being generated using the SOEIT Engine...'
                   )
                 }
-                accessible
-                accessibilityRole="button"
-                accessibilityLabel="Generate AI Resume"
-                accessibilityHint="Creates a professional resume based on your achievements"
               >
                 <LinearGradient
                   colors={['#06b6d4', '#3b82f6']}
@@ -189,93 +472,201 @@ const ProfileScreen = () => {
                   style={styles.resumeGradient}
                 >
                   <Ionicons name="document-text" size={20} color="#fff" />
-                  <Text
-                    style={styles.resumeText}
-                    allowFontScaling
-                    maxFontSizeMultiplier={1.2}
-                  >
+                  <Text style={styles.resumeText} allowFontScaling maxFontSizeMultiplier={1.2}>
                     Generate AI Resume
                   </Text>
                   <Ionicons name="sparkles" size={16} color="#fff" />
                 </LinearGradient>
               </TouchableOpacity>
-              <View style={styles.divider} />
-            </>
+            </View>
           )}
-          <ProfileItem
-            icon="calendar-outline"
-            label="Joined On"
-            value={
-              user?.createdAt
-                ? new Date(user.createdAt).toLocaleDateString()
-                : 'August 2024'
-            }
-            color="#ec4899"
-          />
-        </View>
-      </View>
+        </>
+      )}
 
-      <View style={styles.section}>
-        <Text
-          style={styles.sectionTitle}
-          accessible
-          accessibilityRole="header"
-          allowFontScaling
-          maxFontSizeMultiplier={1.2}
-        >
-          Settings & Preferences
-        </Text>
-        <View style={styles.card}>
-          <MenuItem
-            icon="notifications-outline"
-            label="Push Notifications"
-            onPress={() =>
-              Alert.alert('Info', 'Notification settings coming soon')
-            }
-            testID="notificationSettings"
-          />
-          <View style={styles.divider} />
-          <MenuItem
-            icon="shield-checkmark-outline"
-            label="Security & Privacy"
-            onPress={() =>
-              Alert.alert('Info', 'Security settings coming soon')
-            }
-            testID="securitySettings"
-          />
-          <View style={styles.divider} />
-          <MenuItem
-            icon="help-circle-outline"
-            label="Help & Support"
-            onPress={() => Alert.alert('Info', 'Help center coming soon')}
-            testID="helpCenter"
-          />
+      {/* Edit Tab */}
+      {activeTab === 'edit' && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle} allowFontScaling maxFontSizeMultiplier={1.2}>
+            Edit Profile
+          </Text>
+          <View style={styles.card}>
+            <EditableField
+              label="Full Name"
+              value={formData.name}
+              onChange={(text) => setFormData({ ...formData, name: text })}
+              icon="person"
+              placeholder="Your name"
+            />
+            <EditableField
+              label="Email"
+              value={user?.email}
+              icon="mail"
+              editable={false}
+            />
+            <EditableField
+              label="Phone"
+              value={formData.phone}
+              onChange={(text) => setFormData({ ...formData, phone: text })}
+              icon="call"
+              placeholder="Your phone number"
+            />
+            <EditableField
+              label="Bio"
+              value={formData.bio}
+              onChange={(text) => setFormData({ ...formData, bio: text })}
+              icon="information-circle"
+              placeholder="Tell us about yourself"
+            />
+            <EditableField
+              label="Batch"
+              value={formData.batch}
+              onChange={(text) => setFormData({ ...formData, batch: text })}
+              icon="school"
+              placeholder="e.g., 2023"
+            />
+            <EditableField
+              label="Semester"
+              value={formData.semester}
+              onChange={(text) => setFormData({ ...formData, semester: text })}
+              icon="layers"
+              placeholder="e.g., 4"
+            />
+            <EditableField
+              label="Section"
+              value={formData.section}
+              onChange={(text) => setFormData({ ...formData, section: text })}
+              icon="documents"
+              placeholder="e.g., A"
+            />
+            <EditableField
+              label="LinkedIn Profile"
+              value={formData.linkedIn}
+              onChange={(text) => setFormData({ ...formData, linkedIn: text })}
+              icon="logo-linkedin"
+              placeholder="linkedin.com/in"
+            />
+            <EditableField
+              label="GitHub Profile"
+              value={formData.github}
+              onChange={(text) => setFormData({ ...formData, github: text })}
+              icon="logo-github"
+              placeholder="github.com"
+            />
+            <EditableField
+              label="Portfolio"
+              value={formData.portfolio}
+              onChange={(text) => setFormData({ ...formData, portfolio: text })}
+              icon="globe"
+            />
+            <View style={styles.buttonGroup}>
+              <Button
+                title={loading ? 'Saving...' : 'Save Changes'}
+                onPress={() => handleUpdateProfile()}
+                disabled={loading}
+                style={{ flex: 1 }}
+              />
+              <Button
+                title="Cancel"
+                onPress={() => {
+                  setFormData({
+                    name: user?.name || '',
+                    phone: user?.phone || '',
+                    bio: user?.bio || '',
+                    batch: user?.batch || '',
+                    semester: user?.semester || '',
+                    section: user?.section || '',
+                    linkedIn: user?.linkedIn || '',
+                    github: user?.github || '',
+                    portfolio: user?.portfolio || '',
+                  });
+                  setActiveTab('view');
+                }}
+                variant="outline"
+                style={{ flex: 1, marginLeft: SPACING.md }}
+              />
+            </View>
+          </View>
         </View>
-      </View>
+      )}
+
+      {/* Password Tab */}
+      {activeTab === 'password' && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle} allowFontScaling maxFontSizeMultiplier={1.2}>
+            Change Password
+          </Text>
+          <View style={styles.card}>
+            <View style={styles.securityInfo}>
+              <Ionicons name="information-circle" size={20} color={COLORS.primary} />
+              <Text style={styles.securityInfoText}>
+                Password must be 8+ chars with uppercase, lowercase, number, and special character
+              </Text>
+            </View>
+            <EditableField
+              label="Current Password"
+              value={pwFormData.currentPassword}
+              onChange={(text) =>
+                setPwFormData({ ...pwFormData, currentPassword: text })
+              }
+              icon="lock-closed"
+              placeholder="Enter current password"
+            />
+            <EditableField
+              label="New Password"
+              value={pwFormData.newPassword}
+              onChange={(text) =>
+                setPwFormData({ ...pwFormData, newPassword: text })
+              }
+              icon="lock-closed"
+              placeholder="Enter new password"
+            />
+            <EditableField
+              label="Confirm Password"
+              value={pwFormData.confirmPassword}
+              onChange={(text) =>
+                setPwFormData({ ...pwFormData, confirmPassword: text })
+              }
+              icon="lock-closed"
+              placeholder="Confirm new password"
+            />
+
+            <View style={styles.buttonGroup}>
+              <Button
+                title={loading ? 'Updating...' : 'Update Password'}
+                onPress={handleChangePassword}
+                disabled={loading}
+                style={{ flex: 1 }}
+              />
+              <Button
+                title="Cancel"
+                onPress={() => {
+                  setPwFormData({
+                    currentPassword: '',
+                    newPassword: '',
+                    confirmPassword: '',
+                  });
+                  setActiveTab('view');
+                }}
+                variant="outline"
+                style={{ flex: 1, marginLeft: SPACING.md }}
+              />
+            </View>
+          </View>
+        </View>
+      )}
 
       <Button
-        title="Logout Account"
+        title="Logout"
         onPress={handleLogout}
         variant="danger"
         style={styles.logoutBtn}
-        accessibilityLabel="Logout from your account"
-        accessibilityHint="Sign out and return to login screen"
-        testID="logoutButton"
       />
 
       <View style={styles.footer}>
-        <Text
-          style={styles.footerText}
-          allowFontScaling
-          maxFontSizeMultiplier={1.1}
-        >
+        <Text style={styles.footerText} allowFontScaling maxFontSizeMultiplier={1.1}>
           SoEIT Achievement Portal v1.0.0
         </Text>
-        <Text
-          style={styles.footerSub}
-          allowFontScaling
-          maxFontSizeMultiplier={1.1}
-        >
+        <Text style={styles.footerSub} allowFontScaling maxFontSizeMultiplier={1.1}>
           Designed by Ritesh Kumar
         </Text>
       </View>
@@ -297,14 +688,18 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
   },
-  avatarLarge: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+  avatarWrapper: {
+    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.lg,
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.md,
+  },
+  avatarLarge: {
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    alignItems: 'center',
+    justifyContent: 'center',
     elevation: 8,
     ...Platform.select({
       ios: {
@@ -313,8 +708,32 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 15,
       },
-      web: {
-        boxShadow: '0 10px 15px rgba(139, 0, 0, 0.2)',
+    }),
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 55,
+  },
+  cameraButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 10,
+    borderWidth: 3,
+    borderColor: COLORS.bgSecondary,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
       },
     }),
   },
@@ -339,6 +758,33 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: 1,
   },
+  tabContainer: {
+    flexDirection: 'row',
+    marginTop: SPACING.xl,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  tabButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.md,
+    gap: SPACING.xs,
+  },
+  tabActive: {
+    borderBottomWidth: 3,
+    borderBottomColor: COLORS.primary,
+  },
+  tabText: {
+    fontSize: getResponsiveFontSize(12),
+    fontWeight: '600',
+    color: COLORS.textMuted,
+  },
+  tabTextActive: {
+    color: COLORS.primary,
+    fontWeight: '700',
+  },
   section: {
     paddingHorizontal: SPACING.xl,
     marginTop: SPACING.xxxl,
@@ -348,14 +794,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.textSecondary,
     marginBottom: SPACING.lg,
-    marginLeft: SPACING.sm,
   },
   card: {
     backgroundColor: COLORS.bgCard,
     borderRadius: 24,
     padding: SPACING.xl,
     borderWidth: 1,
-    borderColor: COLORS.border,
     borderColor: COLORS.border,
     elevation: 2,
     ...Platform.select({
@@ -364,9 +808,6 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.04,
         shadowRadius: 10,
-      },
-      web: {
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.04)',
       },
     }),
   },
@@ -413,10 +854,37 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     marginLeft: SPACING.lg,
   },
-  logoutBtn: {
-    marginHorizontal: SPACING.xl,
-    marginTop: SPACING.xxxl,
-    marginBottom: SPACING.xl,
+  fieldContainer: {
+    marginBottom: SPACING.md,
+  },
+  fieldLabel: {
+    fontSize: getResponsiveFontSize(14),
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.sm,
+  },
+  fieldInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.bgPrimary,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    paddingHorizontal: SPACING.md,
+  },
+  fieldIcon: {
+    marginRight: SPACING.sm,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: SPACING.md,
+    fontSize: getResponsiveFontSize(15),
+    color: COLORS.textPrimary,
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    marginTop: SPACING.xl,
+    gap: SPACING.md,
   },
   resumeBtn: {
     marginVertical: SPACING.md,
@@ -425,7 +893,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: SPACING.md,
+    paddingVertical: SPACING.lg,
     borderRadius: 12,
     gap: SPACING.md,
   },
@@ -433,6 +901,26 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: getResponsiveFontSize(14),
     fontWeight: '800',
+  },
+  securityInfo: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.primary + '10',
+    borderRadius: 12,
+    padding: SPACING.md,
+    marginBottom: SPACING.lg,
+    alignItems: 'flex-start',
+    gap: SPACING.sm,
+  },
+  securityInfoText: {
+    flex: 1,
+    fontSize: getResponsiveFontSize(13),
+    color: COLORS.textPrimary,
+    fontWeight: '500',
+  },
+  logoutBtn: {
+    marginHorizontal: SPACING.xl,
+    marginTop: SPACING.xxxl,
+    marginBottom: SPACING.xl,
   },
   footer: {
     marginTop: SPACING.xxxl,

@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../../constants/colors';
 import api from '../../services/api';
+import { COURSES as DEMO_COURSES } from '../../constants/courses';
 
 const CourseCard = ({ item }) => (
   <TouchableOpacity style={styles.card} activeOpacity={0.8}>
@@ -57,22 +58,25 @@ const CourseCard = ({ item }) => (
 );
 
 const StudentCoursesPage = () => {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState(DEMO_COURSES);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchCourses = useCallback(async () => {
     try {
       const res = await api.get('/courses');
-      setCourses(res.data.data || res.data.courses || []);
+      if (res.data && (res.data.data || res.data.courses)) {
+        setCourses(res.data.data || res.data.courses);
+      }
     } catch (error) {
-      // API connection failed silently - show empty state
-      setCourses([]);
+      console.warn('Courses fetch failed:', error.message);
+      // Fallback already handled by initial state, but explicit fallback if needed
+      if (courses.length === 0) setCourses(DEMO_COURSES);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [courses.length]);
 
   useEffect(() => {
     fetchCourses();

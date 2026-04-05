@@ -117,6 +117,34 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  const updateProfile = useCallback(async (profileData) => {
+    try {
+      const res = await api.put('/auth/profile', profileData);
+      const updated = res.data.user;
+      setUser(updated);
+      await StorageManager.setItem('soeit_user', JSON.stringify(updated));
+      return updated;
+    } catch (e) {
+      console.error('Update profile error:', e);
+      throw e;
+    }
+  }, []);
+
+  const changePassword = useCallback(async (passwordData) => {
+    try {
+      const res = await api.put('/auth/change-password', passwordData);
+      return res.data;
+    } catch (e) {
+      console.error('Change password error:', e);
+      throw e;
+    }
+  }, []);
+
+  const updateUser = useCallback((updatedUser) => {
+    setUser(updatedUser);
+    StorageManager.setItem('soeit_user', JSON.stringify(updatedUser));
+  }, []);
+
   const isStudent = user?.role === 'student';
   const isFaculty = user?.role === 'faculty';
   const isAdmin = user?.role === 'admin';
@@ -124,7 +152,7 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider value={{
       user, token, loading,
-      login, loginDemo, register, logout, refreshUser,
+      login, loginDemo, register, logout, refreshUser, updateProfile, changePassword, updateUser,
       isStudent, isFaculty, isAdmin,
       isAuthenticated: !!token,
     }}>
