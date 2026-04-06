@@ -7,7 +7,7 @@ import ScrollToTopButton from '../../components/common/ScrollToTopButton';
 import {
     Trophy, Shield, BarChart3, CircleCheck,
     Users, Star, ArrowRight, ArrowLeft, Zap, Globe, Award, BookOpen, Clock, GraduationCap, FileCheck, Briefcase, ChevronDown,
-    Github, Linkedin, Code, Library, Terminal, CircleHelp, MessageSquare
+    Github, Linkedin, Code, Library, Terminal, CircleHelp, MessageSquare, Plus
 } from 'lucide-react';
 
 const quickLinks = [
@@ -254,15 +254,20 @@ const LandingPage = () => {
         return () => clearInterval(timer);
     }, [isPaused]);
 
-    // Warm up backend on mount to avoid Render cold-start lag during login
+    // Conditional profile fetch for logged-in users
     useEffect(() => {
-        const warmup = async () => {
+        const checkAuth = async () => {
             try {
-                const { authAPI } = await import('../../services/api');
-                authAPI.getProfile().catch(() => { });
-            } catch (e) { /* ignore */ }
+                const token = sessionStorage.getItem('soeit_token');
+                const isAuth = token && token !== 'null' && token !== 'undefined' && token.length > 10;
+                
+                if (isAuth) {
+                    const { authAPI } = await import('../../services/api');
+                    authAPI.getProfile().catch(() => {});
+                }
+            } catch (e) { /* ignore silently */ }
         };
-        warmup();
+        checkAuth();
     }, []);
 
     const toggleFaq = (idx) => {
@@ -344,7 +349,7 @@ const LandingPage = () => {
                         </div>
                     </div>
 
-                    <div className="hero-visual desktop-only-hero">
+                    <div className="hero-visual">
                         <div
                             className="hero-collage"
                             onMouseEnter={() => setIsPaused(true)}
@@ -522,7 +527,7 @@ const LandingPage = () => {
                         {/* Featured Column */}
                         <div className="gazette-feature-col">
                             <div className="gazette-label">FEATURED VOICE</div>
-                            <div className="gazette-big-q">❝</div>
+
                             {currentSet.length > 0 && (
                                 <>
                                     <p className="gazette-feature-quote" key={activeTestimonial}>
@@ -563,7 +568,7 @@ const LandingPage = () => {
                                 const idx = (activeTestimonial + offset) % currentSet.length;
                                 return (
                                     <div key={idx} className="gazette-snippet" onClick={() => setActiveTestimonial(idx)}>
-                                        <div className="gazette-snippet-q">"</div>
+
                                         <p className="gazette-snippet-text">
                                             {currentSet[idx].quote.slice(0, 100)}…
                                         </p>
@@ -582,30 +587,6 @@ const LandingPage = () => {
             </section>
 
             {/* Questions Section */}
-            <section className="py-24 bg-white">
-                <div className="container-small">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold mb-4 text-gray-900">Frequently Asked <span className="text-brand-600">Questions</span></h2>
-                        <p className="text-gray-500">Everything you need to know about the portal and its operations.</p>
-                    </div>
-                    <div className="faq-grid">
-                        {faqs.map((faq, idx) => (
-                            <div key={idx} className={`faq-item ${activeFaq === idx ? 'active' : ''}`}>
-                                <button className="faq-question" onClick={() => toggleFaq(idx)}>
-                                    <span className="faq-q-prefix">Q.</span>
-                                    <span className="faq-q-text">{faq.question}</span>
-                                    <ChevronDown className="faq-chevron" size={20} />
-                                </button>
-                                <div className="faq-answer-wrapper">
-                                    <p className="faq-answer">
-                                        {faq.answer}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
             {/* Ecosystem Section */}
             <section className="ecosystem-section py-24 bg-gray-50 border-t">
@@ -625,9 +606,7 @@ const LandingPage = () => {
                         <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="LinkedIn">
                             <img src="https://miro.medium.com/1*kBWo_GWrG58h28kDHwnBfg.png" alt="LinkedIn" className="ecosystem-logo" />
                         </a>
-                        <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="LeetCode">
-                            <img src="https://media.licdn.com/dms/image/v2/D5612AQH_wBNAqIO3Lw/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1685507296579?e=2147483647&v=beta&t=zFLpkUROoe9YkiZI9ItntjlY--lM92X6_HhlfaZPS2U" alt="LeetCode" className="ecosystem-logo logo-leetcode" />
-                        </a>
+
                         <a href="https://coursera.org" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="Coursera">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Coursera_logo_%282020%29.svg/3840px-Coursera_logo_%282020%29.svg.png" alt="Coursera" className="ecosystem-logo" />
                         </a>
@@ -644,9 +623,7 @@ const LandingPage = () => {
                         <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="LinkedIn">
                             <img src="https://miro.medium.com/1*kBWo_GWrG58h28kDHwnBfg.png" alt="LinkedIn" className="ecosystem-logo" />
                         </a>
-                        <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="LeetCode">
-                            <img src="https://media.licdn.com/dms/image/v2/D5612AQH_wBNAqIO3Lw/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1685507296579?e=2147483647&v=beta&t=zFLpkUROoe9YkiZI9ItntjlY--lM92X6_HhlfaZPS2U" alt="LeetCode" className="ecosystem-logo logo-leetcode" />
-                        </a>
+
                         <a href="https://coursera.org" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="Coursera">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Coursera_logo_%282020%29.svg/3840px-Coursera_logo_%282020%29.svg.png" alt="Coursera" className="ecosystem-logo" />
                         </a>
@@ -656,6 +633,49 @@ const LandingPage = () => {
                         <a href="https://geeksforgeeks.org" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="GeeksForGeeks">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/GeeksForGeeks_logo.png" alt="GeeksForGeeks" className="ecosystem-logo" />
                         </a>
+                    </div>
+                </div>
+            </section>
+
+            {/* Highlight Achievements Section */}
+            <section className="achievement-highlight-section py-24">
+                <div className="container">
+                    <div className="achievement-highlight-content-vertical">
+                        {/* Quote & Description */}
+                        <div className="achievement-highlight-text-full">
+
+                            <h2 className="achievement-highlight-title">
+                                Make Your <span className="text-brand-600">Achievement</span> a Highlight
+                            </h2>
+                            <p className="achievement-highlight-quote">
+                                Every project you complete, every certificate you earn, and every milestone you achieve deserves to be recognized and celebrated. We don't just track your accomplishments—we validate them with official badges that tell your professional story.
+                            </p>
+                            
+
+
+                            <Link to="/register" className="btn btn-primary btn-lg rounded-lg mt-8 px-12 shadow-xl hover:scale-105 transition-transform" style={{ display: 'inline-block' }}>
+                                Start Earning Badges Today
+                            </Link>
+                        </div>
+
+                        {/* Badge Carousel - Horizontal Line */}
+                        <div className="achievement-badges-carousel">
+                            {[
+                                { url: '/badge.png', label: 'Achievement' },
+                                { url: '/education.png', label: 'Education' },
+                                { url: '/hackathon.png', label: 'Hackathon' },
+                                { url: '/technical.png', label: 'Technical' },
+                                { url: '/workshop.png', label: 'Workshop' }
+                            ].map((badge, idx) => (
+                                <div key={idx} className="achievement-badge-item">
+                                    <img 
+                                        src={badge.url} 
+                                        alt={`${badge.label} Badge`}
+                                        className="achievement-badge-image"
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>
@@ -688,6 +708,39 @@ const LandingPage = () => {
                 </div>
             </section>
 
+
+            {/* FAQ Section Redesign */}
+            <section className="faq-section-new py-24">
+                <div className="container faq-container">
+                    <div className="faq-left">
+                        <div className="faq-badge-minimal">
+                            <CircleHelp size={14} className="faq-badge-icon" />
+                            <span>FAQs</span>
+                        </div>
+                        <h2 className="faq-title-large">Frequently Asked Questions</h2>
+                    </div>
+                    
+                    <div className="faq-right">
+                        <div className="faq-accordion-minimal">
+                            {faqs.map((faq, idx) => (
+                                <div key={idx} className={`faq-item-minimal ${activeFaq === idx ? 'active' : ''}`}>
+                                    <button className="faq-question-minimal" onClick={() => toggleFaq(idx)}>
+                                        <span className="faq-q-text-minimal">{faq.question}</span>
+                                        <div className="faq-icon-minimal">
+                                            <Plus size={20} className={activeFaq === idx ? 'rotate-45' : ''} />
+                                        </div>
+                                    </button>
+                                    {activeFaq === idx && (
+                                        <div className="faq-answer-minimal">
+                                            <p>{faq.answer}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
             <Footer />
             <ScrollToTopButton />
         </div>

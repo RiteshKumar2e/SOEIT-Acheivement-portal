@@ -93,22 +93,40 @@
 
 @media (max-width: 1024px) {
     .hero-container {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
         text-align: center;
-        gap: 3rem;
+        gap: 2.5rem;
         min-height: auto;
+        padding-top: 1rem;
+        padding-bottom: 3rem;
+    }
+
+    .hero-visual {
+        order: -1; 
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .hero-collage {
+        min-height: auto;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        position: relative;
     }
 
     .hero-main-img-slider {
         width: 100% !important;
-        max-width: 500px;
         height: auto !important;
-        aspect-ratio: 1/1;
+        aspect-ratio: 16/10; /* Better for group photos as requested */
         margin: 0 auto;
-    }
-
-    .desktop-only-hero {
-        display: none;
+        border-radius: 1.25rem;
+        background: white;
+        padding: 10px;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.1);
     }
 }
 
@@ -198,9 +216,11 @@
     position: relative;
     z-index: 10;
     width: 600px;
-    height: 600px;
+    height: 500px; /* More landscape for better photo display */
     overflow: hidden;
-    /* Removed white background and padding for borderless look */
+    background: white;
+    padding: 15px; /* Bordered look */
+    border-radius: 1.5rem;
 }
 
 .hero-main-img-slider img {
@@ -884,80 +904,117 @@
     transform: translateX(3px);
 }
 
-/* --- FAQ Section (Accordion) --- */
-.faq-grid {
+/* --- FAQ Section --- */
+
+/* --- FAQ Section New Redesign --- */
+.faq-section-new {
+    background-color: #ffffff;
+    padding: 100px 0;
+}
+
+.faq-container {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 100px;
+}
+
+@media (max-width: 900px) {
+    .faq-container {
+        grid-template-columns: 1fr;
+        gap: 50px;
+    }
+}
+
+.faq-left {
+    max-width: 400px;
+}
+
+.faq-badge-minimal {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background-color: #f1f5f9;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+.faq-badge-icon {
+    color: #0f172a;
+}
+
+.faq-title-large {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+}
+
+@media (max-width: 900px) {
+    .faq-title-large {
+        font-size: 2.5rem;
+    }
+}
+
+.faq-accordion-minimal {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
 }
 
-.faq-item {
-    border-radius: 0.75rem;
-    border: 1px solid #f3f4f6;
-    background-color: white;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
+.faq-item-minimal {
+    border-top: 1px solid #e2e8f0;
 }
 
-.faq-item:hover {
-    border-color: var(--brand-200);
+.faq-item-minimal:last-child {
+    border-bottom: 1px solid #e2e8f0;
 }
 
-.faq-item.active {
-    box-shadow: 0 10px 25px -5px rgba(0, 33, 71, 0.08);
-    border-color: var(--brand-300);
-}
-
-.faq-question {
+.faq-question-minimal {
     width: 100%;
-    padding: 1.5rem 2rem;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 1rem;
-    text-align: left;
+    padding: 24px 0;
     background: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--gray-900);
     border: none;
-    outline: none;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
 }
 
-.faq-q-text {
-    flex: 1;
+.faq-q-text-minimal {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    max-width: 90%;
 }
 
-.faq-chevron {
-    color: var(--gray-400);
+.faq-icon-minimal {
+    color: #94a3b8;
     transition: transform 0.3s ease;
 }
 
-.faq-item.active .faq-chevron {
-    transform: rotate(180deg);
-    color: var(--brand-600);
+.faq-question-minimal:hover .faq-q-text-minimal {
+    color: #1e293b;
 }
 
-.faq-answer-wrapper {
-    max-height: 0;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0;
-}
-
-.faq-item.active .faq-answer-wrapper {
-    max-height: 500px;
-    /* Adjust as needed */
-    opacity: 1;
-    padding-bottom: 2rem;
-}
-
-.faq-answer {
-    color: var(--gray-500);
-    font-size: 0.95rem;
+.faq-answer-minimal {
+    padding-bottom: 24px;
+    color: #64748b;
+    font-size: 1.05rem;
     line-height: 1.6;
-    padding: 0 2rem 0 3.5rem;
+    max-width: 95%;
 }
+
+.rotate-45 {
+    transform: rotate(45deg);
+}
+
+
 
 /* --- Ecosystem Section --- */
 .ecosystem-marquee-container {
@@ -1014,6 +1071,253 @@
 
 .ecosystem-item:hover .logo-leetcode {
     transform: scale(1.55); /* Extra pop on hover for LeetCode */
+}
+
+/* --- Achievement Highlight Section --- */
+.achievement-highlight-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+    border-top: 1px solid #e5e7eb;
+    position: relative;
+    overflow: hidden;
+}
+
+.achievement-highlight-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+}
+
+.achievement-highlight-content-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    position: relative;
+    z-index: 1;
+}
+
+.achievement-highlight-text-full {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.achievement-quote-mark {
+    font-size: 4rem;
+    color: var(--brand-300);
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    opacity: 0.6;
+}
+
+.achievement-highlight-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--gray-900);
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    font-family: 'Georgia', 'Garamond', 'Playfair Display', serif;
+    text-transform: uppercase;
+}
+
+.achievement-highlight-quote {
+    font-size: 1.1rem;
+    color: var(--gray-600);
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+    letter-spacing: 0.3px;
+}
+
+.achievement-features {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    gap: 3rem;
+    margin-bottom: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.achievement-feature-text {
+    flex: 1;
+    text-align: center;
+    padding: 0;
+    border-bottom: none;
+    transition: all 0.3s ease;
+}
+
+.achievement-feature-text:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.achievement-feature-text h4 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 0;
+    letter-spacing: -0.3px;
+    margin: 0;
+}
+
+.achievement-feature-text p {
+    font-size: 0.95rem;
+    color: var(--gray-600);
+    margin: 0;
+    line-height: 1.6;
+    display: none;
+}
+
+/* --- Horizontal Badges Carousel --- */
+.achievement-badges-carousel {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 3rem;
+    overflow-x: auto;
+    padding: 2rem 0;
+    scroll-behavior: smooth;
+}
+
+.achievement-badge-item {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+    margin-top: -32px;
+}
+
+.achievement-badge-item:hover {
+    transform: translateY(-12px);
+}
+
+.achievement-badge-image {
+    width: 180px;
+    height: 220px;
+    object-fit: contain;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.achievement-badge-item:hover .achievement-badge-image {
+    transform: scale(1.05);
+}
+
+.badge-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    text-align: center;
+}
+
+@media (max-width: 1024px) {
+    .achievement-highlight-content-vertical {
+        gap: 3rem;
+    }
+
+    .achievement-highlight-title {
+        font-size: 2.5rem;
+    }
+
+    .achievement-highlight-quote {
+        font-size: 1rem;
+    }
+
+    .achievement-features {
+        align-items: center;
+    }
+
+    .achievement-badges-carousel {
+        gap: 2rem;
+        padding: 1.5rem 0;
+    }
+
+    .achievement-medal-small {
+        width: 140px;
+        height: 170px;
+    }
+
+    .medal-circle-small {
+        width: 140px;
+        height: 140px;
+        border-width: 7px;
+    }
+
+    .medal-ribbon-small {
+        height: 45px;
+    }
+
+    .achievement-badge-image {
+        width: 160px;
+        height: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .achievement-highlight-section {
+        padding: 2rem 1rem;
+    }
+
+    .achievement-highlight-content-vertical {
+        gap: 2.5rem;
+    }
+
+    .achievement-highlight-title {
+        font-size: 1.75rem;
+    }
+
+    .achievement-highlight-quote {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .achievement-features {
+        gap: 1rem;
+        margin-bottom: 1rem;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .achievement-feature-text {
+        padding-bottom: 0;
+        flex: 0 0 calc(33.333% - 0.7rem);
+    }
+
+    .achievement-quote-mark {
+        font-size: 2.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .achievement-badges-carousel {
+        gap: 1.5rem;
+        padding: 1rem 0;
+        scroll-snap-type: x mandatory;
+    }
+
+    .achievement-badge-item {
+        scroll-snap-align: center;
+        flex: 0 0 140px;
+        gap: 1rem;
+    }
+
+    .achievement-badge-image {
+        width: 140px;
+        height: 170px;
+    }
+
+    .badge-label {
+        font-size: 0.85rem;
+    }
 }
 
 .cta-support-card {
@@ -1083,6 +1387,53 @@
 }
 
 @media (max-width: 768px) {
+    .achievement-highlight-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .achievement-badge-container {
+        min-height: 320px;
+        order: -1;
+    }
+
+    .medal-circle {
+        width: 200px;
+        height: 200px;
+        border-width: 8px;
+    }
+
+    .medal-inner {
+        font-size: 0.8rem;
+    }
+
+    .medal-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .achievement-highlight-title {
+        font-size: 1.75rem;
+    }
+
+    .achievement-highlight-quote {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .achievement-badges-carousel {
+        margin-top: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.5rem;
+    }
+    
+    .achievement-badge-image {
+        height: 50px;
+        width: auto;
+    }
+
     .cta-education-theme {
         padding: 4rem 2rem !important;
     }
@@ -1182,8 +1533,8 @@
     }
 
     .hero-visual {
-        max-width: 320px;
-        margin: 0 auto;
+        max-width: 100%;
+        margin: 0 auto 1rem;
     }
 
     .hero-main-card {
@@ -1287,14 +1638,7 @@
         display: none;
     }
 
-    .faq-question {
-        padding: 1.25rem;
-        font-size: 1rem;
-    }
 
-    .faq-answer {
-        padding: 0 1.25rem 0 3rem;
-    }
 
     .ecosystem-grid {
         gap: 1.5rem;
@@ -1686,6 +2030,7 @@
     margin: 1.5rem 0;
 }
 
+/* --- GAZETTE MOBILE OPTIMIZATION --- */
 @media (max-width: 1024px) {
     .gazette-grid {
         grid-template-columns: 1fr;
@@ -1702,13 +2047,85 @@
     }
 }
 
+@media (max-width: 768px) {
+    .gazette-section {
+        padding: 4rem 0;
+    }
+    
+    .gazette-title {
+        font-size: 2.25rem;
+    }
+    
+    .gazette-masthead {
+        margin-bottom: 2rem;
+    }
+    
+    .gazette-feature-quote {
+        font-size: 1.25rem;
+        line-height: 1.4;
+    }
+}
+
 @media (max-width: 640px) {
     .gazette-subline {
         flex-direction: column;
         gap: 0.5rem;
+        font-size: 0.65rem;
     }
 
     .gazette-dot {
         display: none;
     }
 }
+
+/* --- FAQ MOBILE REFINEMENT --- */
+@media (max-width: 900px) {
+    .faq-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .faq-title-large {
+        font-size: 2.25rem;
+        text-align: center;
+    }
+    
+    .faq-left {
+        max-width: 100%;
+        text-align: center;
+    }
+}
+
+/* --- DYNAMIC DEVICE RATIO OVERRIDES --- */
+@media screen and (max-width: 480px) {
+    .hero-title {
+        font-size: 2.25rem;
+        margin-bottom: 1rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.25rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .container {
+        padding: 0 1rem !important;
+    }
+    
+    .py-24 {
+        padding-top: 3.5rem;
+        padding-bottom: 3.5rem;
+    }
+    
+    .quick-access-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+}

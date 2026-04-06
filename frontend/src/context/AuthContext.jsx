@@ -19,7 +19,9 @@ export const AuthProvider = ({ children }) => {
 
     const loadUser = useCallback(async () => {
         const token = sessionStorage.getItem('soeit_token');
-        if (!token) {
+        
+        // Robust check: skip if no token or token is a placeholder string
+        if (!token || token === 'null' || token === 'undefined' || token.length < 10) {
             setUser(null);
             setLoading(false);
             return;
