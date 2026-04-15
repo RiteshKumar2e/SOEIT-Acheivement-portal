@@ -33,12 +33,12 @@
 .footer-logo-icon {
     width: 42px;
     height: 42px;
-    background: var(--brand-600);
+    background: linear-gradient(135deg, #f4c430, #ffd966);
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(0, 33, 71, 0.4);
+    box-shadow: 0 4px 15px rgba(244, 196, 48, 0.3);
 }
 
 .footer-logo-text {
