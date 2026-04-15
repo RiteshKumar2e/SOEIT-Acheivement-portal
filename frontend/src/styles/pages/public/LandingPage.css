@@ -2128,3 +2128,33 @@
         grid-template-columns: 1fr;
     }
 }
+
+.btn-gold {
+    background: #f4c430 !important;
+    color: #002147 !important;
+    font-weight: 800 !important;
+    box-shadow: 0 10px 20px -5px rgba(244, 196, 48, 0.4) !important;
+}
+
+.btn-gold:hover {
+    background: #e6b400 !important;
+    box-shadow: 0 15px 25px -5px rgba(244, 196, 48, 0.5) !important;
+}
+
+.badge-gold {
+    background: #f4c430 !important;
+    color: #002147 !important;
+    border: 2px solid #fff !important;
+    font-weight: 800 !important;
+}
+
+.btn-secondary-yellow {
+    border: 2px solid #f4c430 !important;
+    color: #b38b1a !important;
+    background: transparent !important;
+}
+
+.btn-secondary-yellow:hover {
+    background: #fff4d6 !important;
+    color: #002147 !important;
+}

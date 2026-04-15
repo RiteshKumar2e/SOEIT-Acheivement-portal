@@ -324,10 +324,10 @@ const LandingPage = () => {
                         </p>
 
                         <div className="flex gap-4 items-center">
-                            <Link to="/login" className="btn btn-primary btn-lg rounded-xl px-10 shadow-2xl hover:scale-105 transition-transform bg-brand-900 border-none flex items-center gap-2">
+                            <Link to="/login" className="btn btn-gold btn-lg rounded-xl px-10 shadow-2xl hover:scale-105 transition-transform border-none flex items-center gap-2">
                                 Explore Opportunities <ArrowRight size={18} />
                             </Link>
-                            <Link to="/register" className="btn btn-secondary btn-lg rounded-xl px-10 border-gray-200 hover:bg-gray-50 text-gray-700 font-bold">
+                            <Link to="/register" className="btn btn-secondary-yellow btn-lg rounded-xl px-10 border-gray-200 hover:bg-gray-50 font-bold">
                                 Register Now
                             </Link>
                         </div>
@@ -339,7 +339,7 @@ const LandingPage = () => {
                                         <img src={`https://i.pravatar.cc/100?img=${i + 15}`} alt="User" />
                                     </div>
                                 ))}
-                                <div className="w-10 h-10 rounded-full border-2 border-white bg-brand-600 flex items-center justify-center text-[10px] text-white font-bold">
+                                <div className="w-10 h-10 rounded-full border-2 border-white badge-gold flex items-center justify-center text-[10px] font-bold">
                                     +5k
                                 </div>
                             </div>
