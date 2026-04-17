@@ -229,31 +229,7 @@ const PublicPortfolioPage = () => {
                                 </div>
                             )}
 
-                            {/* Academic History in Public Portfolio */}
-                            {(student.edu12thSchool || student.edu10thSchool) && (
-                                <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                                    {student.edu12thSchool && (
-                                        <div style={{ background: 'white', padding: '0.75rem 1rem', borderRadius: '12px', border: '1px solid var(--border-primary)', minWidth: '220px' }}>
-                                            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--brand-600)', textTransform: 'uppercase', marginBottom: '0.25rem', letterSpacing: '0.05em' }}>Senior Secondary (12th)</div>
-                                            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>{student.edu12thSchool}</div>
-                                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', marginTop: '0.25rem' }}>
-                                                <span>{student.edu12thYear}</span>
-                                                <span style={{ fontWeight: 700, color: 'var(--success-600)' }}>{student.edu12thPercent}</span>
-                                            </div>
-                                        </div>
-                                    )}
-                                    {student.edu10thSchool && (
-                                        <div style={{ background: 'white', padding: '0.75rem 1rem', borderRadius: '12px', border: '1px solid var(--border-primary)', minWidth: '220px' }}>
-                                            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--brand-600)', textTransform: 'uppercase', marginBottom: '0.25rem', letterSpacing: '0.05em' }}>Secondary Education (10th)</div>
-                                            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>{student.edu10thSchool}</div>
-                                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', marginTop: '0.25rem' }}>
-                                                <span>{student.edu10thYear}</span>
-                                                <span style={{ fontWeight: 700, color: 'var(--success-600)' }}>{student.edu10thPercent}</span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                            {/* Academic History in Public Portfolio was removed as per request, it will only show on generated resume */}
 
                             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
                                 {student.linkedIn && <a href={student.linkedIn.startsWith('http') ? student.linkedIn : `https://${student.linkedIn}`} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm"><Linkedin size={14} /> LinkedIn</a>}
