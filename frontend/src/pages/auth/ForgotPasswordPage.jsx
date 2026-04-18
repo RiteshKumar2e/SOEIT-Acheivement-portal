@@ -81,7 +81,7 @@ const ForgotPasswordPage = () => {
                                         <input
                                             type="email"
                                             className={`form-control ${error ? 'error' : ''}`}
-                                            placeholder="your@email.com"
+                                            placeholder="example@arkajainuniversity.ac.in"
                                             value={email}
                                             onChange={e => { setEmail(e.target.value); setError(''); }}
                                         />
