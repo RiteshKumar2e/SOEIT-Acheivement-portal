@@ -1,9 +1,26 @@
-import '../../styles/pages/auth/ForgotPasswordPage.css';
+import '../../styles/pages/auth/LoginPage.css'; // sharing login premium css
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { authAPI } from '../../services/api';
-import { GraduationCap, Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+
+const UniversityHeader = () => (
+    <div className="auth-header">
+        <div className="auth-logo-group">
+            <div className="auth-logo">JGi</div>
+            <div className="auth-divider" />
+            <div className="auth-title-column">
+                <div className="auth-university-name">
+                    <span className="auth-name-primary">ARKA JAIN</span><br />
+                    <span className="auth-name-secondary">UNIVERSITY</span>
+                </div>
+                <div className="auth-location">Jharkhand</div>
+            </div>
+        </div>
+        <div className="auth-naac-badge">NAAC GRADE A</div>
+    </div>
+);
 
 const ForgotPasswordPage = () => {
     const [email, setEmail] = useState('');
@@ -27,42 +44,56 @@ const ForgotPasswordPage = () => {
     };
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)', padding: '1rem', position: 'relative' }}>
-            <div style={{ width: '100%', maxWidth: '440px' }}>
-                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                    <h2>Forgot Password?</h2>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>Enter your email and we'll send reset instructions</p>
-                </div>
+        <div className="login-page">
+            <div style={{ position: 'absolute', top: '2rem', left: '2rem', zIndex: 10 }}>
+                <Link to="/login" className="btn btn-secondary btn-sm" style={{ fontWeight: 600, boxShadow: 'var(--shadow-sm)' }}>
+                    <ArrowLeft size={14} /> Back to Login
+                </Link>
+            </div>
 
-                <div className="card card-body">
+            <div className="animate-slide-up" style={{ width: '100%', maxWidth: '440px' }}>
+                <UniversityHeader />
+
+                <div className="login-card">
                     {sent ? (
-                        <div style={{ textAlign: 'center', padding: '1rem' }}>
+                        <div style={{ textAlign: 'center', padding: '1rem 0' }}>
                             <div style={{ width: 64, height: 64, background: 'rgba(34,197,94,0.15)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
                                 <CheckCircle size={32} color="var(--success-500)" />
                             </div>
-                            <h3 style={{ color: 'var(--success-500)', marginBottom: '0.75rem' }}>Check Your Email</h3>
-                            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
+                            <h3 style={{ color: 'var(--success-500)', marginBottom: '0.75rem', fontWeight: 800 }}>Check Your Email</h3>
+                            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', lineHeight: 1.7, fontSize: '0.9rem' }}>
                                 We've sent password reset instructions to <strong style={{ color: 'var(--text-primary)' }}>{email}</strong>
                             </p>
-                            <Link to="/login" className="btn btn-primary w-full" style={{ justifyContent: 'center' }}>Back to Login</Link>
+                            <Link to="/login" className="btn-arka-jain" style={{ display: 'flex', justifyContent: 'center', textDecoration: 'none' }}>
+                                Back to Login
+                            </Link>
                         </div>
                     ) : (
-                        <form onSubmit={handleSubmit}>
-                            <div className="form-group">
-                                <label className="form-label required">Email Address</label>
-                                <div style={{ position: 'relative' }}>
-                                    <Mail size={16} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                    <input type="email" className={`form-control ${error ? 'error' : ''}`} style={{ paddingLeft: '2.5rem' }} placeholder="your@email.com" value={email} onChange={e => { setEmail(e.target.value); setError(''); }} />
-                                </div>
-                                {error && <div className="input-error">{error}</div>}
+                        <>
+                            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                                <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Forgot Password?</h2>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>Enter your registration email address to receive password reset instructions.</p>
                             </div>
-                            <button type="submit" className="btn btn-primary w-full" disabled={loading} style={{ padding: '0.75rem' }}>
-                                {loading ? <><div className="spinner spinner-sm" style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: '#fff' }} /> Sending...</> : 'Send Reset Link'}
-                            </button>
-                            <Link to="/login" className="btn btn-secondary w-full" style={{ marginTop: '0.75rem', justifyContent: 'center' }}>
-                                <ArrowLeft size={16} /> Back to Login
-                            </Link>
-                        </form>
+                            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                    <label className="form-label" style={{ fontWeight: 600, color: '#303657', marginBottom: '0.4rem', display: 'block', fontSize: '0.85rem' }}>Email Address</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <input
+                                            type="email"
+                                            className={`form-control ${error ? 'error' : ''}`}
+                                            placeholder="your@email.com"
+                                            value={email}
+                                            onChange={e => { setEmail(e.target.value); setError(''); }}
+                                        />
+                                    </div>
+                                    {error && <div className="input-error" style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{error}</div>}
+                                </div>
+
+                                <button type="submit" className="btn-arka-jain" disabled={loading} style={{ marginTop: '0.5rem' }}>
+                                    {loading ? 'Sending...' : 'SEND RESET LINK'}
+                                </button>
+                            </form>
+                        </>
                     )}
                 </div>
             </div>
