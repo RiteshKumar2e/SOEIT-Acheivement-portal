@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { GraduationCap, Mail, Phone, MapPin, Linkedin, Github, Twitter, Youtube, ExternalLink } from 'lucide-react';
+import { GraduationCap, Mail, Phone, MapPin, Linkedin, Github, Twitter, Youtube, ExternalLink, X } from 'lucide-react';
 import '../../styles/layout/Footer.css';
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
+    const [showAppModal, setShowAppModal] = useState(false);
 
     const socialLinks = [
         { icon: Linkedin, href: '#' },
@@ -96,12 +98,12 @@ const Footer = () => {
                         </div>
                         {/* Badges moved here under Reach Us */}
                         <div className="footer-badges-column">
-                            <a href="#" className="app-badge-box">
+                            <button onClick={() => setShowAppModal(true)} className="app-badge-box" style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}>
                                 <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="App Store" />
-                            </a>
-                            <a href="#" className="app-badge-box">
-                                <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Google Play" />
-                            </a>
+                            </button>
+                            <button onClick={() => setShowAppModal(true)} className="app-badge-box" style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}>
+                                <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Google Play" style={{ width: '135px' }} />
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -122,6 +124,46 @@ const Footer = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Coming Soon App Modal */}
+            {showAppModal && (
+                <div style={{
+                    position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)',
+                    zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem', animation: 'fadeIn 0.2s ease-out'
+                }}>
+                    <div style={{
+                        background: '#ffffff', width: '100%', maxWidth: '450px', borderRadius: '20px', padding: '2rem',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', position: 'relative', textAlign: 'center', animation: 'slideUp 0.3s ease-out'
+                    }}>
+                        <button 
+                            onClick={() => setShowAppModal(false)}
+                            style={{ position: 'absolute', top: '1rem', right: '1rem', background: '#f1f5f9', border: 'none', borderRadius: '50%', padding: '0.5rem', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                            onMouseOver={(e) => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.color = '#0f172a'; }}
+                            onMouseOut={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#64748b'; }}
+                        >
+                            <X size={20} strokeWidth={2.5} />
+                        </button>
+                        <div style={{ width: '60px', height: '60px', background: '#eff6ff', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem auto' }}>
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                        </div>
+                        <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>Available Soon!</h3>
+                        <p style={{ margin: '0 0 1rem 0', color: '#475569', fontSize: '1rem', lineHeight: 1.6 }}>
+                            Our mobile application is currently under development and will be available soon on the App Store and Google Play.
+                        </p>
+                        <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem', fontWeight: 500 }}>
+                            We are working to deliver a seamless and high-quality experience. Thank you for your patience and support.
+                        </p>
+                        <button 
+                            onClick={() => setShowAppModal(false)}
+                            style={{ width: '100%', padding: '0.875rem', background: '#2563eb', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, fontSize: '1rem', marginTop: '2rem', cursor: 'pointer', transition: 'background 0.2s' }}
+                            onMouseOver={(e) => e.currentTarget.style.background = '#1d4ed8'}
+                            onMouseOut={(e) => e.currentTarget.style.background = '#2563eb'}
+                        >
+                            Got It
+                        </button>
+                    </div>
+                </div>
+            )}
         </footer>
     );
 };
