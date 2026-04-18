@@ -98,10 +98,10 @@ exports.getProfile = async (req, res, next) => {
 exports.updateProfile = async (req, res, next) => {
     try {
         const allowedFields = [
-            'name', 'email', 'phone', 'enrollmentNo', 'bio', 'batch', 'semester', 'section', 
-            'linkedIn', 'github', 'portfolio', 
-            'edu10thSchool', 'edu10thYear', 'edu10thPercent', 
-            'edu12thSchool', 'edu12thYear', 'edu12thPercent', 
+            'name', 'email', 'phone', 'enrollmentNo', 'bio', 'batch', 'semester', 'section',
+            'linkedIn', 'github', 'portfolio',
+            'edu10thSchool', 'edu10thYear', 'edu10thPercent',
+            'edu12thSchool', 'edu12thYear', 'edu12thPercent',
             'universityName', 'universityCgpa', 'skills'
         ];
         const updates = {};
@@ -114,11 +114,11 @@ exports.updateProfile = async (req, res, next) => {
         }
 
         const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true });
-        
+
         // Invalidate cache
         clearCache('/api/auth/profile');
         clearCache(`/api/achievements/portfolio/${req.user.id}`);
-        
+
         res.status(200).json({ success: true, message: 'Profile updated successfully', user });
     } catch (error) {
         next(error);
@@ -163,11 +163,41 @@ exports.forgotPassword = async (req, res, next) => {
         const resetToken = user.getResetPasswordToken();
         await user.save();
 
-        res.status(200).json({
-            success: true,
-            message: 'Password reset token generated',
-            resetToken, // In production: send via email only
-        });
+        const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+
+        try {
+            const sendEmail = require('../../utils/sendEmail');
+            const getEmailTemplate = require('../../utils/emailTemplates');
+
+            const html = getEmailTemplate({
+                title: 'Password Reset Request',
+                content: `
+                    <h1 class="h1">Hello ${user.name},</h1>
+                    <p class="p">You are receiving this email because you  has requested the reset of a password for your account on the SOEIT Achievement Portal.</p>
+                    <p class="p">Please click on the button below to complete the process. This link is valid for 10 minutes.</p>
+                    <p class="p" style="margin-top: 15px; color: #ef4444; font-size: 13px;">If you did not request this, please ignore this email and your password will remain unchanged.</p>
+                `,
+                actionUrl: resetUrl,
+                actionText: 'Reset Password',
+                footerText: 'For security reasons, this link will expire shortly. Never share your password reset link with anyone.'
+            });
+
+            await sendEmail({
+                to: user.email,
+                subject: 'SOEIT Portal - Password Reset Instructions',
+                html
+            });
+
+            res.status(200).json({
+                success: true,
+                message: 'Password reset instructions sent to your email.'
+            });
+        } catch (emailError) {
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpire = undefined;
+            await user.save();
+            return res.status(500).json({ success: false, message: 'Email could not be sent' });
+        }
     } catch (error) {
         next(error);
     }
