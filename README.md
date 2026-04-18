@@ -104,14 +104,16 @@ The portal is built on a **full-stack modern architecture** (REVN Stack + React 
 
 ---
 
-## 🆕 Recent Updates (March 19, 2026)
+## 🆕 Recent Updates (April 2026)
 
 | Update | Description |
 | :--- | :--- |
-| 📄 **Professional Resume Engine** | Launched high-density automated resume generator matching top-tier technical industry standards. |
-| 🆔 **Comprehensive Profiles** | Expanded user profiles to include 10th/12th academic markers, Enrollment IDs, and University CGPA. |
+| 🏅 **Gamified Weekly Badges** | Automated system assigns Platinum, Gold, Silver, and Bronze badges every Sunday at midnight based on verified points using `node-cron`. |
+| 📊 **Public Scholar Leaderboard** | Live "Top Scholars of the Week" natively integrated across both faculty and student dashboards. |
+| 📄 **100% ATS-Compliant Resumes** | Completely overhauled PDF and DOCX generators to use native vector text with active URL routing—guaranteed parsing inside applicant tracking systems. |
+| 📧 **Branded Automated Email** | Custom Brevo HTML email templates triggered upon badge assignments to keep students motivated. |
+
 | 🛡️ **Session-Based Auth** | Enhanced security by migrating to `sessionStorage`, ensuring automatic logout when the browser tab is closed. |
-| 🚀 **Direct Verification** | Updated email verification flow to land users directly on the dashboard for a smoother onboarding experience. |
 | 🏥 **DB Reliability** | Optimized Turso schema with indexes for high-speed lookups across all management modules. |
 
 ---
@@ -775,7 +777,7 @@ expo build:android
 
 ### Q3 2026
 - [ ] **Alumni Integration** — Extended profiles for post-graduates
-- [ ] **Achievement Badges** — Gamification with earned badges
+- [x] **Achievement Badges** — Gamification with earned badges
 - [ ] **Social Features** — Follow students, share achievements
 - [ ] **Analytics Dashboard** — Advanced reporting for institutions
 
