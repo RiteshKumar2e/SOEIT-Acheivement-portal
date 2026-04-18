@@ -211,8 +211,8 @@ const User = {
                 const colMap = { name: 'name', createdAt: 'created_at' };
                 sql += ` ORDER BY ${colMap[field] || field} ${dir === -1 || dir === 'desc' ? 'DESC' : 'ASC'}`;
             }
-            if (_skip) sql += ` OFFSET ${_skip}`;
             if (_limit) sql += ` LIMIT ${_limit}`;
+            if (_skip) sql += ` OFFSET ${_skip}`;
 
             const result = await db.execute({ sql, args });
             return result.rows.map(rowToUser);

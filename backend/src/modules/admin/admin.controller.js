@@ -62,7 +62,7 @@ exports.getDashboardStats = async (req, res, next) => {
 // @route   GET /api/admin/achievements/pending
 exports.getPendingAchievements = async (req, res, next) => {
     try {
-        const { page = 1, limit = 10, category, department, search } = req.query;
+        const { page = 1, limit = 5000, category, department, search } = req.query;
         const db = getDb();
         let sql = `
             SELECT
@@ -240,7 +240,7 @@ exports.verifyAchievement = async (req, res, next) => {
 // @route   GET /api/admin/achievements
 exports.getAllAchievements = async (req, res, next) => {
     try {
-        const { page = 1, limit = 10, status, category, department, search } = req.query;
+        const { page = 1, limit = 5000, status, category, department, search } = req.query;
         const db = getDb();
         let sql = `
             SELECT
@@ -302,9 +302,9 @@ exports.getAllAchievements = async (req, res, next) => {
 // @route   GET /api/admin/students
 exports.getStudents = async (req, res, next) => {
     try {
-        const { page = 1, limit = 10, department, search, batch, semester, section } = req.query;
+        const { page = 1, limit = 5000, department, search, batch, semester, section } = req.query;
         const pageNum = Math.max(1, parseInt(page) || 1);
-        const limitNum = Math.max(1, parseInt(limit) || 10);
+        const limitNum = Math.max(1, parseInt(limit) || 5000);
 
         const query = { role: 'student', isActive: true };
         if (department) query.department = department;
