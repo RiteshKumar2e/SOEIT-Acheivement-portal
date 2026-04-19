@@ -20,7 +20,7 @@ const { width, height } = Dimensions.get('window');
 
 // ── data ────────────────────────────────────────────────────────────────────
 
-const HERO_GRADIENT = ['#fff5f0', '#fee2d5', '#ffffff']; // Light Peach Shades
+const HERO_GRADIENT = ['#ffffff', '#f8fafe', '#f1f5f9']; // Clean Institutional Slate
 
 const QUICK_LINKS = [
   { title: 'Hackathons', icon: 'trophy', color: '#ff6b6b' },
@@ -131,7 +131,7 @@ const WelcomeScreen = ({ navigation }) => {
           {/* logo row */}
           <View style={S.logoRow}>
             <View style={S.logoBadge}>
-              <Ionicons name="school" size={22} color={COLORS.primary} />
+              <Ionicons name="school" size={22} color="#b45309" />
             </View>
             <View>
               <Text style={S.logoText}>SoEIT</Text>
@@ -143,7 +143,7 @@ const WelcomeScreen = ({ navigation }) => {
 
           {/* official badge */}
           <View style={S.officialBadge}>
-            <Ionicons name="shield-checkmark" size={13} color={COLORS.primary} />
+            <Ionicons name="shield-checkmark" size={13} color="#b45309" />
             <Text style={S.badgeText}>OFFICIAL SoEIT PORTAL · NAAC A</Text>
           </View>
 
@@ -308,15 +308,15 @@ const S = StyleSheet.create({
   heroContent: { flex: 1, padding: 24, justifyContent: 'flex-start' },
 
   logoRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  logoBadge: { width: 44, height: 44, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' },
-  logoText: { color: COLORS.textPrimary, fontSize: 20, fontWeight: '900', letterSpacing: 0.5 },
-  logoSub: { color: COLORS.primary, fontSize: 9, fontWeight: '800', letterSpacing: 3, marginTop: -3 },
+  logoBadge: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#fef3c7', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#fde68a' },
+  logoText: { color: '#b45309', fontSize: 20, fontWeight: '900', letterSpacing: 0.5 },
+  logoSub: { color: '#d97706', fontSize: 10, fontWeight: '800', letterSpacing: 4, marginTop: -2 },
 
-  officialBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.primary + '15', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20, marginBottom: 14, gap: 6, borderWidth: 1, borderColor: COLORS.primary + '33' },
-  badgeText: { color: COLORS.primary, fontSize: 9, fontWeight: '900', letterSpacing: 1.2 },
+  officialBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fef3c7', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, marginBottom: 16, gap: 6, borderWidth: 1, borderColor: '#fde68a' },
+  badgeText: { color: '#b45309', fontSize: 10, fontWeight: '800', letterSpacing: 1.2 },
 
   heroTitle: { color: COLORS.textPrimary, fontSize: 36, fontWeight: '900', lineHeight: 42 },
-  heroAccent: { color: COLORS.primary },
+  heroAccent: { color: '#b45309' },
   heroSub: { color: COLORS.textSecondary, fontSize: 15, marginTop: 12, lineHeight: 22, fontWeight: '500' },
 
   btnRow: { flexDirection: 'row', gap: 12, marginTop: 28 },
@@ -367,7 +367,7 @@ const S = StyleSheet.create({
 
 
   // gazette
-  gazetteSection: { paddingHorizontal: 24, paddingTop: 8, paddingBottom: 32, backgroundColor: '#fffdf9' },
+  gazetteSection: { paddingHorizontal: 24, paddingTop: 16, paddingBottom: 32, backgroundColor: '#ffffff' },
   gazetteRule: { height: 1.5, backgroundColor: '#e2e8f0', marginVertical: 8 },
   gazetteMasthead: { alignItems: 'center', paddingVertical: 10 },
   gazetteVol: { color: '#64748b', fontSize: 11, fontWeight: '700', letterSpacing: 1 },
@@ -375,12 +375,12 @@ const S = StyleSheet.create({
   gazetteTagline: { color: '#64748b', fontSize: 11, fontWeight: '700', letterSpacing: 1 },
   gazetteSubline: { textAlign: 'center', color: '#94a3b8', fontSize: 10, fontWeight: '700', letterSpacing: 0.8, marginVertical: 4 },
 
-  gazetteCard: { backgroundColor: '#fff', borderRadius: 4, padding: 22, borderWidth: 1, borderColor: '#ece7db', elevation: 3, marginTop: 16 },
-  gazetteFeatLabel: { color: '#991b1b', fontSize: 11, fontWeight: '900', letterSpacing: 1, marginBottom: 14, borderBottomWidth: 1, borderBottomColor: '#ece7db', paddingBottom: 10 },
-  gazetteQuote: { color: '#1e293b', fontSize: 16, fontStyle: 'italic', fontWeight: '700', lineHeight: 24, marginBottom: 20 },
+  gazetteCard: { backgroundColor: '#f8fafc', borderRadius: 16, padding: 22, borderWidth: 1, borderColor: '#e2e8f0', elevation: 2, marginTop: 16 },
+  gazetteFeatLabel: { color: COLORS.primary, fontSize: 11, fontWeight: '900', letterSpacing: 1, marginBottom: 14, borderBottomWidth: 1, borderBottomColor: '#f1f5f9', paddingBottom: 10 },
+  gazetteQuote: { color: '#1e293b', fontSize: 15, fontStyle: 'italic', fontWeight: '700', lineHeight: 22, marginBottom: 20 },
   gazetteByline: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  gazetteAvatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#991b1b15', alignItems: 'center', justifyContent: 'center' },
-  gazetteAvatarTxt: { color: '#991b1b', fontWeight: '900', fontSize: 18 },
+  gazetteAvatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.primary + '15', alignItems: 'center', justifyContent: 'center' },
+  gazetteAvatarTxt: { color: COLORS.primary, fontWeight: '900', fontSize: 18 },
   bylineName: { color: '#0f172a', fontSize: 14, fontWeight: '800' },
   bylineRole: { color: '#64748b', fontSize: 12, fontWeight: '600' },
 
@@ -389,7 +389,7 @@ const S = StyleSheet.create({
   gazetteNavTxt: { color: '#64748b', fontSize: 12, fontWeight: '700' },
   gazetteCount: { color: '#94a3b8', fontSize: 11, fontWeight: '700' },
 
-  snippetsWrap: { backgroundColor: '#fff', borderRadius: 4, padding: 20, borderWidth: 1, borderColor: '#ece7db', marginTop: 12, elevation: 2 },
+  snippetsWrap: { backgroundColor: '#f8fafc', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#e2e8f0', marginTop: 12, elevation: 1 },
   snippet: { paddingVertical: 10 },
   snippetText: { color: '#334155', fontSize: 13, fontStyle: 'italic', lineHeight: 19 },
   snippetAuthor: { color: '#64748b', fontSize: 12, fontWeight: '700', marginTop: 4 },
