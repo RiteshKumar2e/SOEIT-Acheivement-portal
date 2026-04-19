@@ -17,7 +17,7 @@ import api from '../../services/api';
 import { format } from 'date-fns';
 
 const StatusBadge = ({ status }) => {
-  const isVerified = status === 'verified';
+  const isVerified = status === 'verified' || status === 'approved';
   const isPending = status === 'pending';
   const isRejected = status === 'rejected';
 
