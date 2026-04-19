@@ -155,7 +155,7 @@ const WelcomeScreen = ({ navigation }) => {
           {/* logo row */}
           <View style={S.logoRow}>
             <View style={S.logoBadge}>
-              <Ionicons name="school" size={22} color={COLORS.primary} />
+              <Ionicons name="school" size={22} color="#a5b4fc" />
             </View>
             <View>
               <Text style={S.logoText}>SoEIT</Text>
@@ -167,7 +167,7 @@ const WelcomeScreen = ({ navigation }) => {
 
           {/* official badge */}
           <View style={S.officialBadge}>
-            <Ionicons name="shield-checkmark" size={13} color={COLORS.primary} />
+            <Ionicons name="shield-checkmark" size={13} color="#a5b4fc" />
             <Text style={S.badgeText}>OFFICIAL SoEIT PORTAL · NAAC A</Text>
           </View>
 
@@ -333,13 +333,13 @@ const S = StyleSheet.create({
   logoRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   logoBadge: { width: 44, height: 44, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' },
   logoText: { color: '#fff', fontSize: 20, fontWeight: '900', letterSpacing: 0.5 },
-  logoSub: { color: COLORS.primary, fontSize: 9, fontWeight: '800', letterSpacing: 3, marginTop: -3 },
+  logoSub: { color: '#a5b4fc', fontSize: 9, fontWeight: '800', letterSpacing: 3, marginTop: -3 },
 
-  officialBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.primary + '22', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20, marginBottom: 14, gap: 6, borderWidth: 1, borderColor: COLORS.primary + '44' },
-  badgeText: { color: COLORS.primary, fontSize: 9, fontWeight: '900', letterSpacing: 1.2 },
+  officialBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.1)', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20, marginBottom: 14, gap: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' },
+  badgeText: { color: '#a5b4fc', fontSize: 9, fontWeight: '900', letterSpacing: 1.2 },
 
   heroTitle: { color: '#fff', fontSize: 36, fontWeight: '900', lineHeight: 42 },
-  heroAccent: { color: COLORS.primary },
+  heroAccent: { color: '#a5b4fc' },
   heroSub: { color: '#cbd5e1', fontSize: 15, marginTop: 12, lineHeight: 22, fontWeight: '500' },
 
   btnRow: { flexDirection: 'row', gap: 12, marginTop: 28 },
@@ -351,7 +351,7 @@ const S = StyleSheet.create({
 
   dots: { flexDirection: 'row', gap: 6, marginTop: 18 },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.35)' },
-  dotActive: { width: 18, backgroundColor: COLORS.primary },
+  dotActive: { width: 18, backgroundColor: '#a5b4fc' },
 
   // quick links
   section: { padding: 24 },
