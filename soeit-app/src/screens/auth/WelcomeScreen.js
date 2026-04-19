@@ -181,17 +181,12 @@ const WelcomeScreen = ({ navigation }) => {
           </Text>
 
           {/* buttons */}
-          <View style={S.btnRow}>
-            <TouchableOpacity style={S.primaryBtn} onPress={() => navigation.navigate('Login')} activeOpacity={0.88}>
-              <LinearGradient colors={[COLORS.primary, '#4f46e5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={S.btnGrad}>
-                <Text style={S.primaryBtnTxt}>Get Started</Text>
-                <Ionicons name="arrow-forward" size={17} color="#fff" />
-              </LinearGradient>
-            </TouchableOpacity>
-            <TouchableOpacity style={S.secondaryBtn} onPress={() => navigation.navigate('Register')} activeOpacity={0.88}>
-              <Text style={S.secondaryBtnTxt}>Register</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity style={S.primaryBtn} onPress={() => navigation.navigate('Login')} activeOpacity={0.88}>
+            <LinearGradient colors={[COLORS.primary, '#4f46e5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={S.btnGrad}>
+              <Text style={S.primaryBtnTxt}>Get Started</Text>
+              <Ionicons name="arrow-forward" size={17} color="#fff" />
+            </LinearGradient>
+          </TouchableOpacity>
 
           {/* dot indicators */}
           <View style={S.dots}>

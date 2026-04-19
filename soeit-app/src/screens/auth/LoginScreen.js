@@ -282,18 +282,7 @@ const LoginScreen = ({ navigation }) => {
               </View>
             </View>
 
-            {/* Sign Up Link */}
-            <View style={styles.signupContainer}>
-              <Text style={styles.signupText}>Don't have an account?{' '}</Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('Register')}
-                accessible
-                accessibilityRole="button"
-                accessibilityLabel="Sign up"
-              >
-                <Text style={styles.signupLink}>Sign Up</Text>
-              </TouchableOpacity>
-            </View>
+
           </View>
         </ScrollView>
       </LinearGradient>

@@ -8,7 +8,6 @@ import { useAuth } from '../context/AuthContext';
 
 // Auth Screens
 import LoginScreen from '../screens/auth/LoginScreen';
-import RegisterScreen from '../screens/auth/RegisterScreen';
 
 // Student Screens
 import StudentDashboard from '../screens/student/StudentDashboard';
@@ -340,11 +339,6 @@ const AppNavigator = () => {
             name="Login" 
             component={LoginScreen} 
             options={{ headerShown: false }} 
-          />
-          <Stack.Screen 
-            name="Register" 
-            component={RegisterScreen} 
-            options={{ title: 'Create Account' }}
           />
         </>
       ) : (
