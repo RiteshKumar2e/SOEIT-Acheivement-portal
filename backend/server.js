@@ -48,6 +48,9 @@ app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
+    'http://localhost:8081',   // Expo web dev server
+    'http://localhost:8082',
+    'http://localhost:19006',  // Expo Go web
     'https://soeit-acheivement-portal.vercel.app',
     'https://soeit-acheivement-portal-5ojpz1d9b.vercel.app',
     'https://soeit-achievement-portal.onrender.com',
