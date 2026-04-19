@@ -36,7 +36,7 @@ const LoginScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [captchaCode, setCaptchaCode] = useState(generateCaptcha());
-  const { login, loginDemo } = useAuth();
+  const { login } = useAuth();
 
   // Refresh captcha function
   const handleRefreshCaptcha = () => {
@@ -79,16 +79,6 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-  const handleDemoLogin = async (role = 'student') => {
-    setLoading(true);
-    try {
-      await loginDemo(role);
-    } catch (error) {
-      Alert.alert('Demo Error', 'Failed to use demo login.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -239,47 +229,6 @@ const LoginScreen = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
 
-            {/* Quick Demo Access */}
-            <View style={styles.demoSection}>
-              <Text style={styles.demoSectionTitle}>Quick Demo Access</Text>
-              <View style={styles.demoBtnGroup}>
-                <TouchableOpacity
-                  style={[styles.demoBtn, styles.demoBtnStudent]}
-                  onPress={() => handleDemoLogin('student')}
-                  disabled={loading}
-                  accessible
-                  accessibilityRole="button"
-                  accessibilityLabel="Demo student login"
-                >
-                  <Ionicons name="person-circle" size={18} color="#fff" style={{ marginRight: 8 }} />
-                  <Text style={styles.demoBtnText}>Student</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[styles.demoBtn, styles.demoBtnFaculty]}
-                  onPress={() => handleDemoLogin('faculty')}
-                  disabled={loading}
-                  accessible
-                  accessibilityRole="button"
-                  accessibilityLabel="Demo faculty login"
-                >
-                  <Ionicons name="school" size={18} color="#fff" style={{ marginRight: 8 }} />
-                  <Text style={styles.demoBtnText}>Faculty</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[styles.demoBtn, styles.demoBtnAdmin]}
-                  onPress={() => handleDemoLogin('admin')}
-                  disabled={loading}
-                  accessible
-                  accessibilityRole="button"
-                  accessibilityLabel="Demo admin login"
-                >
-                  <Ionicons name="shield-checkmark" size={18} color="#fff" style={{ marginRight: 8 }} />
-                  <Text style={styles.demoBtnText}>Admin</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
 
 
           </View>
@@ -474,44 +423,6 @@ const styles = StyleSheet.create({
     fontSize: getResponsiveFontSize(14),
     fontWeight: '700',
     letterSpacing: 1,
-  },
-  demoBtn: {
-    flexDirection: 'row',
-    paddingVertical: SPACING.md,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  demoBtnStudent: {
-    backgroundColor: '#0891b2',
-  },
-  demoBtnFaculty: {
-    backgroundColor: '#8b5cf6',
-  },
-  demoBtnAdmin: {
-    backgroundColor: '#dc2626',
-  },
-  demoBtnText: {
-    color: '#fff',
-    fontSize: getResponsiveFontSize(13),
-    fontWeight: '600',
-  },
-  demoSection: {
-    marginTop: SPACING.lg,
-    marginBottom: SPACING.lg,
-  },
-  demoSectionTitle: {
-    color: '#455a64',
-    fontSize: getResponsiveFontSize(11),
-    fontWeight: '700',
-    letterSpacing: 1.2,
-    marginBottom: SPACING.md,
-  },
-  demoBtnGroup: {
-    flexDirection: 'row',
-    gap: SPACING.sm,
-    width: '100%',
   },
   signupContainer: {
     flexDirection: 'row',
