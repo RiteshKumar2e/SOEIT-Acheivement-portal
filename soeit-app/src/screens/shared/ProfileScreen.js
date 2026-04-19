@@ -454,32 +454,6 @@ const ProfileScreen = ({ navigation }) => {
             </View>
           )}
 
-          {!isAdmin && (
-            <View style={styles.section}>
-              <TouchableOpacity
-                style={styles.resumeBtn}
-                onPress={() =>
-                  Alert.alert(
-                    'Resume Hub',
-                    'Your professional resume is being generated using the SOEIT Engine...'
-                  )
-                }
-              >
-                <LinearGradient
-                  colors={['#06b6d4', '#3b82f6']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.resumeGradient}
-                >
-                  <Ionicons name="document-text" size={20} color="#fff" />
-                  <Text style={styles.resumeText} allowFontScaling maxFontSizeMultiplier={1.2}>
-                    Generate AI Resume
-                  </Text>
-                  <Ionicons name="sparkles" size={16} color="#fff" />
-                </LinearGradient>
-              </TouchableOpacity>
-            </View>
-          )}
         </>
       )}
 

@@ -20,8 +20,6 @@ import api from '../../services/api';
 const PublicPortfolioScreen = ({ navigation }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [aiGenerating, setAiGenerating] = useState(false);
-  const [aiSummary, setAiSummary] = useState('');
   const [stats, setStats] = useState({
     achievements: 0,
     projects: 0,
@@ -48,31 +46,6 @@ const PublicPortfolioScreen = ({ navigation }) => {
     } catch (e) {
       // Keep zeros on error
     }
-  };
-
-  const generateAiSummary = () => {
-    setAiGenerating(true);
-    setAiSummary('');
-
-    // Final text to type
-    const finalText = `An ambitious ${user?.role || 'Student'} at SoEIT specializing in technical excellence. With ${stats.achievements} verified achievements and ${stats.projects} completed projects, this profile demonstrates strong proficiency in ${stats.achievements > 10 ? 'multiple engineering domains' : 'core software development'}. The candidate shows consistent growth through ${stats.courses} academic certifications.`;
-
-    // Simulate AI "thinking"
-    setTimeout(() => {
-      let currentText = '';
-      let charIdx = 0;
-
-      const typeInterval = setInterval(() => {
-        if (charIdx < finalText.length) {
-          currentText += finalText[charIdx];
-          setAiSummary(currentText);
-          charIdx++;
-        } else {
-          clearInterval(typeInterval);
-          setAiGenerating(false);
-        }
-      }, 30); // 30ms per character for that "typing" feel
-    }, 1200);
   };
 
   const handleShare = async () => {
@@ -129,44 +102,6 @@ const PublicPortfolioScreen = ({ navigation }) => {
         </LinearGradient>
 
         <View style={styles.content}>
-          {/* AI Feature Section */}
-          <View style={styles.aiCard}>
-            <LinearGradient
-              colors={['#f5f3ff', '#ede9fe']}
-              style={styles.aiGradient}
-            >
-              <View style={styles.aiHeader}>
-                <Ionicons name="sparkles" size={20} color="#7c3aed" />
-                <Text style={styles.aiTitle}>AI Professional Insight</Text>
-              </View>
-
-              {aiSummary ? (
-                <Text style={styles.aiText}>{aiSummary}</Text>
-              ) : (
-                <Text style={styles.aiSub}>
-                  Let AI analyze your achievements and generate a professional summary for recruiters.
-                </Text>
-              )}
-
-              <TouchableOpacity
-                style={styles.aiBtn}
-                onPress={generateAiSummary}
-                disabled={aiGenerating}
-              >
-                {aiGenerating ? (
-                  <ActivityIndicator color="#fff" size="small" />
-                ) : (
-                  <>
-                    <Text style={styles.aiBtnText}>
-                      {aiSummary ? 'Regenerate Insight' : 'Generate AI Summary'}
-                    </Text>
-                    <Ionicons name="flash" size={16} color="#fff" style={{ marginLeft: 8 }} />
-                  </>
-                )}
-              </TouchableOpacity>
-            </LinearGradient>
-          </View>
-
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Portfolio Link</Text>
             <View style={styles.linkCard}>
