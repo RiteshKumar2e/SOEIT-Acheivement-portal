@@ -70,8 +70,7 @@ const LoginScreen = ({ navigation }) => {
 
     setLoading(true);
     try {
-      const email = `${enrollmentNo.toLowerCase()}@arkajainuniversity.ac.in`;
-      await login(email, password);
+      await login(enrollmentNo, password);
     } catch (error) {
       const msg = error.response?.data?.message || 'Login failed. Please check your credentials.';
       Alert.alert('Login Failed', msg);

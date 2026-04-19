@@ -41,7 +41,7 @@ api.interceptors.request.use(
 
         // Helper to wrap data in standard response format
         const mockRes = (data) => ({
-          data: { success: true, data: data, notices: data, courses: data, internships: data, stats: data },
+          data: { success: true, data: data },
           status: 200, statusText: 'OK', headers: {}, config
         });
 
@@ -65,7 +65,7 @@ api.interceptors.request.use(
             { id: 'ach1', title: 'Google Hash Code Finalist', category: 'Coding', level: 'International', date: '2026-03-15', status: 'pending', user: { name: 'Ritesh Kumar', enrollmentNo: 'AJU/221403' } },
             { id: 'ach2', title: 'Inter-University Cricket Winner', category: 'Sports', level: 'Regional', date: '2026-02-10', status: 'pending', user: { name: 'Anjali Sharma' } },
           ];
-          return { ...config, adapter: () => Promise.resolve({ data: { success: true, data: demoPending, total: 2 }, status: 200, statusText: 'OK', headers: {}, config }) };
+          return { ...config, adapter: () => Promise.resolve(mockRes(demoPending)) };
         }
 
         // 🔵 STUDENT ENDPOINTS

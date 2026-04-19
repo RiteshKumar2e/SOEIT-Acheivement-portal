@@ -145,7 +145,7 @@ export const AuthProvider = ({ children }) => {
 
   const refreshUser = useCallback(async () => {
     try {
-      const res = await api.get('/auth/me');
+      const res = await api.get('/auth/profile');
       const updated = res.data.user;
       setUser(updated);
       await StorageManager.setItem('soeit_user', JSON.stringify(updated));

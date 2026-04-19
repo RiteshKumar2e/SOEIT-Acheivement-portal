@@ -22,7 +22,7 @@ const EventsPage = () => {
   const fetchNotices = useCallback(async () => {
     try {
       const res = await api.get('/notices');
-      setNotices(res.data.notices || []);
+      setNotices(res.data.data || []);
     } catch (error) {
       console.warn('Notices API unavailable:', error.message);
       setNotices([]);

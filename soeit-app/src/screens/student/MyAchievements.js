@@ -53,7 +53,7 @@ const MyAchievements = ({ navigation }) => {
   const fetchAchievements = useCallback(async () => {
     try {
       const res = await api.get('/achievements/my');
-      setAchievements(res.data.achievements || []);
+      setAchievements(res.data.data || []);
     } catch (error) {
       // API connection failed silently - show cached or empty state
       setAchievements([]);
