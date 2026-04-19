@@ -9,6 +9,7 @@ import {
   Image,
   Animated,
   ImageBackground,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,13 +20,7 @@ const { width, height } = Dimensions.get('window');
 
 // ── data ────────────────────────────────────────────────────────────────────
 
-const HERO_IMAGES = [
-  'https://arkajainuniversity.ac.in/wp-content/uploads/2023/01/1-2.jpg',
-  'https://arkajainuniversity.ac.in/wp-content/uploads/2023/05/9-3.jpg',
-  'https://arkajainuniversity.ac.in/wp-content/uploads/2022/10/11.jpg',
-  'https://arkajainuniversity.ac.in/wp-content/uploads/2022/10/13.jpg',
-  'https://arkajainuniversity.ac.in/wp-content/uploads/2020/11/8-5.jpg',
-];
+const HERO_GRADIENT = ['#fff5f0', '#fee2d5', '#ffffff']; // Light Peach Shades
 
 const QUICK_LINKS = [
   { title: 'Hackathons', icon: 'trophy', color: '#ff6b6b' },
@@ -95,8 +90,6 @@ const getDaySet = () => {
 
 const WelcomeScreen = ({ navigation }) => {
   // hero image slider
-  const [heroIdx, setHeroIdx] = useState(0);
-  const heroFade = useRef(new Animated.Value(1)).current;
 
   // gazette
   const daySet = useRef(getDaySet()).current;
@@ -107,16 +100,6 @@ const WelcomeScreen = ({ navigation }) => {
   const [activeFaq, setActiveFaq] = useState(null);
 
   // hero image auto-rotate
-  useEffect(() => {
-    const timer = setInterval(() => {
-      Animated.sequence([
-        Animated.timing(heroFade, { toValue: 0, duration: 500, useNativeDriver: true }),
-        Animated.timing(heroFade, { toValue: 1, duration: 500, useNativeDriver: true }),
-      ]).start();
-      setHeroIdx(i => (i + 1) % HERO_IMAGES.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
 
   // gazette auto-rotate
   useEffect(() => {
@@ -137,25 +120,18 @@ const WelcomeScreen = ({ navigation }) => {
 
       {/* ── HERO ── */}
       <View style={S.heroWrap}>
-        <Animated.View style={[S.heroImgWrap, { opacity: heroFade }]}>
-          <Image
-            source={{ uri: HERO_IMAGES[heroIdx] }}
-            style={S.heroImg}
-            resizeMode="cover"
-          />
-        </Animated.View>
-
-        {/* dark overlay gradient */}
         <LinearGradient
-          colors={['rgba(0,0,0,0.55)', 'rgba(15,23,42,0.82)', 'rgba(15,23,42,0.95)']}
-          style={S.heroOverlay}
+          colors={HERO_GRADIENT}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={S.heroImgWrap}
         />
 
         <SafeAreaView style={S.heroContent}>
           {/* logo row */}
           <View style={S.logoRow}>
             <View style={S.logoBadge}>
-              <Ionicons name="school" size={22} color="#a5b4fc" />
+              <Ionicons name="school" size={22} color={COLORS.primary} />
             </View>
             <View>
               <Text style={S.logoText}>SoEIT</Text>
@@ -167,7 +143,7 @@ const WelcomeScreen = ({ navigation }) => {
 
           {/* official badge */}
           <View style={S.officialBadge}>
-            <Ionicons name="shield-checkmark" size={13} color="#a5b4fc" />
+            <Ionicons name="shield-checkmark" size={13} color={COLORS.primary} />
             <Text style={S.badgeText}>OFFICIAL SoEIT PORTAL · NAAC A</Text>
           </View>
 
@@ -181,21 +157,22 @@ const WelcomeScreen = ({ navigation }) => {
           </Text>
 
           {/* buttons */}
-          <TouchableOpacity style={S.primaryBtn} onPress={() => navigation.navigate('Login')} activeOpacity={0.88}>
-            <LinearGradient colors={[COLORS.primary, '#4f46e5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={S.btnGrad}>
+          <TouchableOpacity 
+            style={S.primaryBtn} 
+            onPress={() => navigation.navigate('Login')} 
+            activeOpacity={0.88}
+          >
+            <LinearGradient 
+              colors={[COLORS.primary, '#4f46e5']} 
+              start={{ x: 0, y: 0 }} 
+              end={{ x: 1, y: 1 }} 
+              style={S.btnGrad}
+            >
               <Text style={S.primaryBtnTxt}>Get Started</Text>
-              <Ionicons name="arrow-forward" size={17} color="#fff" />
+              <Ionicons name="arrow-forward" size={18} color="#fff" />
             </LinearGradient>
           </TouchableOpacity>
 
-          {/* dot indicators */}
-          <View style={S.dots}>
-            {HERO_IMAGES.map((_, i) => (
-              <TouchableOpacity key={i} onPress={() => setHeroIdx(i)}>
-                <View style={[S.dot, heroIdx === i && S.dotActive]} />
-              </TouchableOpacity>
-            ))}
-          </View>
         </SafeAreaView>
       </View>
 
@@ -332,19 +309,41 @@ const S = StyleSheet.create({
 
   logoRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   logoBadge: { width: 44, height: 44, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' },
-  logoText: { color: '#fff', fontSize: 20, fontWeight: '900', letterSpacing: 0.5 },
-  logoSub: { color: '#a5b4fc', fontSize: 9, fontWeight: '800', letterSpacing: 3, marginTop: -3 },
+  logoText: { color: COLORS.textPrimary, fontSize: 20, fontWeight: '900', letterSpacing: 0.5 },
+  logoSub: { color: COLORS.primary, fontSize: 9, fontWeight: '800', letterSpacing: 3, marginTop: -3 },
 
-  officialBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.1)', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20, marginBottom: 14, gap: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' },
-  badgeText: { color: '#a5b4fc', fontSize: 9, fontWeight: '900', letterSpacing: 1.2 },
+  officialBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.primary + '15', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20, marginBottom: 14, gap: 6, borderWidth: 1, borderColor: COLORS.primary + '33' },
+  badgeText: { color: COLORS.primary, fontSize: 9, fontWeight: '900', letterSpacing: 1.2 },
 
-  heroTitle: { color: '#fff', fontSize: 36, fontWeight: '900', lineHeight: 42 },
-  heroAccent: { color: '#a5b4fc' },
-  heroSub: { color: '#cbd5e1', fontSize: 15, marginTop: 12, lineHeight: 22, fontWeight: '500' },
+  heroTitle: { color: COLORS.textPrimary, fontSize: 36, fontWeight: '900', lineHeight: 42 },
+  heroAccent: { color: COLORS.primary },
+  heroSub: { color: COLORS.textSecondary, fontSize: 15, marginTop: 12, lineHeight: 22, fontWeight: '500' },
 
   btnRow: { flexDirection: 'row', gap: 12, marginTop: 28 },
-  primaryBtn: { flex: 1.4, borderRadius: 14, overflow: 'hidden', elevation: 8 },
-  btnGrad: { paddingVertical: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+  primaryBtn: { 
+    borderRadius: 16, 
+    overflow: 'hidden', 
+    marginTop: 24,
+    width: '100%',
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 6,
+      },
+    }),
+  },
+  btnGrad: { 
+    paddingVertical: 18, 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    gap: 10 
+  },
   primaryBtnTxt: { color: '#fff', fontSize: 15, fontWeight: '800' },
   secondaryBtn: { flex: 1, paddingVertical: 16, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.12)', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.25)' },
   secondaryBtnTxt: { color: '#fff', fontSize: 14, fontWeight: '800' },
