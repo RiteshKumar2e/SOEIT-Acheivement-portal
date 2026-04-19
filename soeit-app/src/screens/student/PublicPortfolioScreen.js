@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   Dimensions,
+  Linking,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -162,12 +163,24 @@ const PublicPortfolioScreen = ({ navigation, route }) => {
             {/* Social Links */}
             <View style={styles.socialRow}>
               {student.linkedIn && (
-                <TouchableOpacity style={styles.socialBtn}>
+                <TouchableOpacity 
+                  style={styles.socialBtn}
+                  onPress={() => {
+                    const url = student.linkedIn.startsWith('http') ? student.linkedIn : `https://${student.linkedIn}`;
+                    Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
+                  }}
+                >
                   <Ionicons name="logo-linkedin" size={18} color="#fff" />
                 </TouchableOpacity>
               )}
               {student.github && (
-                <TouchableOpacity style={styles.socialBtn}>
+                <TouchableOpacity 
+                  style={styles.socialBtn}
+                  onPress={() => {
+                    const url = student.github.startsWith('http') ? student.github : `https://${student.github}`;
+                    Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
+                  }}
+                >
                   <Ionicons name="logo-github" size={18} color="#fff" />
                 </TouchableOpacity>
               )}
