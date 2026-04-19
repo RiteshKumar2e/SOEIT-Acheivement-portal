@@ -38,12 +38,8 @@ const StudentDashboard = ({ navigation }) => {
       });
     } catch (error) {
       console.warn('Dashboard stats fetch failed:', error.message);
-      // Fallback to demo stats if in demo mode or error occurs
-      if (stats.total === 0) {
-        setStats({ verified: 12, pending: 3, total: 15 });
-      }
     }
-  }, [stats.total]);
+  }, []);
 
   useEffect(() => {
     fetchStats();
@@ -175,10 +171,10 @@ const StudentDashboard = ({ navigation }) => {
               <Text style={styles.welcomeName}>Welcome back, {user?.name}</Text>
               <View style={styles.infoRow}>
                 <View style={styles.infoBadge}>
-                  <Text style={styles.infoBadgeText}>● {user?.department || 'CSE DEPARTMENT'}</Text>
+                  <Text style={styles.infoBadgeText}>● {user?.department || 'SOEIT'}</Text>
                 </View>
-                <Text style={styles.infoText}>BATCH: 2022-26</Text>
-                <Text style={styles.infoText}>SEMESTER: 8</Text>
+                {user?.batch ? <Text style={styles.infoText}>BATCH: {user.batch}</Text> : null}
+                {user?.semester ? <Text style={styles.infoText}>SEM: {user.semester}</Text> : null}
               </View>
             </View>
           </View>
@@ -196,9 +192,6 @@ const StudentDashboard = ({ navigation }) => {
           </View>
           <Text style={styles.statValue}>{stats.total}</Text>
           <Text style={styles.statLabel}>TOTAL ACHIEVEMENTS</Text>
-          <View style={styles.statPill}>
-             <Text style={styles.statPillText}>Global Rank: 24</Text>
-          </View>
         </LinearGradient>
 
         <View style={styles.statsRow}>
@@ -244,23 +237,13 @@ const StudentDashboard = ({ navigation }) => {
           
           <View style={styles.roadmapCards}>
             <View style={styles.roadmapCard}>
-              <Text style={styles.roadmapRole}>Full Stack Developer</Text>
-              <Text style={styles.roadmapMatch}>92% Match</Text>
-              <View style={styles.roadmapProgress}>
-                <View style={[styles.roadmapFill, { width: '92%', backgroundColor: '#7c3aed' }]} />
-              </View>
-            </View>
-            <View style={styles.roadmapCard}>
-              <Text style={styles.roadmapRole}>Data Analyst</Text>
-              <Text style={styles.roadmapMatch}>75% Match</Text>
-              <View style={styles.roadmapProgress}>
-                <View style={[styles.roadmapFill, { width: '75%', backgroundColor: '#a78bfa' }]} />
-              </View>
+              <Text style={styles.roadmapRole}>Career analysis is based on your verified achievements.</Text>
+              <Text style={styles.roadmapMatch}>Upload & verify more achievements to unlock AI career roadmap.</Text>
             </View>
           </View>
 
           <TouchableOpacity style={styles.aiActionBtn} onPress={() => navigation.navigate('Portfolio')}>
-            <Text style={styles.aiActionText}>View Full Analysis</Text>
+            <Text style={styles.aiActionText}>View Portfolio</Text>
             <Ionicons name="chevron-forward" size={16} color="#7c3aed" />
           </TouchableOpacity>
         </LinearGradient>

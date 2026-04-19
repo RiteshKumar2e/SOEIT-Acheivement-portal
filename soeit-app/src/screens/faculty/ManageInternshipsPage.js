@@ -41,10 +41,7 @@ const ManageInternshipsPage = () => {
       setPostings(res.data.data || []);
     } catch (error) {
       console.error('Fetch postings error:', error);
-      // Fallback for demo
-      setPostings([
-        { id: 1, company_name: 'Tech Giant', role: 'Full Stack Intern', deadline: '2025-10-10', stipend: '₹20k/mo' },
-      ]);
+      setPostings([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -124,6 +121,15 @@ const ManageInternshipsPage = () => {
             <Text style={styles.headerTitle}>Posted Opportunities</Text>
             <Text style={styles.headerSub}>Manage your internship listings</Text>
           </View>
+        }
+        ListEmptyComponent={
+          !loading && (
+            <View style={{ alignItems: 'center', marginTop: 60 }}>
+              <Ionicons name="briefcase-outline" size={60} color={COLORS.border} />
+              <Text style={{ color: COLORS.textPrimary, fontSize: 18, fontWeight: '700', marginTop: 16 }}>No Postings Yet</Text>
+              <Text style={{ color: COLORS.textMuted, fontSize: 14, marginTop: 4, textAlign: 'center', paddingHorizontal: 40 }}>Tap the + button to post a new internship opportunity for students.</Text>
+            </View>
+          )
         }
       />
 

@@ -27,11 +27,7 @@ const FacultyManagementScreen = () => {
       setFaculty(res.data.data || []);
     } catch (error) {
       console.error('Fetch faculty error:', error);
-      // Fallback for demo
-      setFaculty([
-        { id: 1, name: 'Dr. Arjun Dev', email: 'arjun@university.ac.in', department: 'CS', isActive: true },
-        { id: 2, name: 'Prof. Sharma', email: 'sharma@university.ac.in', department: 'IT', isActive: false },
-      ]);
+      setFaculty([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -104,6 +100,15 @@ const FacultyManagementScreen = () => {
         keyExtractor={item => (item.id || item._id).toString()}
         contentContainerStyle={styles.list}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchFaculty} tintColor={COLORS.primary} />}
+        ListEmptyComponent={
+          !loading && (
+            <View style={{ alignItems: 'center', marginTop: 60 }}>
+              <Ionicons name="school-outline" size={60} color={COLORS.border} />
+              <Text style={{ color: COLORS.textPrimary, fontSize: 18, fontWeight: '700', marginTop: 16 }}>No Faculty Registered</Text>
+              <Text style={{ color: COLORS.textMuted, fontSize: 14, marginTop: 4, textAlign: 'center', paddingHorizontal: 40 }}>Faculty accounts will appear here once they register.</Text>
+            </View>
+          )
+        }
       />
     </View>
   );

@@ -129,10 +129,10 @@ const AdminDashboard = ({ navigation }) => {
 
         <View style={styles.content}>
           <View style={styles.statsGrid}>
-            <StatCard label="Students" value={stats.totalStudents} icon="people" color="#3b82f6" subValue="+12" subLabel="this month" />
+            <StatCard label="Students" value={stats.totalStudents} icon="people" color="#3b82f6" />
             <StatCard label="Faculty" value={stats.totalFaculties} icon="school" color="#8b5cf6" subValue="Active" subLabel="Status" />
             <StatCard label="Approved" value={stats.approvedCount} icon="checkmark-circle" color="#10b981" subValue={stats.totalAchievements} subLabel="Total" />
-            <StatCard label="Rejected" value={stats.rejectedCount} icon="close-circle" color="#ef4444" subValue="Audit" subLabel="Needed" />
+            <StatCard label="Rejected" value={stats.rejectedCount} icon="close-circle" color="#ef4444" />
           </View>
 
           <Text style={styles.sectionTitle}>Administrative Controls</Text>

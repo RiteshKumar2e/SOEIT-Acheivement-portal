@@ -39,30 +39,29 @@ const PublicPortfolioScreen = ({ navigation }) => {
         api.get('/projects/my'),
         api.get('/courses/my')
       ]);
-      
+
       setStats({
         achievements: (achs.data.data || []).length,
         projects: (projs.data.data || []).length,
         courses: (crs.data.data || []).length
       });
     } catch (e) {
-      // Fallback for demo
-      setStats({ achievements: 15, projects: 8, courses: 12 });
+      // Keep zeros on error
     }
   };
 
   const generateAiSummary = () => {
     setAiGenerating(true);
     setAiSummary('');
-    
+
     // Final text to type
     const finalText = `An ambitious ${user?.role || 'Student'} at SoEIT specializing in technical excellence. With ${stats.achievements} verified achievements and ${stats.projects} completed projects, this profile demonstrates strong proficiency in ${stats.achievements > 10 ? 'multiple engineering domains' : 'core software development'}. The candidate shows consistent growth through ${stats.courses} academic certifications.`;
-    
+
     // Simulate AI "thinking"
     setTimeout(() => {
       let currentText = '';
       let charIdx = 0;
-      
+
       const typeInterval = setInterval(() => {
         if (charIdx < finalText.length) {
           currentText += finalText[charIdx];
@@ -79,8 +78,8 @@ const PublicPortfolioScreen = ({ navigation }) => {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Check out my detailed academic and technical portfolio at SOEIT Portal! Achievements: ${stats.achievements}, Projects: ${stats.projects}`,
-        url: 'https://soeit-portal.edu/portfolio/' + (user?.id || 'ritesh'),
+        message: `Check out my academic and technical portfolio at SOEIT Portal! Achievements: ${stats.achievements}, Projects: ${stats.projects}`,
+        url: 'https://soeit.edu/portfolio/' + (user?.enrollmentNo || user?.id || 'student'),
       });
     } catch (error) {
       console.log(error.message);
@@ -103,22 +102,22 @@ const PublicPortfolioScreen = ({ navigation }) => {
           colors={[COLORS.primary, '#4c1d95']}
           style={styles.headerGradient}
         >
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.backBtn}
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
-          
+
           <View style={styles.profileInfo}>
             <View style={styles.avatarLarge}>
               <Text style={styles.avatarChar}>
                 {user?.name?.charAt(0) || 'R'}
               </Text>
             </View>
-            <Text style={styles.userName}>{user?.name || 'Ritesh Kumar'}</Text>
+            <Text style={styles.userName}>{user?.name || 'Student'}</Text>
             <Text style={styles.userRole}>
-              Member since {new Date().getFullYear()} • ID: AJU-{Math.floor(Math.random() * 89999 + 10000)}
+              Member since {new Date().getFullYear()} • {user?.enrollmentNo || user?.email?.split('@')[0] || 'SOEIT Student'}
             </Text>
           </View>
 
@@ -140,7 +139,7 @@ const PublicPortfolioScreen = ({ navigation }) => {
                 <Ionicons name="sparkles" size={20} color="#7c3aed" />
                 <Text style={styles.aiTitle}>AI Professional Insight</Text>
               </View>
-              
+
               {aiSummary ? (
                 <Text style={styles.aiText}>{aiSummary}</Text>
               ) : (
@@ -149,7 +148,7 @@ const PublicPortfolioScreen = ({ navigation }) => {
                 </Text>
               )}
 
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.aiBtn}
                 onPress={generateAiSummary}
                 disabled={aiGenerating}
@@ -173,7 +172,7 @@ const PublicPortfolioScreen = ({ navigation }) => {
             <View style={styles.linkCard}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.linkUrl} numberOfLines={1}>
-                  soeit-portal.edu/profile/{user?.name?.toLowerCase().replace(' ', '.')}
+                  soeit.edu/portfolio/{user?.enrollmentNo || user?.email?.split('@')[0] || 'student'}
                 </Text>
               </View>
               <TouchableOpacity onPress={handleShare}>
@@ -199,7 +198,7 @@ const PublicPortfolioScreen = ({ navigation }) => {
         <View style={{ height: 100 }} />
       </ScrollView>
 
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.fab}
         onPress={handleShare}
       >

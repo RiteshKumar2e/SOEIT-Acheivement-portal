@@ -13,10 +13,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../../constants/colors';
 import api from '../../services/api';
-import { INTERNSHIPS as DEMO_INTERNSHIPS } from '../../constants/internships';
 
 const InternshipsPage = () => {
-  const [internships, setInternships] = useState(DEMO_INTERNSHIPS);
+  const [internships, setInternships] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -25,16 +24,17 @@ const InternshipsPage = () => {
       const res = await api.get('/internships');
       if (res.data && res.data.internships) {
         setInternships(res.data.internships);
+      } else {
+        setInternships([]);
       }
     } catch (error) {
       console.warn('Internships fetch failed:', error.message);
-      // Fallback to demo data if the API fails (especially for 401 in demo mode)
-      if (internships.length === 0) setInternships(DEMO_INTERNSHIPS);
+      setInternships([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [internships.length]);
+  }, []);
 
   useEffect(() => {
     fetchInternships();
@@ -49,7 +49,13 @@ const InternshipsPage = () => {
     <TouchableOpacity style={styles.card} activeOpacity={0.8}>
       <View style={styles.cardHeader}>
         <View style={styles.logoContainer}>
-          <Image source={{ uri: item.logo || 'https://via.placeholder.com/60' }} style={styles.logo} />
+          {item.logo ? (
+            <Image source={{ uri: item.logo }} style={styles.logo} />
+          ) : (
+            <View style={[styles.logo, { alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bgSecondary }]}>
+              <Ionicons name="briefcase-outline" size={24} color={COLORS.textMuted} />
+            </View>
+          )}
         </View>
         <View style={styles.headerInfo}>
           <Text style={styles.title}>{item.title}</Text>
@@ -103,6 +109,12 @@ const InternshipsPage = () => {
             <View style={styles.header}>
               <Text style={styles.headerTitle}>Student Internships Hub</Text>
               <Text style={styles.headerSub}>Exclusive opportunities for SOEIT students</Text>
+            </View>
+          }
+          ListEmptyComponent={
+            <View style={{ alignItems: 'center', marginTop: 60 }}>
+              <Text style={{ color: COLORS.textPrimary, fontSize: 18, fontWeight: '700', marginBottom: 8 }}>No Internships Available</Text>
+              <Text style={{ color: COLORS.textMuted, fontSize: 14, textAlign: 'center', paddingHorizontal: 40 }}>Check back later for new internship opportunities posted by faculty.</Text>
             </View>
           }
         />

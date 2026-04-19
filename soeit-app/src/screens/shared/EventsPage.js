@@ -24,27 +24,8 @@ const EventsPage = () => {
       const res = await api.get('/notices');
       setNotices(res.data.notices || []);
     } catch (error) {
-      // Silently fail with fallback data - API might not be available
-      console.warn('Notices API unavailable, using demo data');
-      // Fallback data for demo
-      setNotices([
-        {
-          id: 1,
-          title: 'Upcoming Hackathon: Code AJU 2026',
-          content: 'Registration is open for the annual university hackathon. Teams of 2-4 can apply.',
-          type: 'Event',
-          createdAt: new Date().toISOString(),
-          priority: 'high',
-        },
-        {
-          id: 2,
-          title: 'Achievement Verification Deadline',
-          content: 'Please submit all achievement documents by the end of the semester for credit processing.',
-          type: 'Notice',
-          createdAt: new Date().toISOString(),
-          priority: 'normal',
-        }
-      ]);
+      console.warn('Notices API unavailable:', error.message);
+      setNotices([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -98,6 +79,13 @@ const EventsPage = () => {
           ListHeaderComponent={
             <View style={styles.header}>
               <Text style={styles.headerSubtitle}>Official Broadcasts from Faculty</Text>
+            </View>
+          }
+          ListEmptyComponent={
+            <View style={{ alignItems: 'center', marginTop: 60 }}>
+              <Ionicons name="notifications-off-outline" size={60} color={COLORS.border} />
+              <Text style={{ color: COLORS.textPrimary, fontSize: 18, fontWeight: '700', marginTop: 16 }}>No Notices Yet</Text>
+              <Text style={{ color: COLORS.textMuted, fontSize: 14, marginTop: 4, textAlign: 'center', paddingHorizontal: 40 }}>Faculty will post official notices and announcements here.</Text>
             </View>
           }
         />

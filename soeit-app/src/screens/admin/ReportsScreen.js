@@ -25,19 +25,8 @@ const ReportsScreen = () => {
         setData(res.data);
       } catch (error) {
         console.error('Fetch reports error:', error);
-        // Fallback demo data
-        setData({
-          topPerformers: [
-            { student: { name: 'Aman Sharma', department: 'CS', studentId: 'SOEIT01' }, totalPoints: 450, achievementCount: 15 },
-            { student: { name: 'Priya Singh', department: 'IT', studentId: 'SOEIT02' }, totalPoints: 380, achievementCount: 12 },
-            { student: { name: 'Rahul Kumar', department: 'CS', studentId: 'SOEIT03' }, totalPoints: 320, achievementCount: 10 },
-          ],
-          categoryStats: [
-            { _name: 'Technical', count: 120 },
-            { _name: 'Sports', count: 45 },
-            { _name: 'Cultural', count: 30 },
-          ]
-        });
+        // Show empty data on error
+        setData({ topPerformers: [], categoryStats: [] });
       } finally {
         setLoading(false);
       }
@@ -93,6 +82,13 @@ const ReportsScreen = () => {
           keyExtractor={(item, index) => index.toString()}
           scrollEnabled={false}
           contentContainerStyle={{ marginTop: 15 }}
+          ListEmptyComponent={
+            <View style={{ alignItems: 'center', paddingVertical: 40 }}>
+              <Ionicons name="bar-chart-outline" size={48} color={COLORS.border} />
+              <Text style={{ color: COLORS.textMuted, marginTop: 12, fontWeight: '600' }}>No leaderboard data yet</Text>
+              <Text style={{ color: COLORS.textMuted, fontSize: 12, marginTop: 4 }}>Data will appear once students have verified achievements</Text>
+            </View>
+          }
         />
       </View>
 
@@ -106,7 +102,7 @@ const ReportsScreen = () => {
           <Text style={[styles.exportText, { color: COLORS.textPrimary }]}>Export Excel</Text>
         </TouchableOpacity>
       </View>
-      
+
       <View style={{ height: 40 }} />
     </ScrollView>
   );

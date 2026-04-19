@@ -36,11 +36,7 @@ const BroadcastNoticeScreen = ({ navigation }) => {
       navigation.goBack();
     } catch (error) {
       console.error('Broadcast error:', error);
-      // Fallback for demo
-      setTimeout(() => {
-        Alert.alert('Success (Demo)', 'Notice sent to all ' + target);
-        navigation.goBack();
-      }, 1000);
+      Alert.alert('Error', 'Failed to send broadcast. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
