@@ -15,7 +15,9 @@ const ProfilePage = () => {
     const { user, updateUser } = useAuth();
     const [tab, setTab] = useState('profile');
     const [form, setForm] = useState({ 
-        name: '', email: '', phone: '', enrollmentNo: '', bio: '', batch: '', semester: '', section: '', 
+        name: '', email: '', phone: '', enrollmentNo: '', bio: '', 
+        batch: '', batchMonth: '', batchYear: '',
+        semester: '', section: '', 
         linkedIn: '', github: '', portfolio: '',
         edu10thSchool: '', edu10thYear: '', edu10thPercent: '',
         edu12thSchool: '', edu12thYear: '', edu12thPercent: '',
@@ -31,9 +33,23 @@ const ProfilePage = () => {
 
     useEffect(() => {
         if (user) {
+            // Parse existing batch e.g. 'Aug-2022' or '2022' back into month+year
+            const existingBatch = user.batch || '';
+            let parsedMonth = '';
+            let parsedYear = '';
+            const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const dashIdx = existingBatch.indexOf('-');
+            if (dashIdx !== -1) {
+                parsedMonth = existingBatch.substring(0, dashIdx);
+                parsedYear  = existingBatch.substring(dashIdx + 1);
+            } else if (/^\d{4}$/.test(existingBatch)) {
+                parsedYear = existingBatch; // legacy year-only
+            }
+
             setForm({
                 name: user.name || '', email: user.email || '', phone: user.phone || '', enrollmentNo: user.enrollmentNo || '', bio: user.bio || '',
-                batch: user.batch || '', semester: user.semester || '', section: user.section || '',
+                batch: existingBatch, batchMonth: parsedMonth, batchYear: parsedYear,
+                semester: user.semester || '', section: user.section || '',
                 linkedIn: user.linkedIn || '', github: user.github || '', portfolio: user.portfolio || '',
                 edu10thSchool: user.edu10thSchool || '', edu10thYear: user.edu10thYear || '', edu10thPercent: user.edu10thPercent || '',
                 edu12thSchool: user.edu12thSchool || '', edu12thYear: user.edu12thYear || '', edu12thPercent: user.edu12thPercent || '',
@@ -57,7 +73,14 @@ const ProfilePage = () => {
         setLoading(true);
         try {
             const fd = new FormData();
-            Object.entries(form).forEach(([k, v]) => {
+            // Combine batchMonth + batchYear into 'batch' field before sending
+            const combinedBatch = form.batchMonth && form.batchYear
+                ? `${form.batchMonth}-${form.batchYear}`
+                : form.batchYear || form.batch || '';
+            const payload = { ...form, batch: combinedBatch };
+            delete payload.batchMonth;
+            delete payload.batchYear;
+            Object.entries(payload).forEach(([k, v]) => {
                 if (v !== undefined) fd.append(k, v);
             });
             if (profileImage) fd.append('profileImage', profileImage);
@@ -199,9 +222,35 @@ const ProfilePage = () => {
                                             <label className="form-label field-label-res">University Name</label>
                                             <input className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} value={form.universityName || 'Arka Jain University, Jamshedpur'} readOnly />
                                         </div>
-                                        <div className="form-group">
-                                            <label className="form-label field-label-res">Batch *</label>
-                                            <input className="form-control" style={{ height: '52px', borderRadius: '12px', fontWeight: 700 }} placeholder="e.g. 2022-26" value={form.batch} onChange={e => setForm(p => ({ ...p, batch: e.target.value }))} />
+                                        <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                                            <label className="form-label field-label-res">Batch (Start Month & Year) *</label>
+                                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                                <select
+                                                    className="form-control"
+                                                    style={{ height: '52px', borderRadius: '12px', fontWeight: 700, flex: 1 }}
+                                                    value={form.batchMonth}
+                                                    onChange={e => setForm(p => ({ ...p, batchMonth: e.target.value }))}
+                                                >
+                                                    <option value="">Month</option>
+                                                    {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map(m => (
+                                                        <option key={m} value={m}>{m}</option>
+                                                    ))}
+                                                </select>
+                                                <select
+                                                    className="form-control"
+                                                    style={{ height: '52px', borderRadius: '12px', fontWeight: 700, flex: 1 }}
+                                                    value={form.batchYear}
+                                                    onChange={e => setForm(p => ({ ...p, batchYear: e.target.value }))}
+                                                >
+                                                    <option value="">Year</option>
+                                                    {Array.from({ length: 13 }, (_, i) => 2018 + i).map(y => (
+                                                        <option key={y} value={y}>{y}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.4rem', fontWeight: 600 }}>
+                                                This is your college admission start month &amp; year (e.g. Aug 2022)
+                                            </div>
                                         </div>
                                         <div className="form-group">
                                             <label className="form-label field-label-res">Current CGPA</label>

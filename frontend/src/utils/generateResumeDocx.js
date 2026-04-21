@@ -152,8 +152,22 @@ export const generateResumeDocx = async (data) => {
     // Education Section
     sections.push(createSectionHeader("Education"));
     
-    // University
-    const batchRange = student.batch ? (student.batch.includes('-') ? student.batch : `${student.batch}-${parseInt(student.batch)+4}`) : '2022-26';
+    // Derive batch range from student.batch
+    // Formats: 'Aug-2022' (new) → 'Aug. 2022 – May 2026'  |  '2022' (legacy) → 'Aug. 2022 – May 2026'
+    const parseBatchRange = (batch) => {
+        if (!batch) return '';
+        const dashIdx = batch.indexOf('-');
+        if (dashIdx !== -1) {
+            const mon = batch.substring(0, dashIdx); // e.g. 'Aug'
+            const yr  = batch.substring(dashIdx + 1); // e.g. '2022'
+            const endYr = String(parseInt(yr) + 4);
+            return `${mon}. ${yr} \u2013 May ${endYr}`;
+        }
+        // Legacy: year-only
+        const yr = batch.replace(/[^0-9]/g, '').slice(0, 4);
+        return yr ? `Aug. ${yr} \u2013 May ${String(parseInt(yr) + 4)}` : '';
+    };
+    const batchRange = parseBatchRange(student.batch);
     sections.push(createRow(
         student.universityName || 'Arka Jain University, Jamshedpur', 
         student.universityCgpa ? `CGPA: ${student.universityCgpa}` : 'Arka Jain University',
@@ -161,7 +175,7 @@ export const generateResumeDocx = async (data) => {
     ));
     sections.push(createRow(
         `Bachelor of Technology in ${student.department || 'Computer Science & Engineering'}`, 
-        `Aug. 2022 – May 2026`, // Placeholder for date range from batch
+        batchRange,
         false, true, false, false
     ));
     

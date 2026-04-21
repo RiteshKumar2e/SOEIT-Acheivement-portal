@@ -129,7 +129,23 @@ export const generateResumePdf = (data) => {
     // --- Education ---
     drawSectionHeader('Education');
     drawRow(student.universityName || 'Arka Jain University, Jamshedpur', student.universityCgpa ? `CGPA: ${student.universityCgpa}` : '', true, false);
-    drawRow(`Bachelor of Technology in ${student.department || 'Computer Science & Engineering'}`, 'Aug 2022 - May 2026', false, true);
+    // Derive batch range from student.batch
+    // Formats: 'Aug-2022' (new) → 'Aug 2022 - May 2026'  |  '2022' (legacy) → 'Aug 2022 - May 2026'
+    const parseBatchRange = (batch) => {
+        if (!batch) return '';
+        const dashIdx = batch.indexOf('-');
+        if (dashIdx !== -1) {
+            const mon = batch.substring(0, dashIdx); // e.g. 'Aug'
+            const yr  = batch.substring(dashIdx + 1); // e.g. '2022'
+            const endYr = String(parseInt(yr) + 4);
+            return `${mon} ${yr} - May ${endYr}`;
+        }
+        // Legacy: year-only
+        const yr = batch.replace(/[^0-9]/g, '').slice(0, 4);
+        return yr ? `Aug ${yr} - May ${String(parseInt(yr) + 4)}` : '';
+    };
+    const batchRange = parseBatchRange(student.batch);
+    drawRow(`Bachelor of Technology in ${student.department || 'Computer Science & Engineering'}`, batchRange, false, true);
     cursorY += 5;
 
     if (student.edu12thSchool) {
