@@ -38,9 +38,3 @@ Thumbs.db
 coverage/
 .cache/
 mongodb-binaries/
-
-# Student Data (Sensitive)
-frontend/src/data/aju22/
-frontend/src/data/aju23/
-frontend/src/data/aju24/
-frontend/src/data/aju25/
