@@ -51,7 +51,7 @@ const LoginPage = () => {
         if (!form.email) {
             e.email = 'Username is required';
         } else if (!/^AJU\//i.test(form.email) && !/^ARKA\/AJU\//i.test(form.email)) {
-            e.email = 'Enrollment No. must start with AJU/';
+            e.email = 'Enrollment No. must start with AJU/ or ARKA/AJU/';
         }
         if (!form.password) e.password = 'Password is required';
         if (form.captchaInput !== captcha) e.captchaInput = 'Invalid Captcha';
@@ -99,14 +99,21 @@ const LoginPage = () => {
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
 
                         <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label className="form-label" style={{ fontWeight: 600, color: '#303657', marginBottom: '0.4rem', display: 'block', fontSize: '0.85rem' }}>Username / Enrollment No.</label>
+                            <label className="form-label" style={{ fontWeight: 600, color: '#303657', marginBottom: '0.4rem', display: 'block', fontSize: '0.85rem' }}>Enrollment No.</label>
                             <div style={{ position: 'relative' }}>
                                 <input
                                     type="text"
                                     className={`form-control ${errors.email ? 'error' : ''}`}
                                     placeholder="e.g. AJU/221403"
                                     value={form.email}
-                                    onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                                    onChange={e => {
+                                        let val = e.target.value.toUpperCase();
+                                        // Auto-prefix for enrollment numbers
+                                        if (val.startsWith('AJU') && val.length > 3 && val[3] !== '/') {
+                                            val = 'AJU/' + val.substring(3);
+                                        }
+                                        setForm(p => ({ ...p, email: val }));
+                                    }}
                                 />
                             </div>
                             {errors.email && <div className="input-error" style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.email}</div>}
