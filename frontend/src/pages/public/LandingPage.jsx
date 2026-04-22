@@ -260,10 +260,10 @@ const LandingPage = () => {
             try {
                 const token = sessionStorage.getItem('soeit_token');
                 const isAuth = token && token !== 'null' && token !== 'undefined' && token.length > 10;
-                
+
                 if (isAuth) {
                     const { authAPI } = await import('../../services/api');
-                    authAPI.getProfile().catch(() => {});
+                    authAPI.getProfile().catch(() => { });
                 }
             } catch (e) { /* ignore silently */ }
         };
@@ -365,12 +365,12 @@ const LandingPage = () => {
                                         className={`hero-main-img ${currentImg === idx ? 'active' : ''}`}
                                     />
                                 ))}
-                                
+
                                 {heroImages.length > 1 && (
                                     <div className="hero-img-indicators">
                                         {heroImages.map((_, idx) => (
-                                            <div 
-                                                key={idx} 
+                                            <div
+                                                key={idx}
                                                 className={`hero-img-dot ${currentImg === idx ? 'active' : ''}`}
                                                 onClick={() => setCurrentImg(idx)}
                                             />
@@ -394,9 +394,9 @@ const LandingPage = () => {
                                 <div key={idx} className="quick-card">
                                     <div className="quick-icon" style={{ background: `${link.color}10`, color: link.color }}>
                                         {isUrlIcon ? (
-                                            <img 
-                                                src={link.icon} 
-                                                alt={link.title} 
+                                            <img
+                                                src={link.icon}
+                                                alt={link.title}
                                                 className="quick-img-icon"
                                             />
                                         ) : (
@@ -603,8 +603,8 @@ const LandingPage = () => {
                         <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="GitHub">
                             <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/github-icon.png" alt="GitHub" className="ecosystem-logo" />
                         </a>
-                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="LinkedIn">
-                            <img src="https://miro.medium.com/1*kBWo_GWrG58h28kDHwnBfg.png" alt="LinkedIn" className="ecosystem-logo" />
+                        <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="LeetCode">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/LeetCode_Logo_1.png" alt="LeetCode" className="ecosystem-logo" />
                         </a>
 
                         <a href="https://coursera.org" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="Coursera">
@@ -620,8 +620,8 @@ const LandingPage = () => {
                         <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="GitHub">
                             <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/github-icon.png" alt="GitHub" className="ecosystem-logo" />
                         </a>
-                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="LinkedIn">
-                            <img src="https://miro.medium.com/1*kBWo_GWrG58h28kDHwnBfg.png" alt="LinkedIn" className="ecosystem-logo" />
+                        <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="LinkedIn">
+                            <img src="https://miro.medium.com/1*kBWo_GWrG58h28kDHwnBfg.png" alt="Leetcode" className="ecosystem-logo" />
                         </a>
 
                         <a href="https://coursera.org" target="_blank" rel="noopener noreferrer" className="ecosystem-item" title="Coursera">
@@ -650,7 +650,7 @@ const LandingPage = () => {
                             <p className="achievement-highlight-quote">
                                 Every project you complete, every certificate you earn, and every milestone you achieve deserves to be recognized and celebrated. We don't just track your accomplishments—we validate them with official badges that tell your professional story.
                             </p>
-                            
+
 
 
                             <Link to="/register" className="btn btn-primary btn-lg rounded-lg mt-8 px-12 shadow-xl hover:scale-105 transition-transform" style={{ display: 'inline-block' }}>
@@ -668,8 +668,8 @@ const LandingPage = () => {
                                 { url: '/workshop.png', label: 'Workshop' }
                             ].map((badge, idx) => (
                                 <div key={idx} className="achievement-badge-item">
-                                    <img 
-                                        src={badge.url} 
+                                    <img
+                                        src={badge.url}
                                         alt={`${badge.label} Badge`}
                                         className="achievement-badge-image"
                                     />
@@ -719,7 +719,7 @@ const LandingPage = () => {
                         </div>
                         <h2 className="faq-title-large">Frequently Asked Questions</h2>
                     </div>
-                    
+
                     <div className="faq-right">
                         <div className="faq-accordion-minimal">
                             {faqs.map((faq, idx) => (
