@@ -19,7 +19,8 @@ const sendTokenResponse = (user, statusCode, res, message = 'Success') => {
 };
 
 const validatePassword = (password) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,12}$/;
+    // Allow any non-alphanumeric character as a special character
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{6,10}$/;
     return regex.test(password);
 };
 
@@ -30,7 +31,7 @@ exports.register = async (req, res, next) => {
         const { name, email, password, department, enrollmentNo, batch, semester, section } = req.body;
 
         if (!validatePassword(password)) {
-            return res.status(400).json({ success: false, message: 'Password must be 6-10 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)' });
+            return res.status(400).json({ success: false, message: 'Password must be 6-10 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character' });
         }
 
         // Check duplicates
@@ -251,7 +252,7 @@ exports.changePassword = async (req, res, next) => {
         const { currentPassword, newPassword } = req.body;
 
         if (!validatePassword(newPassword)) {
-            return res.status(400).json({ success: false, message: 'New password must be 6-10 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)' });
+            return res.status(400).json({ success: false, message: 'New password must be 6-10 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character' });
         }
 
         const user = await User.findById(req.user.id);
@@ -336,7 +337,7 @@ exports.resetPassword = async (req, res, next) => {
         if (!user) return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
 
         if (!validatePassword(req.body.password)) {
-            return res.status(400).json({ success: false, message: 'Password must be 6-10 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)' });
+            return res.status(400).json({ success: false, message: 'Password must be 6-10 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character' });
         }
 
         const bcrypt = require('bcryptjs');

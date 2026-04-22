@@ -177,8 +177,8 @@ const RegisterPage = () => {
         else if (!/\S+@arkajainuniversity\.ac\.in$/.test(form.email)) e.email = 'Please use official university email';
 
         if (!form.password) e.password = 'Password is required';
-        else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,10}$/.test(form.password)) {
-            e.password = 'Password must be 6-10 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)';
+        else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{6,10}$/.test(form.password)) {
+            e.password = 'Password must be 6-10 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character';
         }
         if (form.password !== form.confirmPassword) e.confirmPassword = 'Passwords do not match';
 

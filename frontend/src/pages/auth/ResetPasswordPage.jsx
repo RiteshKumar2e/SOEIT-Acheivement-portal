@@ -39,7 +39,7 @@ const ResetPasswordPage = () => {
         upper: /[A-Z]/.test(form.password),
         lower: /[a-z]/.test(form.password),
         number: /\d/.test(form.password),
-        special: /[@$!%*?&]/.test(form.password)
+        special: /[^a-zA-Z0-9]/.test(form.password)
     };
 
     const validate = () => {
@@ -130,7 +130,7 @@ const ResetPasswordPage = () => {
                                                 {validateList.upper && validateList.lower ? '✓' : '•'} Upper & lowercase letters
                                             </div>
                                             <div style={{ color: validateList.number && validateList.special ? '#16a34a' : '#64748b', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                                                {validateList.number && validateList.special ? '✓' : '•'} At least 1 number and 1 symbol (@$!%*?&)
+                                                {validateList.number && validateList.special ? '✓' : '•'} At least 1 number and 1 symbol
                                             </div>
                                         </div>
                                     </div>
