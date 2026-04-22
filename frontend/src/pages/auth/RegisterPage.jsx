@@ -174,7 +174,14 @@ const RegisterPage = () => {
         const e = {};
         if (!form.name.trim()) e.name = 'Name is required';
         if (!form.email) e.email = 'Email is required';
-        else if (!/\S+@arkajainuniversity\.ac\.in$/.test(form.email)) e.email = 'Please use official university email';
+        else {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(form.email)) {
+                e.email = 'Invalid email format';
+            } else if (form.role === 'student' && !form.email.toLowerCase().endsWith('@arkajainuniversity.ac.in')) {
+                e.email = 'Students must use official university email (@arkajainuniversity.ac.in)';
+            }
+        }
 
         if (!form.password) e.password = 'Password is required';
         else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{6,10}$/.test(form.password)) {

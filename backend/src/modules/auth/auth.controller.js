@@ -46,6 +46,12 @@ exports.register = async (req, res, next) => {
         const otp = generateOTP();
         const otpExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
 
+        // Determine role and prevent public admin registration
+        let role = req.body.role || 'student';
+        if (role === 'admin') {
+            role = 'student'; // Fallback to student for safety
+        }
+
         // Store registration data in cache
         const registrationData = {
             name, email: emailLower, password, department,
@@ -53,7 +59,7 @@ exports.register = async (req, res, next) => {
             batch: batch?.trim() || undefined,
             semester: semester ? parseInt(semester, 10) : undefined,
             section: section?.trim() || undefined,
-            role: req.body.role || 'student',
+            role,
             otp,
             otpExpiry
         };
