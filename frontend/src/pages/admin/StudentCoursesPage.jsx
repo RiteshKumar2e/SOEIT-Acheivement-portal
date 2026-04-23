@@ -82,7 +82,8 @@ const StudentCoursesPage = () => {
     };
 
     return (
-        <div className="animate-fade-in">
+        <>
+            <div className="animate-fade-in">
             <div className="page-header" style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h2 className="heading-display">Course Management</h2>
@@ -365,8 +366,9 @@ const StudentCoursesPage = () => {
                     )}
                 </div>
             )}
+        </div>
 
-            {showAssignModal && (
+        {showAssignModal && (
                 <div className="modal-overlay animate-fade-in">
                     <div className="modal animate-scale-in">
                         <div className="modal-header">
@@ -567,7 +569,7 @@ const StudentCoursesPage = () => {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 
