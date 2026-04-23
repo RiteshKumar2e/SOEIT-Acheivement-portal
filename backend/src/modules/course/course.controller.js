@@ -135,6 +135,7 @@ exports.getAllCourses = async (req, res, next) => {
             status: c.status,
             progress: c.progress,
             studentName: c.student_name,
+            studentId: c.student_id,
             department: c.department,
             enrollmentNo: c.enrollment_no,
             updatedAt: c.updated_at,

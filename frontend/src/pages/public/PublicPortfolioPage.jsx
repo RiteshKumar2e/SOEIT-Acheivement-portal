@@ -26,6 +26,11 @@ const PublicPortfolioPage = () => {
     const [badges, setBadges] = useState([]);
 
     useEffect(() => {
+        if (!userId || userId === 'undefined') {
+            setError('Invalid Portfolio Protocol: Student ID missing in request');
+            setLoading(false);
+            return;
+        }
         setLoading(true);
         setError(null);
         achievementAPI.getPortfolio(userId)
