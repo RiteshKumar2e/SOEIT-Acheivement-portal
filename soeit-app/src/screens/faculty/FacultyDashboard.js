@@ -43,23 +43,33 @@ const FacultyDashboard = ({ navigation }) => {
         semester: selectedSemester === 'All' ? undefined : selectedSemester
       };
       
-      const [statsRes, studentsRes] = await Promise.all([
-        api.get(ROUTES.ADMIN_STATS),
-        api.get(ROUTES.ADMIN_STUDENTS, { params })
-      ]);
-      
-      if (statsRes.data.success) {
-        setStats(statsRes.data.stats);
-      }
-      
-      if (studentsRes.data.success) {
-        setStudents(studentsRes.data.data);
-      }
+      // Fetch stats individually to avoid full failure if one times out
+      api.get(ROUTES.ADMIN_STATS)
+        .then(res => {
+          if (res.data.success) setStats(res.data.stats || res.data.data);
+        })
+        .catch(err => console.warn('Stats fetch failed:', err.message));
+
+      // Fetch students
+      api.get(ROUTES.ADMIN_STUDENTS, { params })
+        .then(res => {
+          if (res.data.success) setStudents(res.data.data);
+        })
+        .catch(err => {
+          console.warn('Students fetch failed:', err.message);
+          if (err.message.includes('timeout')) {
+            Alert.alert('Connection Slow', 'The server is taking longer than usual to respond. Please try refreshing in a moment.');
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+          setRefreshing(false);
+        });
+
     } catch (error) {
        console.error('Faculty Dashboard Fetch Error:', error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
+       setLoading(false);
+       setRefreshing(false);
     }
   }, [search, selectedSemester]);
 
