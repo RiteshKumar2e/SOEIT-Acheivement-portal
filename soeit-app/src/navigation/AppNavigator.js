@@ -357,7 +357,6 @@ const AppNavigator = () => {
               <Stack.Screen name="Hackathons" component={HackathonsPage} />
               <Stack.Screen name="Courses" component={StudentCoursesPage} />
               <Stack.Screen name="Projects" component={StudentProjectsPage} />
-              <Stack.Screen name="Portfolio" component={PublicPortfolioScreen} options={{ headerShown: false }} />
             </Stack.Group>
           ) : user?.role === 'faculty' ? (
             <Stack.Group>
@@ -394,6 +393,7 @@ const AppNavigator = () => {
               <Stack.Screen name="BroadcastNotice" component={BroadcastNoticeScreen} options={{ title: 'Create Notice' }} />
             </Stack.Group>
           )}
+          <Stack.Screen name="Portfolio" component={PublicPortfolioScreen} options={{ headerShown: false }} />
         </>
       )}
     </Stack.Navigator>

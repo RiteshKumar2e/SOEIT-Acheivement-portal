@@ -159,8 +159,6 @@ const PublicPortfolioScreen = ({ navigation, route }) => {
                 ))}
               </ScrollView>
             )}
-
-            {/* Social Links */}
             <View style={styles.socialRow}>
               {student.linkedIn && (
                 <TouchableOpacity 
@@ -262,8 +260,10 @@ const PublicPortfolioScreen = ({ navigation, route }) => {
                           <Ionicons name="checkmark-circle" size={10} color="#059669" />
                           <Text style={styles.verifyText}>VERIFIED</Text>
                         </View>
-                        <Text style={styles.achCategory}>{ach.category}</Text>
-                        <Text style={styles.achPoints}>+{ach.points} PTS</Text>
+                        <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', flex: 1 }}>
+                          <Text style={styles.achCategory}>{ach.category}</Text>
+                          <Text style={styles.achPoints}>+{ach.points} PTS</Text>
+                        </View>
                       </View>
                       <Text style={styles.achDesc} numberOfLines={2}>{ach.description}</Text>
                       <View style={styles.achFooter}>
