@@ -26,9 +26,12 @@ const CourseCard = ({ item, onDelete, isStaff }) => (
       <View style={{ flex: 1 }}>
         <Text style={styles.title}>{item.name || item.courseName}</Text>
         <Text style={styles.instructor}>{item.instructor || item.platform || 'Learning Platform'}</Text>
-        {isStaff && item.user?.name && (
-          <Text style={[styles.instructor, { color: COLORS.primary, fontWeight: '700', marginTop: 2 }]}>
-            {item.user.name}{item.user.enrollmentNo ? ` • ${item.user.enrollmentNo}` : ''}
+        {isStaff && (item.student || item.user) && (
+          <Text style={[styles.instructor, { color: COLORS.primary, fontWeight: '800', marginTop: 4 }]}>
+            <Ionicons name="person" size={12} color={COLORS.primary} />
+            {' '}{(item.student?.name || item.user?.name || 'Student')}
+            {(item.student?.semester || item.user?.semester) ? ` • Sem ${item.student?.semester || item.user?.semester}` : ''}
+            {(item.student?.enrollmentNo || item.user?.enrollmentNo || item.student?.idNumber) ? ` • ${item.student?.enrollmentNo || item.user?.enrollmentNo || item.student?.idNumber}` : ''}
           </Text>
         )}
       </View>

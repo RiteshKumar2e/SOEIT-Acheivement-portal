@@ -16,8 +16,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../constants/colors';
 import { SPACING, getResponsiveFontSize } from '../../utils/responsive';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
-const ProjectCard = ({ item, onDelete }) => (
+const ProjectCard = ({ item, onDelete, isStaff }) => (
   <View style={styles.card}>
     <View style={styles.cardHeader}>
       <View style={styles.iconBox}>
@@ -26,13 +27,23 @@ const ProjectCard = ({ item, onDelete }) => (
       <View style={{ flex: 1 }}>
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.techStack}>{item.techStack || 'React, Node.js'}</Text>
+        {isStaff && (item.student || item.user) && (
+          <Text style={[styles.techStack, { color: COLORS.primary, fontWeight: '800', marginTop: 4 }]}>
+            <Ionicons name="person" size={12} color={COLORS.primary} />
+            {' '}{(item.student?.name || item.user?.name || 'Student')}
+            {(item.student?.semester || item.user?.semester) ? ` • Sem ${item.student?.semester || item.user?.semester}` : ''}
+            {(item.student?.enrollmentNo || item.user?.enrollmentNo || item.student?.idNumber) ? ` • ${item.student?.enrollmentNo || item.user?.enrollmentNo || item.student?.idNumber}` : ''}
+          </Text>
+        )}
       </View>
-      <TouchableOpacity
-        style={styles.deleteBtn}
-        onPress={() => onDelete(item.id)}
-      >
-        <Ionicons name="trash-outline" size={18} color="#ef4444" />
-      </TouchableOpacity>
+      {!isStaff && (
+        <TouchableOpacity
+          style={styles.deleteBtn}
+          onPress={() => onDelete(item.id)}
+        >
+          <Ionicons name="trash-outline" size={18} color="#ef4444" />
+        </TouchableOpacity>
+      )}
     </View>
 
     <Text style={styles.description} numberOfLines={3}>
@@ -72,6 +83,7 @@ const ProjectCard = ({ item, onDelete }) => (
 );
 
 const StudentProjectsPage = () => {
+  const { user } = useAuth();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -85,9 +97,12 @@ const StudentProjectsPage = () => {
     status: 'Completed',
   });
 
+  const isStaff = user?.role === 'admin' || user?.role === 'faculty';
+
   const loadInitialData = useCallback(async () => {
     try {
-      const res = await api.get('/projects/my');
+      const endpoint = isStaff ? '/projects' : '/projects/my';
+      const res = await api.get(endpoint);
       if (res.data?.data && res.data.data.length > 0) {
         setProjects(res.data.data);
       } else {
@@ -100,7 +115,7 @@ const StudentProjectsPage = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [isStaff]);
 
 
   useEffect(() => {
@@ -165,8 +180,8 @@ const StudentProjectsPage = () => {
       ) : (
         <FlatList
           data={projects}
-          renderItem={({ item }) => <ProjectCard item={item} onDelete={handleDeleteProject} />}
-          keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+          renderItem={({ item }) => <ProjectCard item={item} onDelete={handleDeleteProject} isStaff={isStaff} />}
+          keyExtractor={(item, index) => (item._id || item.id)?.toString() || index.toString()}
           contentContainerStyle={styles.list}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
@@ -175,23 +190,25 @@ const StudentProjectsPage = () => {
             <View>
               <View style={styles.header}>
                 <View>
-                  <Text style={styles.headerTitle}>Professional Projects</Text>
-                  <Text style={styles.headerSub}>Technical portfolio built during your course</Text>
+                  <Text style={styles.headerTitle}>{isStaff ? 'Project Monitoring' : 'Professional Projects'}</Text>
+                  <Text style={styles.headerSub}>{isStaff ? 'Monitor student project contributions and tech stacks' : 'Technical portfolio built during your course'}</Text>
                 </View>
-                <TouchableOpacity
-                  style={styles.addBtn}
-                  onPress={() => setShowModal(true)}
-                >
-                  <Ionicons name="add" size={24} color="#fff" />
-                </TouchableOpacity>
+                {!isStaff && (
+                  <TouchableOpacity
+                    style={styles.addBtn}
+                    onPress={() => setShowModal(true)}
+                  >
+                    <Ionicons name="add" size={24} color="#fff" />
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Ionicons name="code-working" size={64} color={COLORS.textMuted + '40'} />
-              <Text style={styles.emptyText}>No projects yet</Text>
-              <Text style={styles.emptySubtext}>Showcase your best work</Text>
+              <Text style={styles.emptyText}>{isStaff ? 'No student projects found' : 'No projects yet'}</Text>
+              <Text style={styles.emptySubtext}>{isStaff ? 'Students will appear here once they showcase their work' : 'Showcase your best work'}</Text>
             </View>
           }
         />
