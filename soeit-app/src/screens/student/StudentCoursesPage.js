@@ -15,8 +15,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../constants/colors';
 import { SPACING, getResponsiveFontSize } from '../../utils/responsive';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
-const CourseCard = ({ item, onDelete }) => (
+const CourseCard = ({ item, onDelete, isStaff }) => (
   <View style={styles.card}>
     <View style={styles.cardHeader}>
       <View style={styles.iconBox}>
@@ -25,13 +26,20 @@ const CourseCard = ({ item, onDelete }) => (
       <View style={{ flex: 1 }}>
         <Text style={styles.title}>{item.name || item.courseName}</Text>
         <Text style={styles.instructor}>{item.instructor || item.platform || 'Learning Platform'}</Text>
+        {isStaff && item.user?.name && (
+          <Text style={[styles.instructor, { color: COLORS.primary, fontWeight: '700', marginTop: 2 }]}>
+            {item.user.name}{item.user.enrollmentNo ? ` • ${item.user.enrollmentNo}` : ''}
+          </Text>
+        )}
       </View>
-      <TouchableOpacity
-        style={styles.deleteBtn}
-        onPress={() => onDelete(item.id)}
-      >
-        <Ionicons name="trash-outline" size={18} color="#ef4444" />
-      </TouchableOpacity>
+      {!isStaff && (
+        <TouchableOpacity
+          style={styles.deleteBtn}
+          onPress={() => onDelete(item.id)}
+        >
+          <Ionicons name="trash-outline" size={18} color="#ef4444" />
+        </TouchableOpacity>
+      )}
     </View>
 
     <View style={styles.progressContainer}>
@@ -57,7 +65,8 @@ const CourseCard = ({ item, onDelete }) => (
   </View>
 );
 
-const StudentCoursesPage = () => {
+const StudentCoursesPage = ({ route }) => {
+  const { user } = useAuth();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -69,9 +78,13 @@ const StudentCoursesPage = () => {
     progress: '0',
   });
 
+  const isStaff = user?.role === 'admin' || user?.role === 'faculty';
+
   const loadInitialData = useCallback(async () => {
     try {
-      const res = await api.get('/courses/my');
+      // Faculty/Admin: fetch all courses; Students: fetch own courses
+      const endpoint = isStaff ? '/courses' : '/courses/my';
+      const res = await api.get(endpoint);
       if (res.data?.data && res.data.data.length > 0) {
         setCourses(res.data.data);
       } else {
@@ -84,7 +97,7 @@ const StudentCoursesPage = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [isStaff]);
 
   useEffect(() => {
     loadInitialData();
@@ -147,8 +160,8 @@ const StudentCoursesPage = () => {
       ) : (
         <FlatList
           data={courses}
-          renderItem={({ item }) => <CourseCard item={item} onDelete={handleDeleteCourse} />}
-          keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+          renderItem={({ item }) => <CourseCard item={item} onDelete={handleDeleteCourse} isStaff={isStaff} />}
+          keyExtractor={(item, index) => (item._id || item.id)?.toString() || index.toString()}
           contentContainerStyle={styles.list}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
@@ -157,23 +170,25 @@ const StudentCoursesPage = () => {
             <View>
               <View style={styles.header}>
                 <View>
-                  <Text style={styles.headerTitle}>Academic Courses</Text>
-                  <Text style={styles.headerSub}>Track your current semester learning path</Text>
+                  <Text style={styles.headerTitle}>{isStaff ? 'Course Monitoring' : 'Academic Courses'}</Text>
+                  <Text style={styles.headerSub}>{isStaff ? 'Monitor all student course registrations' : 'Track your current semester learning path'}</Text>
                 </View>
-                <TouchableOpacity
-                  style={styles.addBtn}
-                  onPress={() => setShowModal(true)}
-                >
-                  <Ionicons name="add" size={24} color="#fff" />
-                </TouchableOpacity>
+                {!isStaff && (
+                  <TouchableOpacity
+                    style={styles.addBtn}
+                    onPress={() => setShowModal(true)}
+                  >
+                    <Ionicons name="add" size={24} color="#fff" />
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Ionicons name="book-outline" size={64} color={COLORS.textMuted + '40'} />
-              <Text style={styles.emptyText}>No courses yet</Text>
-              <Text style={styles.emptySubtext}>Add a course to get started</Text>
+              <Text style={styles.emptyText}>{isStaff ? 'No student courses found' : 'No courses yet'}</Text>
+              <Text style={styles.emptySubtext}>{isStaff ? 'Students will appear here once they add courses' : 'Add a course to get started'}</Text>
             </View>
           }
         />
