@@ -65,6 +65,11 @@ const Project = {
             args.push(params.studentId);
         }
 
+        if (params.department) {
+            sql += ` AND u.department = ?`;
+            args.push(params.department);
+        }
+
         if (params.search) {
             sql += ` AND (p.title LIKE ? OR p.tech_stack LIKE ? OR u.name LIKE ?)`;
             args.push(`%${params.search}%`, `%${params.search}%`, `%${params.search}%`);
