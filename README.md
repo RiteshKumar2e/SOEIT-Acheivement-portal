@@ -19,6 +19,44 @@ The system uses a **Bespoke Academic Design System** and is built to be resilien
 
 ---
 
+## 📸 Platform Preview
+
+### 🖥️ Web Interface
+<p align="center">
+  <img src="Screenshots/Home%20Pages/Landing%20Page%201.1.png" width="800" alt="Landing Page">
+</p>
+
+| ![Student Dashboard](Screenshots/Student%20Module/Student%20Dashboard%20Page.png) | ![Faculty Dashboard](Screenshots/Faculty%20Module/Faculty%20Dashboard.png) |
+| :---: | :---: |
+| **Student Achievement Dashboard** | **Faculty Oversight Panel** |
+
+| ![Public Portfolio](Screenshots/Home%20Pages/Public%20Portfolio%20Page.png) | ![Admin Dashboard](Screenshots/Admin%20Module/Admin%20Dashboard%20Page.png) |
+| :---: | :---: |
+| **Shareable Student Portfolio** | **Administrative Control Center** |
+
+<details>
+<summary><b>🖼️ View More Screenshots</b></summary>
+
+#### Home & Auth
+- [Landing Page 1.2 SOEIT GAZETTE](Screenshots/Home%20Pages/Landing%20Page%201.2%20SOEIT%20GAZETTE.png)
+- [Our Features](Screenshots/Home%20Pages/Our%20Features.png)
+- [How Project Works](Screenshots/Home%20Pages/How%20%20Project%20Works.png)
+- [Login Page](Screenshots/Home%20Pages/Login%20Page.png)
+
+#### Student Features
+- [Course Registry](Screenshots/Student%20Module/Course%20Registry%20Page.png)
+- [Internship Opportunities](Screenshots/Student%20Module/Internship%20Opportunities%20Page.png)
+- [Live Hackathons](Screenshots/Student%20Module/Live%20Hackathons%20Page.png)
+- [Upload Achievement](Screenshots/Student%20Module/Upload%20Achievement%20Page.png)
+
+#### Faculty & Admin
+- [Reports & Analysis](Screenshots/Faculty%20Module/Reports%20%26%20Analayis%20Page.png)
+- [Verify Achievements](Screenshots/Faculty%20Module/Verify%20Students%20Achievements%20Page.png)
+- [Faculty Management](Screenshots/Admin%20Module/Faculty%20Management%20Page.png)
+</details>
+
+---
+
 ## 🏗️ Technical Architecture
 
 The portal is built on a **full-stack modern architecture** (REVN Stack + React Native) with **Turso/LibSQL** as the robust persistence layer.
