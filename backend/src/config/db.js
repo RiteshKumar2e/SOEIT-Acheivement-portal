@@ -234,6 +234,8 @@ const initSchema = async (client) => {
     `CREATE INDEX IF NOT EXISTS idx_users_dept ON users(department)`,
     `CREATE INDEX IF NOT EXISTS idx_users_active ON users(is_active)`,
     `CREATE INDEX IF NOT EXISTS idx_users_batch ON users(batch)`,
+    `CREATE INDEX IF NOT EXISTS idx_users_auth_email ON users(email)`,
+    `CREATE INDEX IF NOT EXISTS idx_users_auth_enroll ON users(enrollment_no)`,
     `CREATE INDEX IF NOT EXISTS idx_achievements_student_status ON achievements(student_id, status)`,
     `CREATE INDEX IF NOT EXISTS idx_achievements_public_status ON achievements(is_public, status)`,
     `CREATE INDEX IF NOT EXISTS idx_achievements_category_status ON achievements(category, status)`,

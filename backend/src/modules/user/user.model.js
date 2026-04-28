@@ -148,25 +148,38 @@ const User = {
     },
 
     /** FIND ONE */
-    findOne: async (query) => {
+    findOne: async (query, selectFields = null) => {
         const db = getDb();
-        let sql = 'SELECT * FROM users WHERE 1=1';
+        const selectClause = selectFields ? selectFields : '*';
+        let sql = `SELECT ${selectClause} FROM users WHERE 1=1`;
         const args = [];
 
         if (query.$or) {
             const orParts = [];
             for (const cond of query.$or) {
-                if (cond.email !== undefined) { orParts.push('email = ?'); args.push(cond.email.toLowerCase()); }
-                if (cond.enrollmentNo !== undefined) { orParts.push('enrollment_no = ?'); args.push(cond.enrollmentNo); }
-                if (cond.resetPasswordToken !== undefined) { orParts.push('reset_password_token = ?'); args.push(cond.resetPasswordToken); }
+                if (cond.email !== undefined) { 
+                    orParts.push('email = ?'); 
+                    args.push(cond.email.toLowerCase()); 
+                }
+                if (cond.enrollmentNo !== undefined) { 
+                    orParts.push('enrollment_no = ?'); 
+                    args.push(cond.enrollmentNo); 
+                }
+                if (cond.resetPasswordToken !== undefined) { 
+                    orParts.push('reset_password_token = ?'); 
+                    args.push(cond.resetPasswordToken); 
+                }
             }
             if (orParts.length) sql += ` AND (${orParts.join(' OR ')})`;
         } else {
+            if (query.id !== undefined) { sql += ' AND id = ?'; args.push(query.id); }
             if (query.email !== undefined) { sql += ' AND email = ?'; args.push(query.email.toLowerCase ? query.email.toLowerCase() : query.email); }
             if (query.enrollmentNo !== undefined) { sql += ' AND enrollment_no = ?'; args.push(query.enrollmentNo); }
             if (query.resetPasswordToken !== undefined) { sql += ' AND reset_password_token = ?'; args.push(query.resetPasswordToken); }
             if (query.resetPasswordExpire?.$gt !== undefined) { sql += ' AND reset_password_expire > ?'; args.push(new Date(query.resetPasswordExpire.$gt).toISOString()); }
         }
+
+        sql += ' LIMIT 1'; // Performance hint
 
         const result = await db.execute({ sql, args });
         return result.rows.length ? rowToUser(result.rows[0]) : null;

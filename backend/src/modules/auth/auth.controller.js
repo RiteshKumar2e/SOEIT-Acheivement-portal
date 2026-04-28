@@ -189,18 +189,22 @@ exports.login = async (req, res, next) => {
         const { email, password } = req.body;
         if (!email || !password) return res.status(400).json({ success: false, message: 'Please provide username and password' });
 
+        // High-speed lookup: Fetch only auth-critical fields first
         const user = await User.findOne({
             $or: [{ email: email.toLowerCase() }, { enrollmentNo: email }],
-        });
+        }, 'id, name, email, password, role, is_active, enrollment_no');
 
         if (!user) return res.status(401).json({ success: false, message: 'Invalid credentials' });
         if (!user.isActive) return res.status(401).json({ success: false, message: 'Account is deactivated. Contact admin.' });
 
+        // Bcrypt comparison (CPU bound)
         const isMatch = await user.matchPassword(password);
         if (!isMatch) return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
-        // Fast login update (background)
-        user.updateLastLogin().catch(err => console.error('Login update failed:', err.message));
+        // Perceived O(1) performance: Background the non-critical database update
+        setImmediate(() => {
+            user.updateLastLogin().catch(err => console.debug('Bg Login update skipped:', err.message));
+        });
 
         sendTokenResponse(user, 200, res, 'Login successful');
     } catch (error) {
