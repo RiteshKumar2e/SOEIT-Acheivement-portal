@@ -117,6 +117,19 @@ const rowToUser = (row) => {
                 args: [this.lastLogin.toISOString(), this.id],
             });
         },
+        // Targeted persistence of reset token only. Safe to use after a partial
+        // (projected) fetch, unlike save() which rewrites every column.
+        saveResetToken: async function () {
+            const db = getDb();
+            await db.execute({
+                sql: `UPDATE users SET reset_password_token=?, reset_password_expire=?, updated_at=datetime('now') WHERE id=?`,
+                args: [
+                    this.resetPasswordToken || null,
+                    this.resetPasswordExpire ? this.resetPasswordExpire.toISOString() : null,
+                    this.id,
+                ],
+            });
+        },
     };
 };
 

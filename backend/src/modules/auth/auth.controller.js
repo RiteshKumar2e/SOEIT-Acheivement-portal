@@ -301,7 +301,7 @@ exports.forgotPassword = async (req, res, next) => {
 
         // Fire and forget: Database update and Email dispatch in background for O(1) perceived response
         setImmediate(() => {
-            user.save().then(() => {
+            user.saveResetToken().then(() => {
                 const html = getEmailTemplate({
                     title: 'Password Reset Request',
                     content: `
